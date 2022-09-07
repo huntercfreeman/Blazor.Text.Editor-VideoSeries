@@ -1,0 +1,12 @@
+<div tabindex="-1"
+     @ref="_textEditorDisplayElementReference"
+     @onclick="FocusTextEditorOnClickAsync"
+     @onkeydown="HandleOnKeyDown"
+     @onkeydown:preventDefault="true">
+    
+     <button class="btn btn-primary">
+          Click me
+     </button>
+     
+     @TextEditorStatesSelection.Value.Content.ToString()
+</div>

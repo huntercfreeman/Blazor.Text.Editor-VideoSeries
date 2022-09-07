@@ -20,4 +20,12 @@
       <ProjectReference Include="..\BlazorTextEditor.ClassLib\BlazorTextEditor.ClassLib.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="TextEditor\TextEditorDisplay.razor" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <UpToDateCheckInput Remove="TextEditor\TextEditorDisplay.razor" />
+    </ItemGroup>
+
 </Project>
