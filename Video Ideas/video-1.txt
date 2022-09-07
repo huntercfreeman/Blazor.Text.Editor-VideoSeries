@@ -1,0 +1,10 @@
+Notes for video 1:
+
+After I finished Video 1 I decided I would write my ideas
+for the videos to be recorded in this folder.
+
+So, 
+    Video 1 has a file named, 'video-1.txt'
+    Video 2 will have a file named, 'video-2.txt'
+    Video 3 will have a file named 'video-3.txt'
+    etc...

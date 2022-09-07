@@ -1,0 +1,73 @@
+Notes for video 2:
+
+# Intent
+{
+    Prior to video 2 being recorded the Text Editor currently
+    has a StringBuilder that is being Append()'d to.
+
+    The goal of video 2 is to introduce TextCharacters and
+    add a button that applies Roslyn Syntax highlighting to the
+    TextCharacters.
+}
+
+# Plan
+{
+    Do not go with 'TextCharacters' it is a confusing name.
+    Instead go with 'RichCharacter' it is a more fitting name.
+
+    # Step 1
+        Create the class 'RichCharacter' in ClassLib/TextEditor
+
+        public class RichCharacter
+        {
+            public char Value { get; init; }
+            public byte DecorationByte { get; set; }
+        }
+
+    # Step 2
+        Modify TextEditorBase class to maintain
+        a public List<RichCharacter> Content { get; } = new();
+
+        When the user types do Content.Add(event.Key);
+
+    # Step 3
+       When rendering the TextEditorBase.Content to the User Interface 
+            @foreach() over all the RichCharacters and group
+            contiguous RichCharacters with the same DecorationByte
+            under a single span.
+    
+    # Step 4
+        Add a button to the UserInterface that passes to Roslyn
+        the new string (TextEditor.Contents.Select(x => x.Value).ToArray())
+
+    # Step 5
+        Write a GeneralSyntaxCollector (CSharpSyntaxWalker)
+        to collect all the various syntax.
+
+    # Step 6 
+        Using the GeneralSyntaxCollector get the RichCharacters
+        at the specified Span from the syntax and apply a corresponding
+        DecorationByte.
+
+    # Step 7
+        Use DecorationByteHelper static class to convert from byte
+        to css class.
+
+    # Step 8
+        Add .css file with the corresponding css classes 
+        for the syntax and their styles.
+}
+
+Do not recap last episode. 
+Instead say there is a link in the description of the youtube video.
+This is because anyone who did watch the previous episode might click off
+    from boredom as they already know what happened.
+
+# Youtube Video Description
+{
+    Part 1:
+        https://youtu.be/D5PdeRsV-Hk
+
+    Consider including these notes in the description?
+}
+

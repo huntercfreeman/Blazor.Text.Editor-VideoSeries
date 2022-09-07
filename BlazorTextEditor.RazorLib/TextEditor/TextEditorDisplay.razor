@@ -1,3 +1,4 @@
+@using System.Text
 <div tabindex="-1"
      @ref="_textEditorDisplayElementReference"
      @onclick="FocusTextEditorOnClickAsync"
@@ -8,5 +9,37 @@
           Click me
      </button>
      
-     @TextEditorStatesSelection.Value.Content.ToString()
+     <button class="btn btn-primary"
+             @onclick="ApplyRoslynSyntaxHighlightingOnClick">
+          ApplyRoslynSyntaxHighlightingOnClick
+     </button>
+    
+     @if (TextEditorStatesSelection.Value.Content.Any())
+     {
+          var spanBuilder = new StringBuilder();
+          var currentDecorationByte = TextEditorStatesSelection.Value.Content.First().DecorationByte;
+          
+          foreach (var richCharacter in TextEditorStatesSelection.Value.Content)
+          {
+               if (currentDecorationByte == richCharacter.DecorationByte)
+               {
+                    spanBuilder.Append(richCharacter.Value);
+               }
+               else
+               {
+                    <span class="@GetCssClass(currentDecorationByte)">
+                         @spanBuilder.ToString()
+                    </span>
+
+                    spanBuilder.Clear();
+                    spanBuilder.Append(richCharacter.Value);
+                    currentDecorationByte = richCharacter.DecorationByte;
+               }
+          }
+          
+          @* Final grouping of contiguous characters *@
+          <span class="@GetCssClass(currentDecorationByte)">
+               @spanBuilder.ToString()
+          </span>
+     }
 </div>
