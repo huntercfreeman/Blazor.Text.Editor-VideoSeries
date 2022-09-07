@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorTextEditor.Server", "BlazorTextEditor.Server\BlazorTextEditor.Server.csproj", "{1AE90253-5075-42EC-8C0F-DB1FB6BAC3C9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorTextEditor.ClassLib", "BlazorTextEditor.ClassLib\BlazorTextEditor.ClassLib.csproj", "{0F6A4DA7-174A-40CF-9184-74C3B7B6C68F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorTextEditor.RazorLib", "BlazorTextEditor.RazorLib\BlazorTextEditor.RazorLib.csproj", "{530FB2E6-3C00-49C1-BCE0-C3E53B902822}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1AE90253-5075-42EC-8C0F-DB1FB6BAC3C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1AE90253-5075-42EC-8C0F-DB1FB6BAC3C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1AE90253-5075-42EC-8C0F-DB1FB6BAC3C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1AE90253-5075-42EC-8C0F-DB1FB6BAC3C9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0F6A4DA7-174A-40CF-9184-74C3B7B6C68F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F6A4DA7-174A-40CF-9184-74C3B7B6C68F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F6A4DA7-174A-40CF-9184-74C3B7B6C68F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F6A4DA7-174A-40CF-9184-74C3B7B6C68F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{530FB2E6-3C00-49C1-BCE0-C3E53B902822}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{530FB2E6-3C00-49C1-BCE0-C3E53B902822}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{530FB2E6-3C00-49C1-BCE0-C3E53B902822}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{530FB2E6-3C00-49C1-BCE0-C3E53B902822}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
