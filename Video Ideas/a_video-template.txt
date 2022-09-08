@@ -1,0 +1,50 @@
+Notes for video 3:
+
+# Intent
+{
+    The goal of video 2 is to introduce TextCharacters and
+    add a button that applies Roslyn Syntax highlighting to the
+    TextCharacters.
+}
+
+# Plan
+{
+    # Step 1
+        Create the class 'RichCharacter' in ClassLib/TextEditor
+
+        public class RichCharacter
+        {
+            public char Value { get; init; }
+            public byte DecorationByte { get; set; }
+        }
+}
+
+# Youtube Video Description
+{
+	Part 1:
+	https://youtu.be/D5PdeRsV-Hk
+
+	Starting Point Repo:
+	https://github.com/huntercfreeman/BlazorTextEditor
+	
+	BlazorStudio Repo:
+	https://github.com/huntercfreeman/BlazorStudio
+	
+	Fluxor Repo:
+	https://github.com/mrpmorris/Fluxor
+}
+
+# Youtube Video Title
+{
+	Part 1:
+	https://youtu.be/D5PdeRsV-Hk
+
+	Starting Point Repo:
+	https://github.com/huntercfreeman/BlazorTextEditor
+	
+	BlazorStudio Repo:
+	https://github.com/huntercfreeman/BlazorStudio
+	
+	Fluxor Repo:
+	https://github.com/mrpmorris/Fluxor
+}
