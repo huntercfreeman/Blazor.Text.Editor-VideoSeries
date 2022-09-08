@@ -1,0 +1,113 @@
+Notes for video 6:
+
+# Intent
+{
+    The goals of video 6 are:
+		-Move the code to a Photino host.
+		-Add notification system
+		-Add loading of File from FileSystem into the TextEditor
+	
+	Goals that possibly need to wait until video 4:
+		-Modify a loaded in file
+		-Save the modification to the FileSystem
+		-Notify the user
+			-When the file is saved successfully
+			-When the file is NOT successfully saved
+}
+
+# Plan
+{
+    # Step 1
+        Clone Photino.Blazor from:
+			'https://github.com/tryphotino/photino.Blazor'
+	
+	# Step 2
+        Create a new C# Project that replicates the 'Hello World'
+		sample that Photino provides.
+	
+	# Step 3
+		Have the new C# Project (the Photino host) reference the
+		RazorClassLibrary.
+		
+	# Step 4
+		-Add <BlazorTextEditor.RazorLib.BlazorTextEditorRazorLibInitializer />
+			to the MainLayout.razor of the Photino host.
+		-Register AddBlazorTextEditorRazorLibServices() in main
+	
+	# Step 5
+		Take the code from Index.razor and put it in the Photino application.
+		(in otherwords render the TextEditors again)
+		
+	# Step 6	
+		-Create NotificationStates as a [FeatureState]
+		-NotificationStates is a record with position property of
+			ImmutableList<NotificationRecord> Notifications
+		-Create the record NotificationRecord which has position properties:
+			-NotificationKey
+			-Title
+			-RendererType
+			-Parameters
+			-AutomaticDisposalTimeSpan = null
+		-Create actions:
+			-RegisterNotificationAction
+			-DisposeNotificationAction
+		-Reducer add / remove to [FeatureState]
+				
+	# Step 7
+		-Create in the ClassLib:
+			-IDefaultErrorRenderer.cs
+			-IDefaultInformationRenderer.cs
+		-Register implementations in the RazorLib Services
+		
+	# Step 8
+		-In RazorLib make
+			-DefaultErrorRenderer component
+			-DefaultInformationRenderer component
+			-NotificationDisplay
+			-NotificationsInitializer
+		-In NotificationsInitializer ensure the foreach loop
+			uses an @key when rendering the NotificationDisplay(s)
+		-In the NotificationDisplay component ensure if the
+			AutomaticDisposalTimeSpan  is not null that a Task.Run()
+			is started to await Delay and then Dismiss();
+			
+	# Step 9
+		-In RazorLib make
+			-DefaultErrorRenderer component
+			-DefaultInformationRenderer component
+			-NotificationDisplay
+			-NotificationsInitializer
+		-In NotificationsInitializer ensure the foreach loop
+			uses an @key when rendering the NotificationDisplay(s)
+		-In the NotificationDisplay component ensure if the
+			AutomaticDisposalTimeSpan  is not null that a Task.Run()
+			is started to await Delay and then Dismiss();
+			
+	# Step 10
+		-Use (not sure exact method name) File.ReadTextAsync()
+			to read in a file's contents and display it in the
+			Text Editor
+		-Fluxor FileSystemCase
+			-WriteToFileSystemAction
+			-FileSystemStateEffects
+}
+
+# Youtube Video Description
+{
+	Part 2:
+	https://youtu.be/D5PdeRsV-Hk
+
+	Starting Point Repo:
+	https://github.com/huntercfreeman/BlazorTextEditor
+	
+	BlazorStudio Repo:
+	https://github.com/huntercfreeman/BlazorStudio
+	
+	Fluxor Repo:
+	https://github.com/mrpmorris/Fluxor
+}
+
+# Youtube Video Title
+{
+	Make a Text Editor in Blazor from scratch | Part 3
+}
