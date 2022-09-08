@@ -5,24 +5,6 @@ Notes for video 3:
     The goals of video 3 are:
 		-Add newline logic.
 		-Add Tab key logic
-		-Add JavaScript to measure the 
-			-Row height 
-			-Character width
-		-Add Cursor
-			-Class
-			-Component
-		-OnClick move cursor relative to the TextEditor scrollable viewport
-		-OnKeyDown 
-			-Move cursor with movement keyboard keys
-			-Insert Text at cursor position with character keyboard keys
-			-Remove Text at cursor position
-				-Backspace
-				-Delete
-		-Maintain a list of Edits that the user has made
-			-Consolidate common EditKinds into a singular edit
-			-Ctrl + Z should undo the most recent edit block
-			
-	Maybe do MultiCursor editing in this video? If too long of a video wait until later.
 }
 
 # Plan
@@ -34,6 +16,28 @@ Notes for video 3:
         -Iterate through content to find position of newline characters
         	and maintain them in a List<int> where int is the position 
         	relative to all characters in the document.
+        	
+	# Step 1.5
+		-Update previousCharacter
+		-Add LineEndingKind enum
+			{
+				CarriageReturn,
+				NewLine,
+				CarriageReturnNewLine,
+				EndOfFile
+			}
+		-In situation where '\r\n' modify position + 1 and change LineEndingKind
+		-Add EndOfFile lineEndingPosition after iterating content
+		
+	# Step 1.5
+		-RowLength()
+		-public (int positionIndex, LineEndingKind lineEndingKind) GetStartOfRowTuple(RowIndex rowIndex)
+    {
+        return rowIndex.Value > 0
+            ? _lineEndingPositions[rowIndex.Value - 1]
+            : (0, LineEndingKind.StartOfFile);
+    }
+        	
 	# Step 2
 		-When rendering out the markup to the UI switch statement swap out
 			all html characters that need escaped
@@ -71,44 +75,18 @@ Notes for video 3:
                 }
 			}
 		-In order to render the escaped HTML characters use (MarkupString) cast on the string.
-	# Step 3
-		-Create the JavaScript methods
-			-measureFontSizeByElementId(elementId, amountOfCharactersRendered)
-			-measureDimensionsByElementId(getTextEditorElementId)
-			-getRelativePosition(elementId, clientX, clientY))
-	
-	# Step 4
-		-Create TextEditorCursor ClassLib
-		-Create ImmutableTextEditorCursor ClassLib
-		-Create TextEditorCursorDisplay Blazor Component
-	
-	# Step 5
-		-OnClick move cursor
-		-OnKeyDown move cursor if movement key
-		-PreferredColumnIndex
-	
-	# Step 6
-		-Account for the Tab keys when rendering the Cursor on the UI
-			-GetTabsCountOnSameRowBeforeCursor(rowIndex, columnIndex);
-			
-	# Step 7
-		-Insert text onkeydown
-		-Remove text
-			-Backspace
-			-Delete
-	
-	# Step 8
-		-Maintain a list of edits the user made
-		-Consolidate consecutive edits of the same kind (Instertion / Deletion / Other )
-	
-	# Step 9
-		-Ctrl + Z should undo the most recent edit block
+		
+	# Step 2.5
+		-else if (character == KeyboardKeyFacts.WhitespaceCharacters.NEW_LINE)
+		-InvokeAsync(StateHasChanged)
+		-if (row.Any())
+		-TextEditorStatesSelection.Value.Content.First().DecorationByte;
 }
 
 # Youtube Video Description
 {
 	Part 2:
-	https://youtu.be/D5PdeRsV-Hk
+	https://youtu.be/ZIt0-mbCgG8
 
 	Starting Point Repo:
 	https://github.com/huntercfreeman/BlazorTextEditor
@@ -122,5 +100,5 @@ Notes for video 3:
 
 # Youtube Video Title
 {
-	Cursor movement, ( Insertion / Deletion ) and Undo | Blazor Text Editor Part 3
+	Render with NewLines | Blazor Text Editor Part 3
 }

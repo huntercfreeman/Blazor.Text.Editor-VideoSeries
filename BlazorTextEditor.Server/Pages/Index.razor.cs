@@ -13,9 +13,9 @@ public partial class Index : FluxorComponent, IDisposable
     [Inject]
     private IDispatcher Dispatcher { get; set; } = null!;
     
-    private TextEditorBase _textEditorBaseOne = new();
-    private TextEditorBase _textEditorBaseTwo = new();
-    private TextEditorBase _textEditorBaseThree = new();
+    private TextEditorBase _textEditorBaseOne = new(TextEditorBase.InitialInput);
+    private TextEditorBase _textEditorBaseTwo = new(TextEditorBase.InitialInput);
+    private TextEditorBase _textEditorBaseThree = new(TextEditorBase.InitialInput);
 
     private bool _isLoaded;
 

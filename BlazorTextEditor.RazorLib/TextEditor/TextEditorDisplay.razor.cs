@@ -19,6 +19,7 @@ public partial class TextEditorDisplay : ComponentBase
     public TextEditorKey TextEditorKey { get; set; } = null!;
     
     private ElementReference _textEditorDisplayElementReference;
+    private List<List<RichCharacter>>? _rows;
 
     protected override void OnInitialized()
     {
@@ -26,6 +27,20 @@ public partial class TextEditorDisplay : ComponentBase
             .Select(textEditorStates => textEditorStates.TextEditorMap[TextEditorKey]);
         
         base.OnInitialized();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var localTextEditor = TextEditorStatesSelection.Value;
+            
+            _rows = localTextEditor.GetRows(0, Int32.MaxValue);
+
+            await InvokeAsync(StateHasChanged);
+        }
+        
+        await base.OnAfterRenderAsync(firstRender);
     }
 
     private async Task FocusTextEditorOnClickAsync()
