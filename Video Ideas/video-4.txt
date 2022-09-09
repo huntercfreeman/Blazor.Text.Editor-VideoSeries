@@ -38,12 +38,5 @@ Notes for video 4:
 
 # Youtube Video Title
 {
--Add JavaScript to measure the 
-			-Row height 
-			-Character width
-			-TextEditor
-				-Width
-				-Height
-			-Calculate relative onclick position
 	Measure widths and heights, also relative onclick position | Blazor Text Editor Part 4
 }
