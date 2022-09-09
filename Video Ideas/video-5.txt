@@ -24,8 +24,43 @@ Notes for video 5:
 {
 	# Step 1
 		-Create TextEditorCursor ClassLib
+		{
+			prop IndexCoordinates is ValueTuple (int rowIndex, int columnIndex)
+			prop PreferredColumnIndex is int
+			prop TextCursorKind is TextCursorKind
+			{
+				public enum TextCursorKind
+				{
+					Beam,
+					Block,
+					Replace,
+					AlternateBeam,
+					AlternateBlock,
+					AlternateReplace
+				}
+			}
+			MoveCursor(KeyboardEventArgs, TextCursor, TextEditorBase)
+			{
+				switch (keyboardEventArgs.Key)
+				{
+					case KeyboardKeyFacts.MovementKeys.ARROW_LEFT:
+						...
+					case KeyboardKeyFacts.MovementKeys.ARROW_DOWN:
+						...
+					case KeyboardKeyFacts.MovementKeys.ARROW_UP:
+						...
+					case KeyboardKeyFacts.MovementKeys.ARROW_RIGHT:
+						...
+					case KeyboardKeyFacts.MovementKeys.HOME:
+						...
+					case KeyboardKeyFacts.MovementKeys.END:
+						...
+				}
+			}
+		}
 		-Create ImmutableTextEditorCursor ClassLib
 		-Create TextEditorCursorDisplay Blazor Component
+		-Caret row for user interface
 	
 	# Step 2
 		-OnClick move cursor
@@ -69,3 +104,4 @@ Notes for video 5:
 {
 	Cursor, Movement, Editing / Undo | Blazor Text Editor Part 5
 }
+
