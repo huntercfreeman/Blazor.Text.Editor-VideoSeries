@@ -2,6 +2,20 @@ Notes for video 7:
 
 # Intent
 {
+todo:
+-Themes
+					-Add LightTheme
+					-Add DarkTheme
+				-Cursor needs blinking animation
+					-onkeydown cancel task.delay
+					-task.delay -> completed == start blinking
+					-start blinking means add css class that references
+						the pte_blink @keyframes animation
+					-Remove that class to stop blinking.
+					-onkeydown do not blink
+-------------------------------------------------------------
+
+
     The goals of video 7 are:
 		-Move the code to a Photino host.
 		-Add notification system
@@ -17,6 +31,34 @@ Notes for video 7:
 
 # Plan
 {
+
+todo:
+
+		-ThemeState.cs { ActiveThemeKey }
+		-ThemeKey.cs { Guid, CssClass }
+		-ThemeStateReducer.cs { ReduceSetThemeStateAction() }
+		-ThemeFacts.cs 
+		{ 
+			static ThemeKey Light, 
+			static ThemeKey Dark,
+			static ImmutableArray<ThemeKey> AllDefaultThemeKeys
+			{ 
+				Light, 
+				Dark 
+			}
+		}
+		-wwwroot/
+			-Themes/
+				-light.css
+				-dark.css
+			-variableDeclarations.css 
+			{ 
+				:root { --bstudio_primary-background-color: #1e1e1e; } 
+			}
+		-<div class="bstudio_theme-wrapper @ThemeStateWrap.Value.ThemeKey.KeyName">
+
+
+------------------------------------------------------------------
     # Step 1
         Clone Photino.Blazor from:
 			'https://github.com/tryphotino/photino.Blazor'
