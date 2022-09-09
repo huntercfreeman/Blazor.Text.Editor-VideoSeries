@@ -31,6 +31,7 @@ public partial class TextEditorDisplay : ComponentBase
     private FontWidthAndElementHeight? _characterWidthAndRowHeight;
     private WidthAndHeightOfElement? _textEditorWidthAndHeight;
     private RelativeCoordinates? _relativeCoordinatesOnClick;
+    private TextEditorCursor _textEditorCursor = new();
 
     private string TextEditorContentId => $"bte_text-editor-content_{_textEditorGuid}";
     private string MeasureCharacterWidthAndRowHeightId => $"bte_measure-character-width-and-row-height_{_textEditorGuid}";
@@ -90,14 +91,24 @@ public partial class TextEditorDisplay : ComponentBase
     
     private void HandleOnKeyDown(KeyboardEventArgs keyboardEventArgs)
     {
-        if (keyboardEventArgs.Key.Length > 1)
-            return;
-
-        TextEditorStatesSelection.Value.Content.Add(new RichCharacter()
+        if (KeyboardKeyFacts.IsMovementKey(keyboardEventArgs.Key))
         {
-            Value = keyboardEventArgs.Key.First(),
-            DecorationByte = default
-        });
+            TextEditorCursor.MoveCursor(
+                keyboardEventArgs, 
+                _textEditorCursor, 
+                TextEditorStatesSelection.Value);
+        }
+        else
+        {
+            if (keyboardEventArgs.Key.Length > 1)
+                return;
+
+            TextEditorStatesSelection.Value.Content.Add(new RichCharacter()
+            {
+                Value = keyboardEventArgs.Key.First(),
+                DecorationByte = default
+            });
+        }
     }
     
     private async Task ApplyRoslynSyntaxHighlightingOnClick()

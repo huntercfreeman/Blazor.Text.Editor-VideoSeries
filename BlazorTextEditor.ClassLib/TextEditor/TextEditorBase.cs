@@ -65,6 +65,7 @@ public class TextEditorBase
     }
     
     public List<RichCharacter> Content { get; set; } = new();
+    public int RowCount => _rowEndingPositions.Count;
     
     public (int positionIndex, RowEndingKind rowEndingKind) GetStartOfRowTuple(int rowIndex)
     {

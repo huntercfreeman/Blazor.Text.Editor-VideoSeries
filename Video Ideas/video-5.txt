@@ -48,9 +48,10 @@ Notes for video 5:
 				}
 			}
 		}
-		-Create ImmutableTextEditorCursor ClassLib
 		-Create TextEditorCursorDisplay Blazor Component
 		-Caret row for user interface
+		
+		-Create ImmutableTextEditorCursor ClassLib
 }
 
 # Youtube Video Description

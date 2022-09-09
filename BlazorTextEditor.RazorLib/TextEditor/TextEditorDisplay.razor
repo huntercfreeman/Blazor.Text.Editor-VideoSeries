@@ -124,5 +124,11 @@
                 }
             }
         }
+      
+        @if (_characterWidthAndRowHeight is not null)
+        {
+            <TextEditorCursorDisplay TextEditorCursor="_textEditorCursor"
+                                     FontWidthAndElementHeight="_characterWidthAndRowHeight" />    
+        }
     </div>
 </div>
