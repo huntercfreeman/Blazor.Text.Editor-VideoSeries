@@ -14,14 +14,21 @@ public class TextEditorBase
     }
 }
 ";
-
     
+    public const int TabWidth = 4;
+    public const int GutterPaddingLeftInPixels = 5;
+    public const int GutterPaddingRightInPixels = 5;
+
     /// <summary>
     /// To get the ending position of RowIndex _rowEndingPositions[RowIndex]
     /// <br/><br/>
     /// _rowEndingPositions returns the start of the NEXT row
     /// </summary>
     private List<(int positionIndex, RowEndingKind rowEndingKind)> _rowEndingPositions = new();
+    /// <summary>
+    /// Provides exact position index of a tab character
+    /// </summary>
+    private List<int> _tabKeyPositions = new();
 
     public TextEditorBase(string content)
     {
@@ -52,6 +59,9 @@ public class TextEditorBase
                 }
             }
 
+            if (character == KeyboardKeyFacts.WhitespaceCharacters.TAB)
+                _tabKeyPositions.Add(index);
+                
             previousCharacter = character;
 
             Content.Add(new RichCharacter
@@ -131,5 +141,17 @@ public class TextEditorBase
         }
         
         return rows;
+    }
+
+    public int GetTabsCountOnSameRowBeforeCursor(int rowIndex, int columnIndex)
+    {
+        var startOfRowPositionIndex = GetStartOfRowTuple(rowIndex)
+            .positionIndex;
+
+        var tabs = _tabKeyPositions
+            .SkipWhile(positionIndex => positionIndex < startOfRowPositionIndex)
+            .TakeWhile(positionIndex => positionIndex < startOfRowPositionIndex + columnIndex);
+
+        return tabs.Count();
     }
 }

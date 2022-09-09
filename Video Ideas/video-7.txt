@@ -35,7 +35,8 @@ Notes for video 7:
 		-In TextEditorBase.Constructor _tabKeyPositions.Add(index);
 		-Write method TextEditorBase.GetTabsCountOnSameRowBeforeCursor(int rowIndex, int columnIndex)
 		-const int TabWidth = 4;
-		-const int FileContentMarginLeftSeparateFromLineNumbers = 2;
+		-public const int GutterPaddingLeftInPixels = 5;
+    	-public const int GutterPaddingRightInPixels = 5;
 		-onclick just needs _cursor.preferredColumnIndex = ...
 		-columnIndex for @onclick -=
 			-offsetTabs 
@@ -60,7 +61,5 @@ Notes for video 7:
 
 # Youtube Video Title
 {
-	... TODO
-
-	Make a Text Editor in Blazor from scratch | Part 3
+	Tab-Width and minor visual updates | Blazor Text Editor Part 7
 }

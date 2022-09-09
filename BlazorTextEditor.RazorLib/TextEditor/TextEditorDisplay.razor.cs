@@ -92,6 +92,12 @@ public partial class TextEditorDisplay : ComponentBase
 
         if (_characterWidthAndRowHeight is null)
             return;
+
+        // Gutter padding column offset
+        {
+            _relativeCoordinatesOnClick.RelativeX -= 
+                (TextEditorBase.GutterPaddingLeftInPixels + TextEditorBase.GutterPaddingRightInPixels);
+        }
         
         var columnIndexDouble = _relativeCoordinatesOnClick.RelativeX / _characterWidthAndRowHeight.FontWidthInPixels;
 
@@ -105,13 +111,42 @@ public partial class TextEditorDisplay : ComponentBase
 
         var lengthOfRow = localTextEditor.GetLengthOfRow(rowIndex);
 
+        // Tab key column offset
+        {
+            var parameterForGetTabsCountOnSameRowBeforeCursor = columnIndexInt > lengthOfRow - 1
+                ? lengthOfRow - 1
+                : columnIndexInt;
+
+            var tabsOnSameRowBeforeCursor = localTextEditor
+                .GetTabsCountOnSameRowBeforeCursor(
+                    rowIndex, 
+                    parameterForGetTabsCountOnSameRowBeforeCursor);
+            
+            // 1 of the character width is already accounted for
+
+            var extraWidthPerTabKey = TextEditorBase.TabWidth - 1;
+            
+            columnIndexInt -= (extraWidthPerTabKey * tabsOnSameRowBeforeCursor);
+        }
+        
+        // Line number column offset
+        {
+            var mostDigitsInARowLineNumber = TextEditorStatesSelection.Value.RowCount
+                .ToString()
+                .Length;
+
+            columnIndexInt -= mostDigitsInARowLineNumber;
+        }
+        
         columnIndexInt = columnIndexInt > lengthOfRow - 1
             ? lengthOfRow - 1
             : columnIndexInt;
-        
-        // TODO: handle tab keys being a varying width from characters
 
+        rowIndex = Math.Max(rowIndex, 0);
+        columnIndexInt = Math.Max(columnIndexInt, 0);
+        
         _textEditorCursor.IndexCoordinates = (rowIndex, columnIndexInt);
+        _textEditorCursor.PreferredColumnIndex = columnIndexInt;
     }
     
     private void HandleOnKeyDown(KeyboardEventArgs keyboardEventArgs)
@@ -192,7 +227,7 @@ public partial class TextEditorDisplay : ComponentBase
             .Length;
         
         var widthOfGutterInPixels = mostDigitsInARowLineNumber * _characterWidthAndRowHeight.FontWidthInPixels;
-        var left = $"left: {widthOfGutterInPixels}px;";
+        var left = $"left: {widthOfGutterInPixels + TextEditorBase.GutterPaddingLeftInPixels + TextEditorBase.GutterPaddingRightInPixels}px;";
         
         return $"{top} {height} {left}";
     }
@@ -210,9 +245,15 @@ public partial class TextEditorDisplay : ComponentBase
             .Length;
 
         var widthInPixels = mostDigitsInARowLineNumber * _characterWidthAndRowHeight.FontWidthInPixels;
-        var width = $"width: {widthInPixels}px;";
+
+        widthInPixels += TextEditorBase.GutterPaddingLeftInPixels + TextEditorBase.GutterPaddingRightInPixels;
         
-        return $"{top} {height} {width}";
+        var width = $"width: {widthInPixels}px;";
+
+        var paddingLeft = $"padding-left: {TextEditorBase.GutterPaddingLeftInPixels}px;";
+        var paddingRight = $"padding-right: {TextEditorBase.GutterPaddingRightInPixels}px;";
+        
+        return $"{top} {height} {width} {paddingLeft} {paddingRight}";
     }
 }
 

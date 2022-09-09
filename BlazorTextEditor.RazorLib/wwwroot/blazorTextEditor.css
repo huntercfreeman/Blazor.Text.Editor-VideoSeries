@@ -31,6 +31,14 @@
 .bte_text-editor-cursor {
     position: absolute;
     width: 1.5px;
+    display: inline-block;
+    background-color: black;
+    margin: 0;
+    padding: 0;
+    outline: none !important;
+    resize: none;
+    border: none;
+    overflow: hidden;
 }
 
 .bte_text-editor-caret-row {
