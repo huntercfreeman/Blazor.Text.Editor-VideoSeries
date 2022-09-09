@@ -15,7 +15,7 @@ Notes for video 4:
 # Plan
 {
     # Step 1
-		-Create the JavaScript methods
+		-Create the JavaScript functions
 			-measureFontWidthAndElementHeightByElementId(elementId, amountOfCharactersRendered)
 			-measureWidthAndHeightByElementId(elementId)
 			-getRelativePosition(elementId, clientX, clientY))

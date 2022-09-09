@@ -4,83 +4,125 @@
      @onclick="FocusTextEditorOnClickAsync"
      @onkeydown="HandleOnKeyDown"
      @onkeydown:preventDefault="true">
+
+    @if (_characterWidthAndRowHeight is not null)
+    {
+        <div>
+            ElementHeight:&nbsp;@_characterWidthAndRowHeight.ElementHeightInPixels
+            <br/>
+            FontWidth:&nbsp;@_characterWidthAndRowHeight.FontWidthInPixels    
+        </div>    
+    }
     
-     <button class="btn btn-primary">
-          Click me
-     </button>
-     
-     <button class="btn btn-primary"
-             @onclick="ApplyRoslynSyntaxHighlightingOnClick">
-          ApplyRoslynSyntaxHighlightingOnClick
-     </button>
+    @if (_textEditorWidthAndHeight is not null)
+    {
+        <div>
+            WidthInPixels:&nbsp;@_textEditorWidthAndHeight.WidthInPixels
+            <br/>
+            HeightInPixels:&nbsp;@_textEditorWidthAndHeight.HeightInPixels    
+        </div>
+    }
     
-     @if (_rows is not null &&
-          _rows.Any())
-     {
-          foreach (var row in _rows)
-          {
-               if (row.Any())
-               {
-                    <div>
-                         @{
-                              var spanBuilder = new StringBuilder();
-                              var currentDecorationByte = row.First().DecorationByte;
+    @if (_relativeCoordinatesOnClick is not null)
+    {
+        <div>
+            (RelativeX, RelativeY):
+            <br/>
+            (@_relativeCoordinatesOnClick.RelativeX, @_relativeCoordinatesOnClick.RelativeY)
+        </div>
+    }
+    
+    <button class="btn btn-primary">
+        Click me
+    </button>
 
-                              foreach (var richCharacter in row)
-                              {
-                                   if (currentDecorationByte == richCharacter.DecorationByte)
-                                   {
-                                        switch (richCharacter.Value)
-                                        {
-                                             case '\t':
-                                                  spanBuilder.Append("&nbsp;&nbsp;&nbsp;&nbsp;");
-                                                  break;
-                                             case ' ':
-                                                  spanBuilder.Append("&nbsp;");
-                                                  break;
-                                             case '\r':
-                                                  break;
-                                             case '\n':
-                                                  break;
-                                             case '<':
-                                                  spanBuilder.Append("&lt;");
-                                                  break;
-                                             case '>':
-                                                  spanBuilder.Append("&gt;");
-                                                  break;
-                                             case '"':
-                                                  spanBuilder.Append("&quot;");
-                                                  break;
-                                             case '\'':
-                                                  spanBuilder.Append("&#39;");
-                                                  break;
-                                             case '&':
-                                                  spanBuilder.Append("&amp;");
-                                                  break;
-                                             default:
-                                                  spanBuilder.Append(richCharacter.Value);
-                                                  break;
-                                        }
-                                   }
-                                   else
-                                   {
-                                        <span class="@GetCssClass(currentDecorationByte)">
-                                             @((MarkupString)spanBuilder.ToString())
-                                        </span>
+    <button class="btn btn-primary"
+            @onclick="ApplyRoslynSyntaxHighlightingOnClick">
+        ApplyRoslynSyntaxHighlightingOnClick
+    </button>
 
-                                        spanBuilder.Clear();
-                                        spanBuilder.Append(richCharacter.Value);
-                                        currentDecorationByte = richCharacter.DecorationByte;
-                                   }
-                              }
+    <div class="bte_text-editor-content"
+         id="@TextEditorContentId"
+         @onclick="HandleContentOnClickAsync">
+        <div class="bte_measure-character-width-and-row-height bte_row"
+             id="@MeasureCharacterWidthAndRowHeightId">
+            
+            @for (int i = 0; i < _testStringRepeatCount; i++)
+            {
+                <text>
+                    @_testStringForMeasurement    
+                </text>
+            }
+        </div>
 
-                         @* Final grouping of contiguous characters *@
-                              <span class="@GetCssClass(currentDecorationByte)">
-                                   @((MarkupString)spanBuilder.ToString())
-                              </span>
-                         }
+        @if (_rows is not null &&
+             _rows.Any())
+        {
+            foreach (var row in _rows)
+            {
+                if (row.Any())
+                {
+                    <div class="bte_row">
+                        @{
+                            var spanBuilder = new StringBuilder();
+                            var currentDecorationByte = row.First().DecorationByte;
+
+                            foreach (var richCharacter in row)
+                            {
+                                if (currentDecorationByte == richCharacter.DecorationByte)
+                                {
+                                    switch (richCharacter.Value)
+                                    {
+                                        case '\t':
+                                            spanBuilder.Append("&nbsp;&nbsp;&nbsp;&nbsp;");
+                                            break;
+                                        case ' ':
+                                            spanBuilder.Append("&nbsp;");
+                                            break;
+                                        case '\r':
+                                            break;
+                                        case '\n':
+                                            break;
+                                        case '<':
+                                            spanBuilder.Append("&lt;");
+                                            break;
+                                        case '>':
+                                            spanBuilder.Append("&gt;");
+                                            break;
+                                        case '"':
+                                            spanBuilder.Append("&quot;");
+                                            break;
+                                        case '\'':
+                                            spanBuilder.Append("&#39;");
+                                            break;
+                                        case '&':
+                                            spanBuilder.Append("&amp;");
+                                            break;
+                                        default:
+                                            spanBuilder.Append(richCharacter.Value);
+                                            break;
+                                    }
+                                }
+                                else
+                                {
+                                    <span class="@GetCssClass(currentDecorationByte)">
+                                        @((MarkupString)spanBuilder.ToString())
+                                    </span>
+
+                                    spanBuilder.Clear();
+                                    spanBuilder.Append(richCharacter.Value);
+                                    currentDecorationByte = richCharacter.DecorationByte;
+                                }
+                            }
+
+                                   @* Final grouping of contiguous characters *@
+                            <span class="@GetCssClass(currentDecorationByte)">
+                                @((MarkupString)spanBuilder.ToString())
+                            </span>
+                        }
                     </div>
-               }
-          }
-     }
+                }
+            }
+        }
+    </div>
 </div>

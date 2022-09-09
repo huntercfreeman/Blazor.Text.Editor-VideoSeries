@@ -3,10 +3,12 @@ using BlazorTextEditor.ClassLib.Keyboard;
 using BlazorTextEditor.ClassLib.RoslynHelpers;
 using BlazorTextEditor.ClassLib.Store.TextEditorCase;
 using BlazorTextEditor.ClassLib.TextEditor;
+using BlazorTextEditor.RazorLib.JavaScriptObjects;
 using Fluxor;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.JSInterop;
 
 namespace BlazorTextEditor.RazorLib.TextEditor;
 
@@ -14,13 +16,25 @@ public partial class TextEditorDisplay : ComponentBase
 {
     [Inject]
     private IStateSelection<TextEditorStates, TextEditorBase> TextEditorStatesSelection { get; set; } = null!;
+    [Inject]
+    private IJSRuntime JsRuntime { get; set; } = null!;
 
     [Parameter]
     public TextEditorKey TextEditorKey { get; set; } = null!;
-    
+
+    private Guid _textEditorGuid = Guid.NewGuid();
     private ElementReference _textEditorDisplayElementReference;
     private List<List<RichCharacter>>? _rows;
+    private bool _shouldMeasureDimensions = true;
+    private string _testStringForMeasurement = "abcdefghijklmnopqrstuvwxyz0123456789";
+    private int _testStringRepeatCount = 6;
+    private FontWidthAndElementHeight? _characterWidthAndRowHeight;
+    private WidthAndHeightOfElement? _textEditorWidthAndHeight;
+    private RelativeCoordinates? _relativeCoordinatesOnClick;
 
+    private string TextEditorContentId => $"bte_text-editor-content_{_textEditorGuid}";
+    private string MeasureCharacterWidthAndRowHeightId => $"bte_measure-character-width-and-row-height_{_textEditorGuid}";
+    
     protected override void OnInitialized()
     {
         TextEditorStatesSelection
@@ -39,6 +53,23 @@ public partial class TextEditorDisplay : ComponentBase
 
             await InvokeAsync(StateHasChanged);
         }
+
+        if (_shouldMeasureDimensions)
+        {
+            _characterWidthAndRowHeight = await JsRuntime.InvokeAsync<FontWidthAndElementHeight>(
+                "blazorTextEditor.measureFontWidthAndElementHeightByElementId",
+                MeasureCharacterWidthAndRowHeightId,
+                _testStringRepeatCount * _testStringForMeasurement.Length);
+            
+            _textEditorWidthAndHeight = await JsRuntime.InvokeAsync<WidthAndHeightOfElement>(
+                "blazorTextEditor.measureWidthAndHeightByElementId",
+                TextEditorContentId);
+
+            {
+                _shouldMeasureDimensions = false;
+                await InvokeAsync(StateHasChanged);
+            }
+        }
         
         await base.OnAfterRenderAsync(firstRender);
     }
@@ -46,6 +77,15 @@ public partial class TextEditorDisplay : ComponentBase
     private async Task FocusTextEditorOnClickAsync()
     {
         await _textEditorDisplayElementReference.FocusAsync();
+    }
+    
+    private async Task HandleContentOnClickAsync(MouseEventArgs mouseEventArgs)
+    {
+        _relativeCoordinatesOnClick = await JsRuntime.InvokeAsync<RelativeCoordinates>(
+            "blazorTextEditor.getRelativePosition",
+            TextEditorContentId,
+            mouseEventArgs.ClientX,
+            mouseEventArgs.ClientY);
     }
     
     private void HandleOnKeyDown(KeyboardEventArgs keyboardEventArgs)
@@ -103,3 +143,13 @@ public partial class TextEditorDisplay : ComponentBase
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
