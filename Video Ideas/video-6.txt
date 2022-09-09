@@ -3,24 +3,48 @@ Notes for video 6:
 # Intent
 {
     The goals of video 6 are:
-		-Make VirtualizeCoordinateSystem<T>.
-		-Add LineNumbers
-		-Add Caret Row
-		-Scroll Cursor into view if offscreen when keydown is hit
+		-OnClick move cursor relative to the TextEditor scrollable viewport
+		-OnKeyDown
+			-Insert Text at cursor position with character keyboard keys
+			-Remove Text at cursor position
+				-Backspace
+				-Delete
+		-Maintain a list of Edits that the user has made
+			-Consolidate common EditKinds into a singular edit
+			-Ctrl + Z should undo the most recent edit block
 }
 
 # Plan
 {
-    # Step 1
-        ... TODO
+	# Step 1
+		-In TextEditorDisplay component and the method HandleOnCustomClick()
+			-Math.Round(
+				RelativeX / CharacterWidth, 
+				MidpointRounding.AwayFromZero)
+			-(int) truncate (RelativeY / RowHeight)
+			-If (rowIndex > rowCount) take last row index
+			-If (columnIndex > rowLength) take rowLength
+			-TextEditorBase._tabKeyPositions
+			-In TextEditorBase.Constructor _tabKeyPositions.Add(index);
+			-Write method TextEditorBase.GetTabsCountOnSameRowBeforeCursor()
+			-const int TabWidth = 4;
+			-const int FileContentMarginLeftSeparateFromLineNumbers = 2;
+			-columnIndex for @onclick -=
+				-offsetTabs 
+				-offsetmostDigitsInALineNumber
+				-contentMarginLeftSeparateFromLineNumbers
+			-In TextEditorDisplay.razor
+				-bstudio_text-editor-display-gutter
+				-the row content
+					-both absolute
+			-In Cursor blazor component
+				-pte_caret-row
 }
 
 # Youtube Video Description
 {
-	... TODO
-	
-	Part 2:
-	https://youtu.be/D5PdeRsV-Hk
+	Part 5:
+	https://youtu.be/jvWS6e7Mnm8
 
 	Starting Point Repo:
 	https://github.com/huntercfreeman/BlazorTextEditor
@@ -34,7 +58,6 @@ Notes for video 6:
 
 # Youtube Video Title
 {
-	... TODO
-
-	Make a Text Editor in Blazor from scratch | Part 3
+	Move Cursor onclick, line numbers, caret row | Blazor Text Editor Part 6
 }
+
