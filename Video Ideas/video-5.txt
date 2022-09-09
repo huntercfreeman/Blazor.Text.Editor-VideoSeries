@@ -22,38 +22,38 @@ Notes for video 5:
 
 # Plan
 {
-	# Step 2
+	# Step 1
 		-Create TextEditorCursor ClassLib
 		-Create ImmutableTextEditorCursor ClassLib
 		-Create TextEditorCursorDisplay Blazor Component
 	
-	# Step 3
+	# Step 2
 		-OnClick move cursor
 		-OnKeyDown move cursor if movement key
 		-PreferredColumnIndex
 	
-	# Step 4
+	# Step 3
 		-Account for the Tab keys when rendering the Cursor on the UI
 			-GetTabsCountOnSameRowBeforeCursor(rowIndex, columnIndex);
 			
-	# Step 5
+	# Step 4
 		-Insert text onkeydown
 		-Remove text
 			-Backspace
 			-Delete
 	
-	# Step 6
+	# Step 5
 		-Maintain a list of edits the user made
 		-Consolidate consecutive edits of the same kind (Instertion / Deletion / Other )
 	
-	# Step 7
+	# Step 6
 		-Ctrl + Z should undo the most recent edit block
 }
 
 # Youtube Video Description
 {
-	Part 3:
-	https://youtu.be/AedIDAZKp4U
+	Part 4:
+	https://youtu.be/_qcqlUyD_Mw
 
 	Starting Point Repo:
 	https://github.com/huntercfreeman/BlazorTextEditor
@@ -67,5 +67,5 @@ Notes for video 5:
 
 # Youtube Video Title
 {
-	Cursor, OnClick, OnKeyDown, Editing / Undo | Blazor Text Editor Part 4
+	Cursor, Movement, Editing / Undo | Blazor Text Editor Part 5
 }
