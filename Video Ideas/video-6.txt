@@ -3,21 +3,19 @@ Notes for video 6:
 # Intent
 {
     The goals of video 6 are:
-		-OnClick move cursor relative to the TextEditor scrollable viewport
-		-OnKeyDown
-			-Insert Text at cursor position with character keyboard keys
-			-Remove Text at cursor position
-				-Backspace
-				-Delete
-		-Maintain a list of Edits that the user has made
-			-Consolidate common EditKinds into a singular edit
-			-Ctrl + Z should undo the most recent edit block
+		-Move cursor onclick
+		-Add line numbers
+		-Add caret row
 }
 
 # Plan
 {
 	# Step 1
-		-In TextEditorDisplay component and the method HandleOnCustomClick()
+		-display: flex;
+		-overflow: auto;
+		-height: 400px;
+		-font-family: monospace;
+		-In TextEditorDisplay component and the method HandleContentOnClickAsync()
 			-Math.Round(
 				RelativeX / CharacterWidth, 
 				MidpointRounding.AwayFromZero)
