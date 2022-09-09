@@ -6,8 +6,18 @@ Notes for video 5:
 		-Add Cursor
 			-Class
 			-Component
+		-OnClick move cursor relative to the TextEditor scrollable viewport
 		-OnKeyDown 
 			-Move cursor with movement keyboard keys
+			-Insert Text at cursor position with character keyboard keys
+			-Remove Text at cursor position
+				-Backspace
+				-Delete
+		-Maintain a list of Edits that the user has made
+			-Consolidate common EditKinds into a singular edit
+			-Ctrl + Z should undo the most recent edit block
+			
+	Maybe do MultiCursor editing in this video? If too long of a video wait until later.
 }
 
 # Plan
@@ -51,6 +61,28 @@ Notes for video 5:
 		-Create ImmutableTextEditorCursor ClassLib
 		-Create TextEditorCursorDisplay Blazor Component
 		-Caret row for user interface
+	
+	# Step 2
+		-OnClick move cursor
+		-OnKeyDown move cursor if movement key
+		-PreferredColumnIndex
+	
+	# Step 3
+		-Account for the Tab keys when rendering the Cursor on the UI
+			-GetTabsCountOnSameRowBeforeCursor(rowIndex, columnIndex);
+			
+	# Step 4
+		-Insert text onkeydown
+		-Remove text
+			-Backspace
+			-Delete
+	
+	# Step 5
+		-Maintain a list of edits the user made
+		-Consolidate consecutive edits of the same kind (Instertion / Deletion / Other )
+	
+	# Step 6
+		-Ctrl + Z should undo the most recent edit block
 }
 
 # Youtube Video Description
