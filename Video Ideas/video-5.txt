@@ -3,9 +3,6 @@ Notes for video 5:
 # Intent
 {
     The goals of video 5 are:
-		-Add JavaScript to measure the 
-			-Row height 
-			-Character width
 		-Add Cursor
 			-Class
 			-Component
@@ -25,12 +22,6 @@ Notes for video 5:
 
 # Plan
 {
-    # Step 1
-		-Create the JavaScript methods
-			-measureFontSizeByElementId(elementId, amountOfCharactersRendered)
-			-measureDimensionsByElementId(getTextEditorElementId)
-			-getRelativePosition(elementId, clientX, clientY))
-	
 	# Step 2
 		-Create TextEditorCursor ClassLib
 		-Create ImmutableTextEditorCursor ClassLib

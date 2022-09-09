@@ -6,57 +6,19 @@ Notes for video 4:
 		-Add JavaScript to measure the 
 			-Row height 
 			-Character width
-		-Add Cursor
-			-Class
-			-Component
-		-OnClick move cursor relative to the TextEditor scrollable viewport
-		-OnKeyDown 
-			-Move cursor with movement keyboard keys
-			-Insert Text at cursor position with character keyboard keys
-			-Remove Text at cursor position
-				-Backspace
-				-Delete
-		-Maintain a list of Edits that the user has made
-			-Consolidate common EditKinds into a singular edit
-			-Ctrl + Z should undo the most recent edit block
-			
-	Maybe do MultiCursor editing in this video? If too long of a video wait until later.
+			-TextEditor
+				-Width
+				-Height
+			-Calculate relative onclick position
 }
 
 # Plan
 {
     # Step 1
 		-Create the JavaScript methods
-			-measureFontSizeByElementId(elementId, amountOfCharactersRendered)
-			-measureDimensionsByElementId(getTextEditorElementId)
+			-measureFontWidthAndElementHeightByElementId(elementId, amountOfCharactersRendered)
+			-measureWidthAndHeightByElementId(elementId)
 			-getRelativePosition(elementId, clientX, clientY))
-	
-	# Step 2
-		-Create TextEditorCursor ClassLib
-		-Create ImmutableTextEditorCursor ClassLib
-		-Create TextEditorCursorDisplay Blazor Component
-	
-	# Step 3
-		-OnClick move cursor
-		-OnKeyDown move cursor if movement key
-		-PreferredColumnIndex
-	
-	# Step 4
-		-Account for the Tab keys when rendering the Cursor on the UI
-			-GetTabsCountOnSameRowBeforeCursor(rowIndex, columnIndex);
-			
-	# Step 5
-		-Insert text onkeydown
-		-Remove text
-			-Backspace
-			-Delete
-	
-	# Step 6
-		-Maintain a list of edits the user made
-		-Consolidate consecutive edits of the same kind (Instertion / Deletion / Other )
-	
-	# Step 7
-		-Ctrl + Z should undo the most recent edit block
 }
 
 # Youtube Video Description
@@ -76,5 +38,12 @@ Notes for video 4:
 
 # Youtube Video Title
 {
-	Cursor, OnClick, OnKeyDown, Editing / Undo | Blazor Text Editor Part 4
+-Add JavaScript to measure the 
+			-Row height 
+			-Character width
+			-TextEditor
+				-Width
+				-Height
+			-Calculate relative onclick position
+	Measure widths and heights, also relative onclick position | Blazor Text Editor Part 4
 }
