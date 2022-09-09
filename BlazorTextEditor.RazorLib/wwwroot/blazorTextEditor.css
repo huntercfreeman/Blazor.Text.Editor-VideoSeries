@@ -3,7 +3,6 @@
 }
 
 .bte_measure-character-width-and-row-height {
-    position: absolute;
     top: 0;
     left: 0;
     visibility: hidden;
@@ -11,12 +10,39 @@
 
 .bte_row {
     white-space: nowrap;
+    position: absolute;
+    display: flex;
+}
+
+.bte_gutter {
+    white-space: nowrap;
+    position: absolute;
+    display: flex;
 }
 
 .bte_text-editor-content {
     position: relative;
+    display: flex;
+    overflow: auto;
+    height: 400px;
+    font-family: monospace;
 }
 
 .bte_text-editor-cursor {
     position: absolute;
+    width: 1.5px;
 }
+
+.bte_text-editor-caret-row {
+    outline: 1.5px solid red;
+    position: absolute;
+    left: 0;
+    width: 100%;
+}
+
+
+
+
+
+
+

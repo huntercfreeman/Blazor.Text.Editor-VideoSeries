@@ -82,11 +82,36 @@ public partial class TextEditorDisplay : ComponentBase
     
     private async Task HandleContentOnClickAsync(MouseEventArgs mouseEventArgs)
     {
+        var localTextEditor = TextEditorStatesSelection.Value;
+        
         _relativeCoordinatesOnClick = await JsRuntime.InvokeAsync<RelativeCoordinates>(
             "blazorTextEditor.getRelativePosition",
             TextEditorContentId,
             mouseEventArgs.ClientX,
             mouseEventArgs.ClientY);
+
+        if (_characterWidthAndRowHeight is null)
+            return;
+        
+        var columnIndexDouble = _relativeCoordinatesOnClick.RelativeX / _characterWidthAndRowHeight.FontWidthInPixels;
+
+        var columnIndexInt = (int)Math.Round(columnIndexDouble, MidpointRounding.AwayFromZero);
+        
+        var rowIndex = (int) (_relativeCoordinatesOnClick.RelativeY / _characterWidthAndRowHeight.ElementHeightInPixels);
+
+        rowIndex = rowIndex > localTextEditor.RowCount - 1
+            ? localTextEditor.RowCount - 1
+            : rowIndex;
+
+        var lengthOfRow = localTextEditor.GetLengthOfRow(rowIndex);
+
+        columnIndexInt = columnIndexInt > lengthOfRow - 1
+            ? lengthOfRow - 1
+            : columnIndexInt;
+        
+        // TODO: handle tab keys being a varying width from characters
+
+        _textEditorCursor.IndexCoordinates = (rowIndex, columnIndexInt);
     }
     
     private void HandleOnKeyDown(KeyboardEventArgs keyboardEventArgs)
@@ -152,6 +177,42 @@ public partial class TextEditorDisplay : ComponentBase
         {
             return "bte_method";
         }
+    }
+
+    private string GetRowStyleCss(int index)
+    {
+        if (_characterWidthAndRowHeight is null)
+            return string.Empty;
+        
+        var top = $"top: {index * _characterWidthAndRowHeight.ElementHeightInPixels}px;";
+        var height = $"height: {_characterWidthAndRowHeight.ElementHeightInPixels}px;";
+
+        var mostDigitsInARowLineNumber = TextEditorStatesSelection.Value.RowCount
+            .ToString()
+            .Length;
+        
+        var widthOfGutterInPixels = mostDigitsInARowLineNumber * _characterWidthAndRowHeight.FontWidthInPixels;
+        var left = $"left: {widthOfGutterInPixels}px;";
+        
+        return $"{top} {height} {left}";
+    }
+
+    private string GetGutterStyleCss(int index)
+    {
+        if (_characterWidthAndRowHeight is null)
+            return string.Empty;
+        
+        var top = $"top: {index * _characterWidthAndRowHeight.ElementHeightInPixels}px;";
+        var height = $"height: {_characterWidthAndRowHeight.ElementHeightInPixels}px;";
+
+        var mostDigitsInARowLineNumber = TextEditorStatesSelection.Value.RowCount
+            .ToString()
+            .Length;
+
+        var widthInPixels = mostDigitsInARowLineNumber * _characterWidthAndRowHeight.FontWidthInPixels;
+        var width = $"width: {widthInPixels}px;";
+        
+        return $"{top} {height} {width}";
     }
 }
 
