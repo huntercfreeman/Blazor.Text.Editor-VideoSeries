@@ -1,143 +1,29 @@
-Notes for video 7:
+Notes for video 8:
 
 # Intent
 {
-todo:
--Themes
-					-Add LightTheme
-					-Add DarkTheme
-				-Cursor needs blinking animation
-					-onkeydown cancel task.delay
-					-task.delay -> completed == start blinking
-					-start blinking means add css class that references
-						the pte_blink @keyframes animation
-					-Remove that class to stop blinking.
-					-onkeydown do not blink
--------------------------------------------------------------
-
-
-    The goals of video 7 are:
-		-Move the code to a Photino host.
-		-Add notification system
-		-Add loading of File from FileSystem into the TextEditor
-	
-	Goals that possibly need to wait until video 4:
-		-Modify a loaded in file
-		-Save the modification to the FileSystem
-		-Notify the user
-			-When the file is saved successfully
-			-When the file is NOT successfully saved
+	-columnIndexInt = columnIndexInt > lengthOfRow - 1
+		-remove the -1 part so can click after
+		 last character on row
+	-Cursor needs blinking animation
+	-Text Insertion
+	-Text Deletion
 }
 
 # Plan
 {
-
-todo:
-
-		-ThemeState.cs { ActiveThemeKey }
-		-ThemeKey.cs { Guid, CssClass }
-		-ThemeStateReducer.cs { ReduceSetThemeStateAction() }
-		-ThemeFacts.cs 
-		{ 
-			static ThemeKey Light, 
-			static ThemeKey Dark,
-			static ImmutableArray<ThemeKey> AllDefaultThemeKeys
-			{ 
-				Light, 
-				Dark 
-			}
-		}
-		-wwwroot/
-			-Themes/
-				-light.css
-				-dark.css
-			-variableDeclarations.css 
-			{ 
-				:root { --bstudio_primary-background-color: #1e1e1e; } 
-			}
-		-<div class="bstudio_theme-wrapper @ThemeStateWrap.Value.ThemeKey.KeyName">
-
-
-------------------------------------------------------------------
-    # Step 1
-        Clone Photino.Blazor from:
-			'https://github.com/tryphotino/photino.Blazor'
-	
-	# Step 2
-        Create a new C# Project that replicates the 'Hello World'
-		sample that Photino provides.
-	
-	# Step 3
-		Have the new C# Project (the Photino host) reference the
-		RazorClassLibrary.
-		
-	# Step 4
-		-Add <BlazorTextEditor.RazorLib.BlazorTextEditorRazorLibInitializer />
-			to the MainLayout.razor of the Photino host.
-		-Register AddBlazorTextEditorRazorLibServices() in main
-	
-	# Step 5
-		Take the code from Index.razor and put it in the Photino application.
-		(in otherwords render the TextEditors again)
-		
-	# Step 6	
-		-Create NotificationStates as a [FeatureState]
-		-NotificationStates is a record with position property of
-			ImmutableList<NotificationRecord> Notifications
-		-Create the record NotificationRecord which has position properties:
-			-NotificationKey
-			-Title
-			-RendererType
-			-Parameters
-			-AutomaticDisposalTimeSpan = null
-		-Create actions:
-			-RegisterNotificationAction
-			-DisposeNotificationAction
-		-Reducer add / remove to [FeatureState]
-				
-	# Step 7
-		-Create in the ClassLib:
-			-IDefaultErrorRenderer.cs
-			-IDefaultInformationRenderer.cs
-		-Register implementations in the RazorLib Services
-		
-	# Step 8
-		-In RazorLib make
-			-DefaultErrorRenderer component
-			-DefaultInformationRenderer component
-			-NotificationDisplay
-			-NotificationsInitializer
-		-In NotificationsInitializer ensure the foreach loop
-			uses an @key when rendering the NotificationDisplay(s)
-		-In the NotificationDisplay component ensure if the
-			AutomaticDisposalTimeSpan  is not null that a Task.Run()
-			is started to await Delay and then Dismiss();
-			
-	# Step 9
-		-In RazorLib make
-			-DefaultErrorRenderer component
-			-DefaultInformationRenderer component
-			-NotificationDisplay
-			-NotificationsInitializer
-		-In NotificationsInitializer ensure the foreach loop
-			uses an @key when rendering the NotificationDisplay(s)
-		-In the NotificationDisplay component ensure if the
-			AutomaticDisposalTimeSpan  is not null that a Task.Run()
-			is started to await Delay and then Dismiss();
-			
-	# Step 10
-		-Use (not sure exact method name) File.ReadTextAsync()
-			to read in a file's contents and display it in the
-			Text Editor
-		-Fluxor FileSystemCase
-			-WriteToFileSystemAction
-			-FileSystemStateEffects
+	-columnIndexInt = columnIndexInt > lengthOfRow - 1
+		-remove the -1 part so can click after
+		 last character on row
+	-Cursor needs blinking animation
+	-Text Insertion
+	-Text Deletion
 }
 
 # Youtube Video Description
 {
-	Part 2:
-	https://youtu.be/D5PdeRsV-Hk
+	Part 7:
+	https://youtu.be/Dbl5Mnt5tJM
 
 	Starting Point Repo:
 	https://github.com/huntercfreeman/BlazorTextEditor
@@ -151,5 +37,5 @@ todo:
 
 # Youtube Video Title
 {
-	Make a Text Editor in Blazor from scratch | Part 3
+	Insertion, Deletion, Blinking Cursor | Part 8
 }
