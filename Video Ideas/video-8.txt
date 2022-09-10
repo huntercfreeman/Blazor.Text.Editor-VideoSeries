@@ -6,8 +6,9 @@ Notes for video 8:
 		-remove the -1 part so can click after
 		 last character on row
 	-Cursor needs blinking animation
-	-Text Insertion
-	-Text Deletion
+	-Do the necessary setup for text ( insertion / deletion )
+	-DecorationKind enum
+	-Move applyling decoration logic to the TextEditorBase.cs
 }
 
 # Plan
@@ -15,9 +16,18 @@ Notes for video 8:
 	-columnIndexInt = columnIndexInt > lengthOfRow - 1
 		-remove the -1 part so can click after
 		 last character on row
+ 	-Focus needs to be on the Cursor
 	-Cursor needs blinking animation
-	-Text Insertion
-	-Text Deletion
+	-public record EditTextEditorAction(
+		TextEditorKey TextEditorKey, 
+		TextEditorBase TextEditorBase,
+		ImmutableArray<(ImmutableTextEditorCursor immutableTextEditorCursor, TextEditorCursor textEditorCursor)> TextCursorTuples,
+		KeyboardEventArgs KeyboardEventArgs,
+		CancellationToken CancellationToken);
+	-public TextEditorBase PerformEditTextEditorAction(EditTextEditorAction editTextEditorAction)
+	-Content -> _content and private
+	-readonly _content
+	-public void ApplyDecorationRange(DecorationKind decorationKind, IEnumerable<TextSpan> textSpans)
 }
 
 # Youtube Video Description
@@ -37,5 +47,5 @@ Notes for video 8:
 
 # Youtube Video Title
 {
-	Insertion, Deletion, Blinking Cursor | Part 8
+	Cleanup to allow for text insertion, and deletion | Part 8
 }
