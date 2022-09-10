@@ -1,6 +1,5 @@
 @using System.Text
-<div tabindex="-1"
-     @ref="_textEditorDisplayElementReference"
+<div @ref="_textEditorDisplayElementReference"
      @onclick="FocusTextEditorOnClickAsync"
      @onkeydown="HandleOnKeyDown"
      @onkeydown:preventDefault="true">
@@ -134,7 +133,8 @@
       
         @if (_characterWidthAndRowHeight is not null)
         {
-            <TextEditorCursorDisplay TextEditorCursor="_textEditorCursor"
+            <TextEditorCursorDisplay @ref="_textEditorCursorDisplay" 
+                                     TextEditorCursor="_textEditorCursor"
                                      FontWidthAndElementHeight="_characterWidthAndRowHeight"
                                      TextEditor="TextEditorStatesSelection.Value" />    
         }

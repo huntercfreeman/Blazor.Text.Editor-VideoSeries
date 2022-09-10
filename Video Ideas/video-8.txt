@@ -19,8 +19,7 @@ Notes for video 8:
  	-Focus needs to be on the Cursor
 	-Cursor needs blinking animation
 	-public record EditTextEditorAction(
-		TextEditorKey TextEditorKey, 
-		TextEditorBase TextEditorBase,
+		TextEditorKey TextEditorKey,
 		ImmutableArray<(ImmutableTextEditorCursor immutableTextEditorCursor, TextEditorCursor textEditorCursor)> TextCursorTuples,
 		KeyboardEventArgs KeyboardEventArgs,
 		CancellationToken CancellationToken);
@@ -47,5 +46,5 @@ Notes for video 8:
 
 # Youtube Video Title
 {
-	Cleanup to allow for text insertion, and deletion | Part 8
+	Setup for text insertion, and deletion | Blazor Text Editor Part 8
 }

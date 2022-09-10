@@ -19,4 +19,22 @@ public class TextEditorStatesReducer
             TextEditorMap = nextMap
         };
     }
+    
+    [ReducerMethod]
+    public static TextEditorStates ReduceEditTextEditorAction(TextEditorStates previousTextEditorStates,
+        EditTextEditorAction editTextEditorAction)
+    {
+        var textEditor = previousTextEditorStates.TextEditorMap
+            [editTextEditorAction.TextEditorKey];
+
+        var nextTextEditor = textEditor.PerformEditTextEditorAction(editTextEditorAction);
+
+        var nextMap = previousTextEditorStates.TextEditorMap
+            .SetItem(editTextEditorAction.TextEditorKey, nextTextEditor);
+
+        return previousTextEditorStates with
+        {
+            TextEditorMap = nextMap
+        };
+    }
 }

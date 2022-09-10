@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using System.Text;
 using BlazorTextEditor.ClassLib.Keyboard;
 using BlazorTextEditor.ClassLib.RoslynHelpers;
@@ -17,6 +18,8 @@ public partial class TextEditorDisplay : ComponentBase
     [Inject]
     private IStateSelection<TextEditorStates, TextEditorBase> TextEditorStatesSelection { get; set; } = null!;
     [Inject]
+    private IDispatcher Dispatcher { get; set; } = null!;
+    [Inject]
     private IJSRuntime JsRuntime { get; set; } = null!;
 
     [Parameter]
@@ -32,6 +35,7 @@ public partial class TextEditorDisplay : ComponentBase
     private WidthAndHeightOfElement? _textEditorWidthAndHeight;
     private RelativeCoordinates? _relativeCoordinatesOnClick;
     private TextEditorCursor _textEditorCursor = new();
+    private TextEditorCursorDisplay? _textEditorCursorDisplay;
 
     private string TextEditorContentId => $"bte_text-editor-content_{_textEditorGuid}";
     private string MeasureCharacterWidthAndRowHeightId => $"bte_measure-character-width-and-row-height_{_textEditorGuid}";
@@ -77,7 +81,8 @@ public partial class TextEditorDisplay : ComponentBase
 
     private async Task FocusTextEditorOnClickAsync()
     {
-        await _textEditorDisplayElementReference.FocusAsync();
+        if (_textEditorCursorDisplay is not null) 
+            await _textEditorCursorDisplay.FocusAsync();
     }
     
     private async Task HandleContentOnClickAsync(MouseEventArgs mouseEventArgs)
@@ -113,8 +118,8 @@ public partial class TextEditorDisplay : ComponentBase
 
         // Tab key column offset
         {
-            var parameterForGetTabsCountOnSameRowBeforeCursor = columnIndexInt > lengthOfRow - 1
-                ? lengthOfRow - 1
+            var parameterForGetTabsCountOnSameRowBeforeCursor = columnIndexInt > lengthOfRow
+                ? lengthOfRow
                 : columnIndexInt;
 
             var tabsOnSameRowBeforeCursor = localTextEditor
@@ -138,8 +143,8 @@ public partial class TextEditorDisplay : ComponentBase
             columnIndexInt -= mostDigitsInARowLineNumber;
         }
         
-        columnIndexInt = columnIndexInt > lengthOfRow - 1
-            ? lengthOfRow - 1
+        columnIndexInt = columnIndexInt > lengthOfRow
+            ? lengthOfRow
             : columnIndexInt;
 
         rowIndex = Math.Max(rowIndex, 0);
@@ -163,19 +168,21 @@ public partial class TextEditorDisplay : ComponentBase
             if (keyboardEventArgs.Key.Length > 1)
                 return;
 
-            TextEditorStatesSelection.Value.Content.Add(new RichCharacter()
-            {
-                Value = keyboardEventArgs.Key.First(),
-                DecorationByte = default
-            });
+            Dispatcher.Dispatch(new EditTextEditorAction(TextEditorKey,
+                new (ImmutableTextEditorCursor, TextEditorCursor)[]
+                {
+                    (new ImmutableTextEditorCursor(_textEditorCursor), _textEditorCursor)
+                }.ToImmutableArray(),
+                keyboardEventArgs,
+                CancellationToken.None));
         }
     }
     
     private async Task ApplyRoslynSyntaxHighlightingOnClick()
     {
-        var stringContent = new string(TextEditorStatesSelection.Value.Content
-            .Select(rc => rc.Value)
-            .ToArray());
+        var localTextEditor = TextEditorStatesSelection.Value;
+        
+        var stringContent = TextEditorStatesSelection.Value.GetAllText();
 
         var syntaxTree = CSharpSyntaxTree.ParseText(stringContent);
 
@@ -191,15 +198,8 @@ public partial class TextEditorDisplay : ComponentBase
 
         var method = methodIdentifiers.First();
 
-        var correspondingRichCharacters = TextEditorStatesSelection.Value.Content
-            .Skip(method.Span.Start)
-            .Take(method.Span.Length)
-            .ToList();
-
-        foreach (var richCharacter in correspondingRichCharacters)
-        {
-            richCharacter.DecorationByte = 1;
-        }
+        localTextEditor.ApplyDecorationRange(DecorationKind.Method,
+            methodIdentifiers.Select(x => x.Span));
     }
 
     private string GetCssClass(byte currentDecorationByte)

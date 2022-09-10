@@ -1,6 +1,8 @@
 using System.Collections.Immutable;
 using System.Text;
 using BlazorTextEditor.ClassLib.Keyboard;
+using BlazorTextEditor.ClassLib.Store.TextEditorCase;
+using Microsoft.CodeAnalysis.Text;
 
 namespace BlazorTextEditor.ClassLib.TextEditor;
 
@@ -24,11 +26,12 @@ public class TextEditorBase
     /// <br/><br/>
     /// _rowEndingPositions returns the start of the NEXT row
     /// </summary>
-    private List<(int positionIndex, RowEndingKind rowEndingKind)> _rowEndingPositions = new();
+    private readonly List<(int positionIndex, RowEndingKind rowEndingKind)> _rowEndingPositions = new();
     /// <summary>
     /// Provides exact position index of a tab character
     /// </summary>
-    private List<int> _tabKeyPositions = new();
+    private readonly List<int> _tabKeyPositions = new();
+    private readonly List<RichCharacter> _content = new();
 
     public TextEditorBase(string content)
     {
@@ -64,7 +67,7 @@ public class TextEditorBase
                 
             previousCharacter = character;
 
-            Content.Add(new RichCharacter
+            _content.Add(new RichCharacter
             {
                 Value = character,
                 DecorationByte = default
@@ -74,7 +77,6 @@ public class TextEditorBase
         _rowEndingPositions.Add((content.Length, RowEndingKind.EndOfFile));
     }
     
-    public List<RichCharacter> Content { get; set; } = new();
     public int RowCount => _rowEndingPositions.Count;
     
     public (int positionIndex, RowEndingKind rowEndingKind) GetStartOfRowTuple(int rowIndex)
@@ -132,7 +134,7 @@ public class TextEditorBase
 
             var endOfRowExclusive = _rowEndingPositions[i].positionIndex;
 
-            var row = Content
+            var row = _content
                 .Skip(startOfRowInclusive)
                 .Take(endOfRowExclusive - startOfRowInclusive)
                 .ToList();
@@ -153,5 +155,44 @@ public class TextEditorBase
             .TakeWhile(positionIndex => positionIndex < startOfRowPositionIndex + columnIndex);
 
         return tabs.Count();
+    }
+
+    public TextEditorBase PerformEditTextEditorAction(EditTextEditorAction editTextEditorAction)
+    {
+        if (KeyboardKeyFacts.IsMetaKey(editTextEditorAction.KeyboardEventArgs.Key) &&
+            !KeyboardKeyFacts.IsWhitespaceCode(editTextEditorAction.KeyboardEventArgs.Code))
+        {
+            if () // if backspace
+            {
+                
+            }
+            else if () // delete
+            {
+            }
+        }
+        else
+        {
+            // Insert text
+        }
+
+        return this;
+    }
+
+    public void ApplyDecorationRange(DecorationKind decorationKind, IEnumerable<TextSpan> textSpans)
+    {
+        foreach (var textSpan in textSpans)
+        {
+            for (int i = textSpan.Start; i < textSpan.End; i++)
+            {
+                _content[i].DecorationByte = (byte) decorationKind;
+            }
+        }
+    }
+
+    public string GetAllText()
+    {
+        return new string(_content
+            .Select(rc => rc.Value)
+            .ToArray());
     }
 }

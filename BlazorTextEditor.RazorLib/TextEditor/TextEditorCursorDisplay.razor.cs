@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Components;
 
 namespace BlazorTextEditor.RazorLib.TextEditor;
 
-public partial class TextEditorCursorDisplay : ComponentBase
+public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
 {
     [Parameter, EditorRequired]
     public TextEditorBase TextEditor { get; set; } = null!;
@@ -13,8 +13,16 @@ public partial class TextEditorCursorDisplay : ComponentBase
     [Parameter, EditorRequired]
     public FontWidthAndElementHeight FontWidthAndElementHeight { get; set; } = null!;
 
+    private ElementReference? _textEditorCursorDisplayElementReference;
+    private bool _hasBlinkAnimation = true;
+    private CancellationTokenSource _blinkingCursorCancellationTokenSource = new();
+    private TimeSpan _blinkingCursorTaskDelay = TimeSpan.FromMilliseconds(1000);
+    
     public string CursorStyleCss => GetCursorStyleCss();
     public string CaretRowStyleCss => GetCaretRowStyleCss();
+    public string BlinkAnimationCssClass => _hasBlinkAnimation
+        ? "bte_blink"
+        : string.Empty;
 
     private string GetCursorStyleCss()
     {
@@ -64,5 +72,42 @@ public partial class TextEditorCursorDisplay : ComponentBase
         var height = $"height: {FontWidthAndElementHeight.ElementHeightInPixels}px;";
 
         return $"{top} {height}";
+    }
+
+    public async Task FocusAsync()
+    {
+        if (_textEditorCursorDisplayElementReference is not null)
+            await _textEditorCursorDisplayElementReference.Value.FocusAsync();
+    }
+
+    public void Dispose()
+    {
+        _blinkingCursorCancellationTokenSource.Cancel();
+    }
+
+    private void HandleOnKeyDown()
+    {
+        _hasBlinkAnimation = false;
+
+        var cancellationToken = CancelSourceAndCreateNewThenReturnToken();
+
+        _ = Task.Run(async () =>
+        {
+            await Task.Delay(_blinkingCursorTaskDelay, cancellationToken);
+
+            if (!cancellationToken.IsCancellationRequested)
+            {
+                _hasBlinkAnimation = true;
+                await InvokeAsync(StateHasChanged);    
+            }
+        }, cancellationToken);
+    }
+
+    private CancellationToken CancelSourceAndCreateNewThenReturnToken()
+    {
+        _blinkingCursorCancellationTokenSource.Cancel();
+        _blinkingCursorCancellationTokenSource = new();
+
+        return _blinkingCursorCancellationTokenSource.Token;
     }
 }
