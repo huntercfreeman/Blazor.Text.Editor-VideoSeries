@@ -3,48 +3,129 @@ Notes for video 9:
 # Intent
 {
 	-Insertion
-	-Deletion
 	-View edits
-	-Undo with ctrl + z
-	-Redo with ctrl + y
 }
 
 # Plan
 {
-	-private List<IEditBlock> _editBlocks = new();
-	-public ImmutableArray<IEditBlock> EditBlocks => 
+	-KeyboardKeyFacts.IsMetaKey()
+		-Change to KeyboardEventArgs argument
+		-Pass code to overload
+		-put !Whitespace Code in IsMetaKey()
+	-public enum TextEditKind {Other,Insertion,Deletion}
+	-public record EditBlock(TextEditKind, DisplayName, ContentSnapshot);
+	-private readonly List<EditBlock> _editBlocks = new();
+	-public ImmutableArray<EditBlock> EditBlocks => 
 		_editBlocks.ToImmutableArray();
-	-PerformTextEditorEditAction()
+	-PerformEditTextEditorAction()
 	{
-		if (meta && !whitespace)
+		if (just IsMetaKey() put !Whitespace Code in IsMetaKey())
 		{
-			if (backspace)
-				PerformBackspaces(textEditorEditAction);
-			else if (delete)
-				PerformDeletions(textEditorEditAction);
+			if (backspaceKey)
+				PerformBackspaces(editTextEditorAction);
+			else if (deleteKey)
+				PerformDeletions(editTextEditorAction);
 		}
 		else
         {
-            PerformInsertions(textEditorEditAction);
+            PerformInsertions(editTextEditorAction);
         }
         
         return this;
 	}
 	-private void EnsureUndoPoint(TextEditKind textEditKind)
+		-mostRecentEditBlock
+		-while (_editBlocks.Count > MaximumEditBlocks && 
+                _editBlocks.Count != 0)
+	-public const int MaximumEditBlocks = 10;	
 	-private void PerformInsertions(TextEditorEditAction textEditorEditAction)
 	{
 		EnsureUndoPoint(TextEditKind.Insertion);
-		
 		-foreach over the cursors
-		-if wasTabKey update the tab positions in the correct order
-		-after insertion increment any that come after insertion point
-			-lineEnding positions 
-			-tab positions
+			-if // enterkey
+			{
+			}
+			-else
+			{
+				-if // tab
+				{
+				}
+				
+				// tab and ( character / digits )
+			}
+			- put the following variables to
+			  be shared above the if // whitespace
+				-var startOfRowPositionIndex
+				-var cursorPositionIndex
+				-var wasTabCode = false;
+				-var wasEnterCode = false;
+				-var characterValueToInsert = .Key.First()
+				-if (KeyboardKeyFacts.Whitespace(.Code))
+				{
+					characterValueToInsert = ConvertWhitespaceToCharacter(code)
+				
+					wasTabCode = KeyboardKeyFacts.WhitespaceCodes...
+					wasEnterCode = KeyboardKeyFacts.WhitespaceCodes...
+				}
+				-var richCharacterToInsert = new() RichCharacter
+				{
+					characterValueToInsert, 
+					(byte)DecorationKind.None
+				}
+			-if (wasEnterKey)
+			{
+				// New line
+				_content.Insert(cursorPosition)
+				_rowEndingPositions
+					.Insert(
+						rowIndex, // weird not to have +1 so comment on why 
+						(cursorPositionIndex + 1, NewLine))
+				
+				// later video match current file's line endings 
+				
+				cursor.IndexCoordinates -> (rowIndex + 1, 0)
+				cursor.PreferredColumnIndex -> 0
+			}
+			else
+			{
+				if (wasTabKey)
+				{
+					var index = _tabKeyPositions
+		                    .FindIndex(x =>
+		                        x >= cursorPositionIndex);
+
+		            if (index == -1)
+		            {
+		                _tabKeyPositions.Add(cursorPositionIndex);
+		            }
+		            else
+		            {
+		                for (int i = index; i < _tabKeyPositions.Count; i++)
+		                {
+		                    _tabKeyPositions[i]++;
+		                }
+		                
+		                _tabKeyPositions.Insert(index, cursorPosition);
+		            }
+				}
+				
+				// insert to _content for both tab and non tab
+				// cursorPositionIndex, richCharacterToInsert
+				
+				// mutate coordinates column += 1 and PreferredColumn += 1
+			}
+			-var firstRowIndexToModify = wasEnterCode ? :
+			-var firstTabKeyPositionIndexToModify = _tabKeyPositions
+                    .FindIndex(x => x >= cursorPositionIndex);
+			-for (int i = firstRowIndexToModify; i < _rowEndingPositions.Count; i++)
+			-if (firstTabKeyPositionIndexToModify != -1)
+			-modify onkeydown in blazor code behind use IsMetaKey()
+			-OnAfterRenderAsync move _rows logic into method
+			-Call await GetRowsAsync(); after Dispatch onkeydown
+			-tab key needs fixed
+			-onclick account for scrollTop when getting rowIndex
 	}
-	-private void PerformDeletions(TextEditorEditAction textEditorEditAction)
-	-private void PerformBackspaces(TextEditorEditAction textEditorEditAction)
-	-Render the edit blocks to showcase them just for debugging
-	 	then remove them from UI.
+	-Render the edit blocks to showcase them, then remove them from UI.
 	 	{
 	 		<div style="overflow: auto; height: 5em;">
                 @{
