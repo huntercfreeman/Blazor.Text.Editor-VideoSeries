@@ -1,7 +1,7 @@
 @using System.Text
 <div @ref="_textEditorDisplayElementReference"
      @onclick="FocusTextEditorOnClickAsync"
-     @onkeydown="HandleOnKeyDown"
+     @onkeydown="HandleOnKeyDownAsync"
      @onkeydown:preventDefault="true">
 
     @if (_characterWidthAndRowHeight is not null)

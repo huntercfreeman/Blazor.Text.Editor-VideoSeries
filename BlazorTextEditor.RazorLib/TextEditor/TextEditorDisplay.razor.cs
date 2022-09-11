@@ -52,11 +52,7 @@ public partial class TextEditorDisplay : ComponentBase
     {
         if (firstRender)
         {
-            var localTextEditor = TextEditorStatesSelection.Value;
-            
-            _rows = localTextEditor.GetRows(0, Int32.MaxValue);
-
-            await InvokeAsync(StateHasChanged);
+            await GetRowsAsync();
         }
 
         if (_shouldMeasureDimensions)
@@ -77,6 +73,15 @@ public partial class TextEditorDisplay : ComponentBase
         }
         
         await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private async Task GetRowsAsync()
+    {
+        var localTextEditor = TextEditorStatesSelection.Value;
+            
+        _rows = localTextEditor.GetRows(0, Int32.MaxValue);
+
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task FocusTextEditorOnClickAsync()
@@ -154,7 +159,7 @@ public partial class TextEditorDisplay : ComponentBase
         _textEditorCursor.PreferredColumnIndex = columnIndexInt;
     }
     
-    private void HandleOnKeyDown(KeyboardEventArgs keyboardEventArgs)
+    private async Task HandleOnKeyDownAsync(KeyboardEventArgs keyboardEventArgs)
     {
         if (KeyboardKeyFacts.IsMovementKey(keyboardEventArgs.Key))
         {
@@ -165,7 +170,7 @@ public partial class TextEditorDisplay : ComponentBase
         }
         else
         {
-            if (keyboardEventArgs.Key.Length > 1)
+            if (KeyboardKeyFacts.IsMetaKey(keyboardEventArgs))
                 return;
 
             Dispatcher.Dispatch(new EditTextEditorAction(TextEditorKey,
@@ -175,6 +180,8 @@ public partial class TextEditorDisplay : ComponentBase
                 }.ToImmutableArray(),
                 keyboardEventArgs,
                 CancellationToken.None));
+            
+            await GetRowsAsync();
         }
     }
     

@@ -20,6 +20,7 @@ public class TextEditorBase
     public const int TabWidth = 4;
     public const int GutterPaddingLeftInPixels = 5;
     public const int GutterPaddingRightInPixels = 5;
+    public const int MaximumEditBlocks = 10;
 
     /// <summary>
     /// To get the ending position of RowIndex _rowEndingPositions[RowIndex]
@@ -32,6 +33,7 @@ public class TextEditorBase
     /// </summary>
     private readonly List<int> _tabKeyPositions = new();
     private readonly List<RichCharacter> _content = new();
+    private readonly List<EditBlock> _editBlocks = new();
 
     public TextEditorBase(string content)
     {
@@ -78,6 +80,8 @@ public class TextEditorBase
     }
     
     public int RowCount => _rowEndingPositions.Count;
+    
+    public ImmutableArray<EditBlock> EditBlocks => _editBlocks.ToImmutableArray();
     
     public (int positionIndex, RowEndingKind rowEndingKind) GetStartOfRowTuple(int rowIndex)
     {
@@ -159,23 +163,163 @@ public class TextEditorBase
 
     public TextEditorBase PerformEditTextEditorAction(EditTextEditorAction editTextEditorAction)
     {
-        if (KeyboardKeyFacts.IsMetaKey(editTextEditorAction.KeyboardEventArgs.Key) &&
-            !KeyboardKeyFacts.IsWhitespaceCode(editTextEditorAction.KeyboardEventArgs.Code))
+        if (KeyboardKeyFacts.IsMetaKey(editTextEditorAction.KeyboardEventArgs))
         {
-            if () // if backspace
+            if (KeyboardKeyFacts.MetaKeys.BACKSPACE == editTextEditorAction.KeyboardEventArgs.Key)
             {
-                
+                PerformBackspaces(editTextEditorAction);
             }
-            else if () // delete
+            else if (KeyboardKeyFacts.MetaKeys.DELETE == editTextEditorAction.KeyboardEventArgs.Key)
             {
+                PerformDeletions(editTextEditorAction);
             }
         }
         else
         {
-            // Insert text
+            PerformInsertions(editTextEditorAction);
         }
 
         return this;
+    }
+
+    private void EnsureUndoPoint(TextEditKind textEditKind)
+    {
+        var mostRecentEditBlock = _editBlocks.LastOrDefault();
+
+        if (mostRecentEditBlock is null ||
+            mostRecentEditBlock.TextEditKind != textEditKind)
+        {
+            _editBlocks.Add(new EditBlock(
+                textEditKind,
+                textEditKind.ToString(),
+                GetAllText()));
+        }
+
+        while (_editBlocks.Count > MaximumEditBlocks &&
+               _editBlocks.Count != 0)
+        {
+            _editBlocks.RemoveAt(0);
+        }
+    }
+    
+    private void PerformInsertions(EditTextEditorAction editTextEditorAction)
+    {
+        EnsureUndoPoint(TextEditKind.Insertion);
+
+        foreach (var cursorTuple in editTextEditorAction.TextCursorTuples)
+        {
+            var startOfRowPositionIndex = 
+                GetStartOfRowTuple(cursorTuple.immutableTextEditorCursor.RowIndex)
+                    .positionIndex;
+
+            var cursorPositionIndex =
+                startOfRowPositionIndex + cursorTuple.immutableTextEditorCursor.ColumnIndex;
+                
+            var wasTabCode = false;
+            var wasEnterCode = false;
+
+            var characterValueToInsert = editTextEditorAction.KeyboardEventArgs.Key
+                .First();
+            
+            if (KeyboardKeyFacts.IsWhitespaceCode(editTextEditorAction.KeyboardEventArgs.Code))
+            {
+                characterValueToInsert =
+                    KeyboardKeyFacts.ConvertWhitespaceCodeToCharacter(editTextEditorAction.KeyboardEventArgs.Code);
+
+                wasTabCode = KeyboardKeyFacts.WhitespaceCodes.TAB_CODE ==
+                             editTextEditorAction.KeyboardEventArgs.Code;
+                
+                wasEnterCode = KeyboardKeyFacts.WhitespaceCodes.ENTER_CODE ==
+                               editTextEditorAction.KeyboardEventArgs.Code;
+            }
+
+            var richCharacterToInsert = new RichCharacter
+            {
+                Value = characterValueToInsert,
+                DecorationByte = (byte)DecorationKind.None
+            };
+            
+            if (wasEnterCode)
+            {
+                _content.Insert(cursorPositionIndex, richCharacterToInsert);
+                
+                _rowEndingPositions.Insert(cursorTuple.immutableTextEditorCursor.RowIndex,
+                    (cursorPositionIndex + 1, RowEndingKind.NewLine));
+
+                var indexCoordinates = cursorTuple.textEditorCursor.IndexCoordinates;
+                
+                cursorTuple.textEditorCursor.IndexCoordinates = (indexCoordinates.rowIndex + 1, 0);
+                
+                cursorTuple.textEditorCursor.PreferredColumnIndex =
+                    cursorTuple.textEditorCursor.IndexCoordinates.columnIndex;
+            }
+            else
+            {
+                if (wasTabCode)
+                {
+                    var index = _tabKeyPositions
+                        .FindIndex(x =>
+                            x >= cursorPositionIndex);
+                    
+                    if (index == -1)
+                    {
+                        _tabKeyPositions.Add(cursorPositionIndex);
+                    }
+                    else
+                    {
+                        for (int i = index; i < _tabKeyPositions.Count; i++)
+                        {
+                            _tabKeyPositions[i]++;
+                        }
+                        
+                        _tabKeyPositions.Insert(index, cursorPositionIndex);
+                    }
+                }
+
+                _content.Insert(cursorPositionIndex, richCharacterToInsert);
+                
+                var indexCoordinates = cursorTuple.textEditorCursor.IndexCoordinates;
+
+                cursorTuple.textEditorCursor.IndexCoordinates = (indexCoordinates.rowIndex, indexCoordinates.columnIndex + 1);
+                cursorTuple.textEditorCursor.PreferredColumnIndex =
+                    cursorTuple.textEditorCursor.IndexCoordinates.columnIndex;
+            }
+
+            var firstRowIndexToModify = wasEnterCode
+                ? cursorTuple.immutableTextEditorCursor.RowIndex + 1
+                : cursorTuple.immutableTextEditorCursor.RowIndex;
+
+            for (int i = firstRowIndexToModify; i < _rowEndingPositions.Count; i++)
+            {
+                var rowEndingTuple = _rowEndingPositions[i];
+                
+                _rowEndingPositions[i] = (rowEndingTuple.positionIndex + 1, rowEndingTuple.rowEndingKind);
+            }
+
+            if (!wasTabCode)
+            {
+                var firstTabKeyPositionIndexToModify = _tabKeyPositions
+                    .FindIndex(x => x >= cursorPositionIndex);
+
+                if (firstTabKeyPositionIndexToModify != -1)
+                {
+                    for (int i = firstTabKeyPositionIndexToModify; i < _tabKeyPositions.Count; i++)
+                    {
+                        _tabKeyPositions[i]++;
+                    }
+                }
+            }
+        }
+    }
+
+    private void PerformBackspaces(EditTextEditorAction editTextEditorAction)
+    {
+        throw new NotImplementedException();
+    }
+    
+    private void PerformDeletions(EditTextEditorAction editTextEditorAction)
+    {
+        throw new NotImplementedException();
     }
 
     public void ApplyDecorationRange(DecorationKind decorationKind, IEnumerable<TextSpan> textSpans)

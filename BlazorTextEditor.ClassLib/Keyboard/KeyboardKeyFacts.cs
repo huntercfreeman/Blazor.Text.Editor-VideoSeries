@@ -1,15 +1,17 @@
+using Microsoft.AspNetCore.Components.Web;
+
 namespace BlazorTextEditor.ClassLib.Keyboard;
 
 public static class KeyboardKeyFacts
 {
-    public static bool IsMetaKey(KeyDownEventRecord onKeyDownEventArgs)
+    public static bool IsMetaKey(KeyboardEventArgs keyboardEventArgs)
     {
-        return IsMetaKey(onKeyDownEventArgs.Key);
+        return IsMetaKey(keyboardEventArgs.Key, keyboardEventArgs.Code);
     }
     
-    public static bool IsMetaKey(string key)
+    public static bool IsMetaKey(string key, string code)
     {
-        if (key.Length > 1)
+        if (key.Length > 1 && !IsWhitespaceCode(code))
             return true;
 
         return false;

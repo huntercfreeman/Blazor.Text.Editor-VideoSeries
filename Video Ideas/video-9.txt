@@ -3,7 +3,6 @@ Notes for video 9:
 # Intent
 {
 	-Insertion
-	-View edits
 }
 
 # Plan
@@ -62,7 +61,7 @@ Notes for video 9:
 				-var characterValueToInsert = .Key.First()
 				-if (KeyboardKeyFacts.Whitespace(.Code))
 				{
-					characterValueToInsert = ConvertWhitespaceToCharacter(code)
+					characterValueToInsert = ConvertWhitespaceCodeToCharacter(code)
 				
 					wasTabCode = KeyboardKeyFacts.WhitespaceCodes...
 					wasEnterCode = KeyboardKeyFacts.WhitespaceCodes...
@@ -88,7 +87,7 @@ Notes for video 9:
 			}
 			else
 			{
-				if (wasTabKey)
+				if (wasTabCode)
 				{
 					var index = _tabKeyPositions
 		                    .FindIndex(x =>
@@ -181,5 +180,5 @@ Notes for video 9:
 
 # Youtube Video Title
 {
-	Insertion, Deletion, Undo / Redo | Blazor Text Editor Part 8
+	Text Insertion | Blazor Text Editor Part 9
 }
