@@ -2,21 +2,94 @@ Notes for video 10:
 
 # Intent
 {
-	-Deletion
-	-Undo with ctrl + z
-	-Redo with ctrl + y
+-delete current debug UI
+-border on caret-row not outline
+	prior to end of a row write out the line ending
+-fix ArrowRight
+-Toggle Show Whitespace
+-Toggle ShowNewlines
+-TextEditorBase has another constructor accepting a key
+-Construct the 3 text editors in TextEditorStates' constructor not the UI
+-In TextEditorFacts public const string InitialInput = "public class MyClass\n{\n\tpublic void MyMethod()\n\t{\n\t\treturn;\n\t}\n}\n";
 }
+
 
 # Plan
 {
-	-private void PerformDeletions(TextEditorEditAction textEditorEditAction)
-	-private void PerformBackspaces(TextEditorEditAction textEditorEditAction)
+-Delete debug UI being put above the text editor content area (keep apply roslyn button)
+-bte_text-editor-caret-row needs border instead of outline	
+-bte_text-editor-content needs 5px of margin
+-prior to the end of a row html div write out the line ending
+	-Make RowEndingPositions as a public ImmutableArray
+	-Add AsCharactersHtmlEscaped() to class RowEndingKindExtensions
+-[
+	<span style="color: #007F00; background-color: #faeee2">
+                            @rowEndingTuple.rowEndingKind.AsCharactersHtmlEscaped()    
+                        </span>
+]
+-fix ARROW_RIGHT 
+	-localIndexCoordinates.rowIndex++;
+	-else if (localIndexCoordinates.columnIndex < lengthOfRow)
+-Toggle show whitespace [
+	var tabKeyOutput = "&nbsp;&nbsp;&nbsp;&nbsp;";
+    var spaceKeyOutput = "&nbsp;";
+    
+    if (_showWhitespace)
+    {
+        tabKeyOutput = "--->";
+        spaceKeyOutput = "·";
+    }
+]
+-[ 
+	@if (_showNewlines)
+                    {
+                        var localTextEditor = TextEditorStatesSelection.Value;
+
+                        var rowEndingTuple = localTextEditor.RowEndingPositions[i];
+                        
+                        <span style="color: #007F00; background-color: #faeee2">
+                            @rowEndingTuple.rowEndingKind.AsCharactersHtmlEscaped()    
+                        </span>
+                    }
+]
+-[
+	
+[FeatureState]
+public record TextEditorStates(ImmutableDictionary<TextEditorKey, TextEditorBase> TextEditorMap)
+{
+    public TextEditorStates() : this(ImmutableDictionary<TextEditorKey, TextEditorBase>.Empty)
+    {
+        var textEditorCodeTest = new TextEditorBase(TextEditorBase.InitialInput, TextEditorFacts.TextEditorKeyCodeTest);
+        var textEditorEmailTest = new TextEditorBase("Dear Martin,\r\nI am looking forward to our meeting on Thursday.\nI will be there at 5:00 PM\rRegards, Bob", TextEditorFacts.TextEditorKeyEmailTest);
+        var textEditorEmptyTest = new TextEditorBase(string.Empty, TextEditorFacts.TextEditorKeyEmptyTest);
+        
+        TextEditorMap = TextEditorMap.AddRange(new []
+        {
+            new KeyValuePair<TextEditorKey, TextEditorBase>(textEditorCodeTest.Key, textEditorCodeTest),
+            new KeyValuePair<TextEditorKey, TextEditorBase>(textEditorEmailTest.Key, textEditorEmailTest),
+            new KeyValuePair<TextEditorKey, TextEditorBase>(textEditorEmptyTest.Key, textEditorEmptyTest)
+        });
+    }
+}
+]
+-[
+<BlazorTextEditor.RazorLib.TextEditor.TextEditorDisplay TextEditorKey="TextEditorFacts.TextEditorKeyCodeTest" />
+<BlazorTextEditor.RazorLib.TextEditor.TextEditorDisplay TextEditorKey="TextEditorFacts.TextEditorKeyEmailTest" />
+<BlazorTextEditor.RazorLib.TextEditor.TextEditorDisplay TextEditorKey="TextEditorFacts.TextEditorKeyEmptyTest" />
+]
+-[
+public TextEditorBase(string content, TextEditorKey key)
+        : this(content)
+    {
+        Key = key;
+    }
+]
 }
 
 # Youtube Video Description
 {
-	Part 2:
-	https://youtu.be/D5PdeRsV-Hk
+	Part 9:
+	https://youtu.be/181JRDrG5d8
 
 	Starting Point Repo:
 	https://github.com/huntercfreeman/BlazorTextEditor
@@ -30,5 +103,5 @@ Notes for video 10:
 
 # Youtube Video Title
 {
-	Make a Text Editor in Blazor from scratch | Part 3
+	Bug Fixes and Cleanup | Blazor Text Editor Part 10
 }
