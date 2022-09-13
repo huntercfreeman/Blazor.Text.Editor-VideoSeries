@@ -36,6 +36,8 @@ public partial class TextEditorDisplay : ComponentBase
     private RelativeCoordinates? _relativeCoordinatesOnClick;
     private TextEditorCursor _textEditorCursor = new();
     private TextEditorCursorDisplay? _textEditorCursorDisplay;
+    private bool _showNewlines = true;
+    private bool _showWhitespace = true;
 
     private string TextEditorContentId => $"bte_text-editor-content_{_textEditorGuid}";
     private string MeasureCharacterWidthAndRowHeightId => $"bte_measure-character-width-and-row-height_{_textEditorGuid}";

@@ -83,8 +83,9 @@ public class TextEditorCursor
                     localIndexCoordinates.rowIndex < textEditorBase.RowCount - 1)
                 {
                     MutateIndexCoordinatesAndPreferredColumnIndex(0);
+                    localIndexCoordinates.rowIndex++;
                 }
-                else
+                else if (localIndexCoordinates.columnIndex != lengthOfRow)
                 {
                     MutateIndexCoordinatesAndPreferredColumnIndex(localIndexCoordinates.columnIndex + 1);
                 }

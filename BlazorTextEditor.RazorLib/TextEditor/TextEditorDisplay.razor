@@ -1,40 +1,23 @@
 @using System.Text
+@using BlazorTextEditor.ClassLib.TextEditor
 <div @ref="_textEditorDisplayElementReference"
      @onclick="FocusTextEditorOnClickAsync"
      @onkeydown="HandleOnKeyDownAsync"
-     @onkeydown:preventDefault="true">
+     @onkeydown:preventDefault="true"
+     class="bte_text-editor">
 
-    @if (_characterWidthAndRowHeight is not null)
-    {
-        <div>
-            ElementHeight:&nbsp;@_characterWidthAndRowHeight.ElementHeightInPixels
-            <br/>
-            FontWidth:&nbsp;@_characterWidthAndRowHeight.FontWidthInPixels    
-        </div>    
-    }
+    <div>
+        <input type="checkbox" @bind="_showWhitespace" />
+        
+        <span>Show Whitespace</span>
+    </div>
     
-    @if (_textEditorWidthAndHeight is not null)
-    {
-        <div>
-            WidthInPixels:&nbsp;@_textEditorWidthAndHeight.WidthInPixels
-            <br/>
-            HeightInPixels:&nbsp;@_textEditorWidthAndHeight.HeightInPixels    
-        </div>
-    }
+    <div>
+        <input type="checkbox" @bind="_showNewlines" />
+        
+        <span>Show Newlines</span>
+    </div>
     
-    @if (_relativeCoordinatesOnClick is not null)
-    {
-        <div>
-            (RelativeX, RelativeY):
-            <br/>
-            (@_relativeCoordinatesOnClick.RelativeX, @_relativeCoordinatesOnClick.RelativeY)
-        </div>
-    }
-    
-    <button class="btn btn-primary">
-        Click me
-    </button>
-
     <button class="btn btn-primary"
             @onclick="ApplyRoslynSyntaxHighlightingOnClick">
         ApplyRoslynSyntaxHighlightingOnClick
@@ -57,6 +40,15 @@
         @if (_rows is not null &&
              _rows.Any())
         {
+            var tabKeyOutput = "&nbsp;&nbsp;&nbsp;&nbsp;";
+            var spaceKeyOutput = "&nbsp;";
+    
+            if (_showWhitespace)
+            {
+                tabKeyOutput = "--->";
+                spaceKeyOutput = "·";
+            }
+            
             for (var i = 0; i < _rows.Count; i++)
             {
                 var index = i;
@@ -81,10 +73,10 @@
                                 switch (richCharacter.Value)
                                 {
                                     case '\t':
-                                        spanBuilder.Append("&nbsp;&nbsp;&nbsp;&nbsp;");
+                                        spanBuilder.Append(tabKeyOutput);
                                         break;
                                     case ' ':
-                                        spanBuilder.Append("&nbsp;");
+                                        spanBuilder.Append(spaceKeyOutput);
                                         break;
                                     case '\r':
                                         break;
@@ -125,6 +117,14 @@
                         /* Final grouping of contiguous characters */
                         <span class="@GetCssClass(currentDecorationByte)">
                             @((MarkupString)spanBuilder.ToString())
+                        </span>
+                    }
+                    
+                    @if(_showNewlines) {
+                        var rowEndingTuple = TextEditorStatesSelection.Value.RowEndingPositions[i];
+                        
+                        <span style="color: #007F00; background-color: #faeee2">
+                            @rowEndingTuple.rowEndingKind.AsCharactersHtmlEscaped()    
                         </span>
                     }
                 </div>

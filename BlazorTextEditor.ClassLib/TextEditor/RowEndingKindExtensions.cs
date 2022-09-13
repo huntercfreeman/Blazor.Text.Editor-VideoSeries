@@ -19,4 +19,17 @@ public static class RowEndingKindExtensions
             _ => throw new ApplicationException($"Unexpected {nameof(RowEndingKind)} of: {rowEndingKind}")
         };
     }
+    
+    public static string AsCharactersHtmlEscaped(this RowEndingKind rowEndingKind)
+    {
+        return rowEndingKind switch
+        {
+            RowEndingKind.CarriageReturn => "\\r",
+            RowEndingKind.NewLine => "\\n",
+            RowEndingKind.CarriageReturnNewLine => "\\r\\n",
+            RowEndingKind.StartOfFile => "SOF",
+            RowEndingKind.EndOfFile => "EOF",
+            _ => throw new ApplicationException($"Unexpected {nameof(RowEndingKind)} of: {rowEndingKind}")
+        };
+    }
 }

@@ -1,3 +1,6 @@
+.bte_text-editor {
+}
+
 .bte_method {
     color: red;
 }
@@ -26,6 +29,7 @@
     overflow: auto;
     height: 400px;
     font-family: monospace;
+    margin: 5px;
 }
 
 .bte_text-editor-cursor {
@@ -42,7 +46,7 @@
 }
 
 .bte_text-editor-caret-row {
-    outline: 1.5px solid red;
+    border: 1.5px solid red;
     position: absolute;
     left: 0;
     width: 100%;

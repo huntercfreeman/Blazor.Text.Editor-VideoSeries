@@ -8,15 +8,6 @@ namespace BlazorTextEditor.ClassLib.TextEditor;
 
 public class TextEditorBase
 {
-    public const string InitialInput = @"public class MyClass
-{
-    public void MyMethod()
-    {
-        return;
-    }
-}
-";
-    
     public const int TabWidth = 4;
     public const int GutterPaddingLeftInPixels = 5;
     public const int GutterPaddingRightInPixels = 5;
@@ -79,9 +70,18 @@ public class TextEditorBase
         _rowEndingPositions.Add((content.Length, RowEndingKind.EndOfFile));
     }
     
+    public TextEditorBase(string content, TextEditorKey key)
+        : this(content)
+    {
+        Key = key;
+    }
+
+    public TextEditorKey Key { get; } = TextEditorKey.NewTextEditorKey();
     public int RowCount => _rowEndingPositions.Count;
     
     public ImmutableArray<EditBlock> EditBlocks => _editBlocks.ToImmutableArray();
+    public ImmutableArray<(int positionIndex, RowEndingKind rowEndingKind)> RowEndingPositions => 
+        _rowEndingPositions.ToImmutableArray();
     
     public (int positionIndex, RowEndingKind rowEndingKind) GetStartOfRowTuple(int rowIndex)
     {
