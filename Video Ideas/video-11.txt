@@ -2,142 +2,179 @@ Notes for video 11:
 
 # Intent
 {
-todo:
--Themes
-					-Add LightTheme
-					-Add DarkTheme
-				-Cursor needs blinking animation
-					-onkeydown cancel task.delay
-					-task.delay -> completed == start blinking
-					-start blinking means add css class that references
-						the pte_blink @keyframes animation
-					-Remove that class to stop blinking.
-					-onkeydown do not blink
--------------------------------------------------------------
-
-
-    The goals of video 11 are:
-		-Move the code to a Photino host.
-		-Add notification system
-		-Add loading of File from FileSystem into the TextEditor
-	
-	Goals that possibly need to wait until video 4:
-		-Modify a loaded in file
-		-Save the modification to the FileSystem
-		-Notify the user
-			-When the file is saved successfully
-			-When the file is NOT successfully saved
+	-Backspace
+	-Deletion
 }
 
 # Plan
 {
+@ KeyboardKeyFacts.cs
+	-public static bool IsLineEndingCharacter(char character)
 
-todo:
-
-		-ThemeState.cs { ActiveThemeKey }
-		-ThemeKey.cs { Guid, CssClass }
-		-ThemeStateReducer.cs { ReduceSetThemeStateAction() }
-		-ThemeFacts.cs 
-		{ 
-			static ThemeKey Light, 
-			static ThemeKey Dark,
-			static ImmutableArray<ThemeKey> AllDefaultThemeKeys
-			{ 
-				Light, 
-				Dark 
-			}
-		}
-		-wwwroot/
-			-Themes/
-				-light.css
-				-dark.css
-			-variableDeclarations.css 
-			{ 
-				:root { --bstudio_primary-background-color: #1e1e1e; } 
-			}
-		-<div class="bstudio_theme-wrapper @ThemeStateWrap.Value.ThemeKey.KeyName">
-
-
-------------------------------------------------------------------
-    # Step 1
-        Clone Photino.Blazor from:
-			'https://github.com/tryphotino/photino.Blazor'
+@ TextEditorDisplay.razor.cs
+	-Remove logic to ignore MetaKey for
+		onkeydown event.
 	
-	# Step 2
-        Create a new C# Project that replicates the 'Hello World'
-		sample that Photino provides.
+@ TextEditorBase.cs
+	-Combine deletion and backspace 1 method
+		-PerformDeletions(editTextEditorAction);
+
+private void PerformDeletions(EditTextEditorAction editTextEditorAction)
+{
+	-iterate over the cursorTuples
+	-var startOfRowPositionIndex
+	-var cursorPositionIndex
+	-int startingPositionIndexToRemoveInclusive
+	-int countToRemove
+	-bool moveBackwards
+	-if (BACKSPACE)
+	{
+		startingPositionIndexToRemoveInclusive
+		countToRemove
+		moveBackwards
+	}
+	else if (DELETE)
+	{
+		startingPositionIndexToRemoveInclusive
+		countToRemove
+		moveBackwards
+	}
+	else
+	{
+		throw new ApplicationException(
+		                $"The keyboard key: {editTextEditorAction.KeyboardEventArgs.Key} was not recognized");
+	}
 	
-	# Step 3
-		Have the new C# Project (the Photino host) reference the
-		RazorClassLibrary.
-		
-	# Step 4
-		-Add <BlazorTextEditor.RazorLib.BlazorTextEditorRazorLibInitializer />
-			to the MainLayout.razor of the Photino host.
-		-Register AddBlazorTextEditorRazorLibServices() in main
-	
-	# Step 5
-		Take the code from Index.razor and put it in the Photino application.
-		(in otherwords render the TextEditors again)
-		
-	# Step 6	
-		-Create NotificationStates as a [FeatureState]
-		-NotificationStates is a record with position property of
-			ImmutableList<NotificationRecord> Notifications
-		-Create the record NotificationRecord which has position properties:
-			-NotificationKey
-			-Title
-			-RendererType
-			-Parameters
-			-AutomaticDisposalTimeSpan = null
-		-Create actions:
-			-RegisterNotificationAction
-			-DisposeNotificationAction
-		-Reducer add / remove to [FeatureState]
-				
-	# Step 7
-		-Create in the ClassLib:
-			-IDefaultErrorRenderer.cs
-			-IDefaultInformationRenderer.cs
-		-Register implementations in the RazorLib Services
-		
-	# Step 8
-		-In RazorLib make
-			-DefaultErrorRenderer component
-			-DefaultInformationRenderer component
-			-NotificationDisplay
-			-NotificationsInitializer
-		-In NotificationsInitializer ensure the foreach loop
-			uses an @key when rendering the NotificationDisplay(s)
-		-In the NotificationDisplay component ensure if the
-			AutomaticDisposalTimeSpan  is not null that a Task.Run()
-			is started to await Delay and then Dismiss();
-			
-	# Step 9
-		-In RazorLib make
-			-DefaultErrorRenderer component
-			-DefaultInformationRenderer component
-			-NotificationDisplay
-			-NotificationsInitializer
-		-In NotificationsInitializer ensure the foreach loop
-			uses an @key when rendering the NotificationDisplay(s)
-		-In the NotificationDisplay component ensure if the
-			AutomaticDisposalTimeSpan  is not null that a Task.Run()
-			is started to await Delay and then Dismiss();
-			
-	# Step 10
-		-Use (not sure exact method name) File.ReadTextAsync()
-			to read in a file's contents and display it in the
-			Text Editor
-		-Fluxor FileSystemCase
-			-WriteToFileSystemAction
-			-FileSystemStateEffects
+	int charactersRemovedCount = 0;
+    int rowsRemovedCount = 0;
+    
+    var indexToRemove = startingPositionIndexToRemoveInclusive;
+    
+    while (countToRemove-- > 0)
+    {
+    	if (indexToRemove < 0 ||
+                    indexToRemove > _content.Count - 1)
+        {
+            break;
+        }
+        
+        var characterToDelete = _content[indexToRemove];
+        
+        int startingIndexToRemoveRange;
+        int countToRemoveRange;
+        
+        if (IsLineEndingCharacter)
+        {
+        	rowsRemovedCount++;
+        	var rowEndingTupleIndex = FindIndex... indexToRemove + 1 || indexToRemove + 2 // CRLF
+        	var rowEndingTuple = _rowEndingPositions[rowEndingTupleIndex];
+        	_rowEndingPositions.RemoveAt(rowEndingTupleIndex);
+        	var lengthOfRowEnding = rowEndingTuple.rowEndingKind
+                        .AsCharacters().Length; 
+                        
+                        
+                    if (moveBackwards)
+                    {
+                        indexIteration -= lengthOfRowEnding - 1;
+                    
+                        startingIndexToRemoveRange = indexToRemove - (lengthOfRowEnding - 1);    
+                    }
+                    else
+                    {
+                        indexIteration -= lengthOfRowEnding - 1;
+                    
+                        startingIndexToRemoveRange = indexToRemove;    
+                    }
+        }
+        else
+                {
+                    if (characterToDelete.Value == KeyboardKeyFacts.WhitespaceCharacters.TAB)
+                        _tabKeyPositions.Remove(indexToRemove);
+                    
+                    startingIndexToRemoveRange = indexToRemove;
+                    countToRemoveRange = 1;
+                }
+                charactersRemovedCount += countToRemoveRange;
+                
+                _content.RemoveRange(startingIndexToRemoveRange, countToRemoveRange);
+                
+                if (moveBackwards)
+                    indexToRemove -= countToRemoveRange;
+                else
+                    indexToRemove += countToRemoveRange;
+                    
+                    if (charactersRemovedCount == 0 &&
+                rowsRemovedCount == 0)
+            {
+                return;
+            }
+            
+            var modifyRowsBy = moveBackwards
+                ? -1 * rowsRemovedCount
+                : rowsRemovedCount;
+                
+                var startOfCurrentRowPositionIndex = GetStartOfRowTuple(
+                cursorTuple.immutableTextEditorCursor.RowIndex + modifyRowsBy)
+                .positionIndex;
+                
+                var modifyPositionIndexBy = moveBackwards
+                ? -1 * charactersRemovedCount
+                : charactersRemovedCount;
+                
+                var endingPositionIndexExclusive = cursorPositionIndex + modifyPositionIndexBy;
+                
+                var columnIndex = endingPositionIndexExclusive - startOfCurrentRowPositionIndex;
+                
+                if (moveBackwards)
+            {
+                var indexCoordinates = cursorTuple.textEditorCursor.IndexCoordinates;
+                
+                cursorTuple.textEditorCursor.IndexCoordinates = 
+                    (indexCoordinates.rowIndex + modifyRowsBy, 
+                        columnIndex);
+            }
+            
+            int firstRowIndexToModify;
+            
+            if (moveBackwards)
+                firstRowIndexToModify = cursorTuple.immutableTextEditorCursor.RowIndex - rowsRemovedCount;
+                
+                else
+                firstRowIndexToModify = cursorTuple.immutableTextEditorCursor.RowIndex;
+                
+                for (int i = firstRowIndexToModify; i < _rowEndingPositions.Count; i++)
+            {
+                var rowEndingTuple = _rowEndingPositions[i];
+                
+                _rowEndingPositions[i] = (rowEndingTuple.positionIndex - charactersRemovedCount, rowEndingTuple.rowEndingKind);
+            }
+            var firstTabKeyPositionIndexToModify = _tabKeyPositions
+                .FindIndex(x => x >= startingPositionIndexToRemoveInclusive);
+                
+                if (firstTabKeyPositionIndexToModify != -1)
+            {
+                for (int i = firstTabKeyPositionIndexToModify; i < _tabKeyPositions.Count; i++)
+                {
+                    _tabKeyPositions[i] -= charactersRemovedCount;
+                }
+            }
+            
+            private MarkupString GetAllTextEscaped => (MarkupString) TextEditorStatesSelection.Value
+        .GetAllText()
+        .Replace("\r\n", "\\r\\n<br/>")
+        .Replace("\r", "\\r<br/>")
+        .Replace("\n", "\\n<br/>")
+        .Replace("\t", "--->")
+        .Replace(" ", "·");
+    }
+}
+
 }
 
 # Youtube Video Description
 {
-	Part 2:
-	https://youtu.be/D5PdeRsV-Hk
+	Part 10:
+	https://youtu.be/gAnQEX1Kqv0
 
 	Starting Point Repo:
 	https://github.com/huntercfreeman/BlazorTextEditor
@@ -151,5 +188,5 @@ todo:
 
 # Youtube Video Title
 {
-	Make a Text Editor in Blazor from scratch | Part 3
+	Text Deletion | Blazor Text Editor Part 11
 }
