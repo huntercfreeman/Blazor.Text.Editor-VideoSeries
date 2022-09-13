@@ -14,159 +14,178 @@ Notes for video 11:
 @ TextEditorDisplay.razor.cs
 	-Remove logic to ignore MetaKey for
 		onkeydown event.
+		
+@ TextEditorDisplay.razor
+	-private MarkupString GetAllTextEscaped => (MarkupString) TextEditorStatesSelection.Value
+		.GetAllText()
+		.Replace("\r\n", "\\r\\n<br/>")
+		.Replace("\r", "\\r<br/>")
+		.Replace("\n", "\\n<br/>")
+		.Replace("\t", "--->")
+		.Replace(" ", "·");
 	
 @ TextEditorBase.cs
 	-Combine deletion and backspace 1 method
 		-PerformDeletions(editTextEditorAction);
 
+
+
 private void PerformDeletions(EditTextEditorAction editTextEditorAction)
 {
-	-iterate over the cursorTuples
-	-var startOfRowPositionIndex
-	-var cursorPositionIndex
-	-int startingPositionIndexToRemoveInclusive
-	-int countToRemove
-	-bool moveBackwards
-	-if (BACKSPACE)
-	{
-		startingPositionIndexToRemoveInclusive
-		countToRemove
-		moveBackwards
-	}
-	else if (DELETE)
-	{
-		startingPositionIndexToRemoveInclusive
-		countToRemove
-		moveBackwards
-	}
-	else
-	{
-		throw new ApplicationException(
-		                $"The keyboard key: {editTextEditorAction.KeyboardEventArgs.Key} was not recognized");
-	}
-	
-	int charactersRemovedCount = 0;
-    int rowsRemovedCount = 0;
-    
-    var indexToRemove = startingPositionIndexToRemoveInclusive;
-    
-    while (countToRemove-- > 0)
+    EnsureUndoPoint(TextEditKind.Deletion);
+
+    foreach (var cursorTuple in editTextEditorAction.TextCursorTuples)
     {
-    	if (indexToRemove < 0 ||
-                    indexToRemove > _content.Count - 1)
+        var startOfRowPositionIndex = 
+            GetStartOfRowTuple(cursorTuple.immutableTextEditorCursor.RowIndex)
+                .positionIndex;
+
+        var cursorPositionIndex =
+            startOfRowPositionIndex + cursorTuple.immutableTextEditorCursor.ColumnIndex;
+
+        int startingPositionIndexToRemoveInclusive;
+        int countToRemove;
+        bool moveBackwards;
+        
+        if (KeyboardKeyFacts.MetaKeys.BACKSPACE == editTextEditorAction.KeyboardEventArgs.Key)
         {
-            break;
+            startingPositionIndexToRemoveInclusive = cursorPositionIndex - 1;
+            countToRemove = 1;
+            moveBackwards = true;
         }
-        
-        var characterToDelete = _content[indexToRemove];
-        
-        int startingIndexToRemoveRange;
-        int countToRemoveRange;
-        
-        if (IsLineEndingCharacter)
+        else if (KeyboardKeyFacts.MetaKeys.DELETE == editTextEditorAction.KeyboardEventArgs.Key)
         {
-        	rowsRemovedCount++;
-        	var rowEndingTupleIndex = FindIndex... indexToRemove + 1 || indexToRemove + 2 // CRLF
-        	var rowEndingTuple = _rowEndingPositions[rowEndingTupleIndex];
-        	_rowEndingPositions.RemoveAt(rowEndingTupleIndex);
-        	var lengthOfRowEnding = rowEndingTuple.rowEndingKind
-                        .AsCharacters().Length; 
-                        
-                        
-                    if (moveBackwards)
-                    {
-                        indexIteration -= lengthOfRowEnding - 1;
-                    
-                        startingIndexToRemoveRange = indexToRemove - (lengthOfRowEnding - 1);    
-                    }
-                    else
-                    {
-                        indexIteration -= lengthOfRowEnding - 1;
-                    
-                        startingIndexToRemoveRange = indexToRemove;    
-                    }
+            startingPositionIndexToRemoveInclusive = cursorPositionIndex;
+            countToRemove = 1;
+            moveBackwards = false;
         }
         else
-                {
-                    if (characterToDelete.Value == KeyboardKeyFacts.WhitespaceCharacters.TAB)
-                        _tabKeyPositions.Remove(indexToRemove);
-                    
-                    startingIndexToRemoveRange = indexToRemove;
-                    countToRemoveRange = 1;
-                }
-                charactersRemovedCount += countToRemoveRange;
-                
-                _content.RemoveRange(startingIndexToRemoveRange, countToRemoveRange);
-                
-                if (moveBackwards)
-                    indexToRemove -= countToRemoveRange;
-                else
-                    indexToRemove += countToRemoveRange;
-                    
-                    if (charactersRemovedCount == 0 &&
-                rowsRemovedCount == 0)
+        {
+            throw new ApplicationException(
+                $"The keyboard key: {editTextEditorAction.KeyboardEventArgs.Key} was not recognized");
+        }
+
+        int charactersRemovedCount = 0;
+        int rowsRemovedCount = 0;
+
+        var indexToRemove = startingPositionIndexToRemoveInclusive;
+        
+        while (countToRemove-- > 0)
+        {
+            if (indexToRemove < 0 ||
+                indexToRemove > _content.Count - 1)
             {
-                return;
+                break;
             }
             
+            var characterToDelete = _content[indexToRemove];
+
+            int startingIndexToRemoveRange;
+            int countToRemoveRange;
+
+            if (KeyboardKeyFacts.IsLineEndingCharacter(characterToDelete.Value))
+            {
+                rowsRemovedCount++;
+                
+                var rowEndingTupleIndex = _rowEndingPositions
+                    .FindIndex(rep => 
+                        rep.positionIndex == indexToRemove + 1 || 
+                        rep.positionIndex == indexToRemove + 2);
+                
+                var rowEndingTuple = _rowEndingPositions[rowEndingTupleIndex];
+
+                _rowEndingPositions.RemoveAt(rowEndingTupleIndex);
+
+                var lengthOfRowEnding = rowEndingTuple.rowEndingKind
+                    .AsCharacters().Length;
+
+                if (moveBackwards)
+                {
+                    indexToRemove -= lengthOfRowEnding - 1;
+                
+                    startingIndexToRemoveRange = indexToRemove - (lengthOfRowEnding - 1);    
+                }
+                else
+                {
+                    startingIndexToRemoveRange = indexToRemove;    
+                }
+                
+                countToRemoveRange = lengthOfRowEnding;
+            }
+            else
+            {
+                if (characterToDelete.Value == KeyboardKeyFacts.WhitespaceCharacters.TAB)
+                    _tabKeyPositions.Remove(indexToRemove);
+                
+                startingIndexToRemoveRange = indexToRemove;
+                countToRemoveRange = 1;
+            }
+
+            charactersRemovedCount += countToRemoveRange;
+            
+            _content.RemoveRange(startingIndexToRemoveRange, countToRemoveRange);
+            
+            if (moveBackwards)
+                indexToRemove -= countToRemoveRange;
+        }
+
+        if (charactersRemovedCount == 0 &&
+            rowsRemovedCount == 0)
+        {
+            return;
+        }
+        
+        if (moveBackwards)
+        {
             var modifyRowsBy = moveBackwards
                 ? -1 * rowsRemovedCount
                 : rowsRemovedCount;
-                
-                var startOfCurrentRowPositionIndex = GetStartOfRowTuple(
-                cursorTuple.immutableTextEditorCursor.RowIndex + modifyRowsBy)
+
+            var startOfCurrentRowPositionIndex = GetStartOfRowTuple(
+                    cursorTuple.immutableTextEditorCursor.RowIndex + modifyRowsBy)
                 .positionIndex;
-                
-                var modifyPositionIndexBy = moveBackwards
+
+            var modifyPositionIndexBy = moveBackwards
                 ? -1 * charactersRemovedCount
                 : charactersRemovedCount;
-                
-                var endingPositionIndexExclusive = cursorPositionIndex + modifyPositionIndexBy;
-                
-                var columnIndex = endingPositionIndexExclusive - startOfCurrentRowPositionIndex;
-                
-                if (moveBackwards)
-            {
-                var indexCoordinates = cursorTuple.textEditorCursor.IndexCoordinates;
-                
-                cursorTuple.textEditorCursor.IndexCoordinates = 
-                    (indexCoordinates.rowIndex + modifyRowsBy, 
-                        columnIndex);
-            }
+
+            var endingPositionIndexExclusive = cursorPositionIndex + modifyPositionIndexBy;
+
+            var columnIndex = endingPositionIndexExclusive - startOfCurrentRowPositionIndex;
             
-            int firstRowIndexToModify;
+            var indexCoordinates = cursorTuple.textEditorCursor.IndexCoordinates;
             
-            if (moveBackwards)
-                firstRowIndexToModify = cursorTuple.immutableTextEditorCursor.RowIndex - rowsRemovedCount;
-                
-                else
-                firstRowIndexToModify = cursorTuple.immutableTextEditorCursor.RowIndex;
-                
-                for (int i = firstRowIndexToModify; i < _rowEndingPositions.Count; i++)
-            {
-                var rowEndingTuple = _rowEndingPositions[i];
-                
-                _rowEndingPositions[i] = (rowEndingTuple.positionIndex - charactersRemovedCount, rowEndingTuple.rowEndingKind);
-            }
-            var firstTabKeyPositionIndexToModify = _tabKeyPositions
-                .FindIndex(x => x >= startingPositionIndexToRemoveInclusive);
-                
-                if (firstTabKeyPositionIndexToModify != -1)
-            {
-                for (int i = firstTabKeyPositionIndexToModify; i < _tabKeyPositions.Count; i++)
-                {
-                    _tabKeyPositions[i] -= charactersRemovedCount;
-                }
-            }
+            cursorTuple.textEditorCursor.IndexCoordinates = 
+                (indexCoordinates.rowIndex + modifyRowsBy, 
+                    columnIndex);
+        }
+
+        int firstRowIndexToModify;
+        
+        if (moveBackwards)
+            firstRowIndexToModify = cursorTuple.immutableTextEditorCursor.RowIndex - rowsRemovedCount;
+        else
+            firstRowIndexToModify = cursorTuple.immutableTextEditorCursor.RowIndex;
             
-            private MarkupString GetAllTextEscaped => (MarkupString) TextEditorStatesSelection.Value
-        .GetAllText()
-        .Replace("\r\n", "\\r\\n<br/>")
-        .Replace("\r", "\\r<br/>")
-        .Replace("\n", "\\n<br/>")
-        .Replace("\t", "--->")
-        .Replace(" ", "·");
+        for (int i = firstRowIndexToModify; i < _rowEndingPositions.Count; i++)
+        {
+            var rowEndingTuple = _rowEndingPositions[i];
+            
+            _rowEndingPositions[i] = (rowEndingTuple.positionIndex - charactersRemovedCount, rowEndingTuple.rowEndingKind);
+        }
+
+        var firstTabKeyPositionIndexToModify = _tabKeyPositions
+            .FindIndex(x => x >= startingPositionIndexToRemoveInclusive);
+
+        if (firstTabKeyPositionIndexToModify != -1)
+        {
+            for (int i = firstTabKeyPositionIndexToModify; i < _tabKeyPositions.Count; i++)
+            {
+                _tabKeyPositions[i] -= charactersRemovedCount;
+            }
+        }
     }
+}
 }
 
 }

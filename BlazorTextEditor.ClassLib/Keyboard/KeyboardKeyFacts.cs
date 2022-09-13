@@ -292,4 +292,14 @@ public static class KeyboardKeyFacts
                 throw new ApplicationException($"Unrecognized Whitespace code of: {code}");
         }
     }
+
+    public static bool IsLineEndingCharacter(char character)
+    {
+        return character switch
+        {
+            KeyboardKeyFacts.WhitespaceCharacters.NEW_LINE => true,
+            KeyboardKeyFacts.WhitespaceCharacters.CARRIAGE_RETURN => true,
+            _ => false
+        };
+    }
 }

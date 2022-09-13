@@ -18,6 +18,17 @@
         <span>Show Newlines</span>
     </div>
     
+    <div>
+        <input type="checkbox" @bind="_showGetAllTextEscaped" />
+        
+        <span>Show GetAllTextEscaped</span>
+    </div>
+    
+    @if (_showGetAllTextEscaped)
+    {
+        @GetAllTextEscaped
+    }
+    
     <button class="btn btn-primary"
             @onclick="ApplyRoslynSyntaxHighlightingOnClick">
         ApplyRoslynSyntaxHighlightingOnClick

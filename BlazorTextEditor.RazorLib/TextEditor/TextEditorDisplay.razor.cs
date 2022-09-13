@@ -38,9 +38,17 @@ public partial class TextEditorDisplay : ComponentBase
     private TextEditorCursorDisplay? _textEditorCursorDisplay;
     private bool _showNewlines = true;
     private bool _showWhitespace = true;
+    private bool _showGetAllTextEscaped = true;
 
     private string TextEditorContentId => $"bte_text-editor-content_{_textEditorGuid}";
     private string MeasureCharacterWidthAndRowHeightId => $"bte_measure-character-width-and-row-height_{_textEditorGuid}";
+    private MarkupString GetAllTextEscaped => (MarkupString) TextEditorStatesSelection.Value
+        .GetAllText()
+        .Replace("\r\n", "\\r\\n<br/>")
+        .Replace("\r", "\\r<br/>")
+        .Replace("\n", "\\n<br/>")
+        .Replace("\t", "--->")
+        .Replace(" ", "·");
     
     protected override void OnInitialized()
     {
@@ -172,9 +180,6 @@ public partial class TextEditorDisplay : ComponentBase
         }
         else
         {
-            if (KeyboardKeyFacts.IsMetaKey(keyboardEventArgs))
-                return;
-
             Dispatcher.Dispatch(new EditTextEditorAction(TextEditorKey,
                 new (ImmutableTextEditorCursor, TextEditorCursor)[]
                 {
