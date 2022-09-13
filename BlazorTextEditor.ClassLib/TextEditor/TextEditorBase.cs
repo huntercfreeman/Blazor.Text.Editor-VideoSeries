@@ -427,9 +427,9 @@ public class TextEditorBase
 
                 var modifyPositionIndexBy = -1 * charactersRemovedCount;
 
-                var endingPositionIndexExclusive = cursorPositionIndex + modifyPositionIndexBy;
+                var endingPositionIndex = cursorPositionIndex + modifyPositionIndexBy;
 
-                var columnIndex = endingPositionIndexExclusive - startOfCurrentRowPositionIndex;
+                var columnIndex = endingPositionIndex - startOfCurrentRowPositionIndex;
             
                 var indexCoordinates = cursorTuple.textEditorCursor.IndexCoordinates;
             
