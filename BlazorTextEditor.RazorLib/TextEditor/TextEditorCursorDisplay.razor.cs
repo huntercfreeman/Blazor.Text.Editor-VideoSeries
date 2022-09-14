@@ -85,7 +85,7 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
         _blinkingCursorCancellationTokenSource.Cancel();
     }
 
-    private void HandleOnKeyDown()
+    public void PauseBlinkAnimation()
     {
         _hasBlinkAnimation = false;
 
@@ -101,6 +101,11 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
                 await InvokeAsync(StateHasChanged);    
             }
         }, cancellationToken);
+    }
+    
+    private void HandleOnKeyDown()
+    {
+        PauseBlinkAnimation();
     }
 
     private CancellationToken CancelSourceAndCreateNewThenReturnToken()

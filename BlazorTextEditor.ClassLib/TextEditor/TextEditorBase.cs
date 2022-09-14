@@ -482,4 +482,39 @@ public class TextEditorBase
             .Select(rc => rc.Value)
             .ToArray());
     }
+    
+    public int GetCursorPositionIndex(TextEditorCursor textEditorCursor)
+    {
+        var startOfRowPositionIndex =
+            GetStartOfRowTuple(textEditorCursor.IndexCoordinates.rowIndex)
+                .positionIndex;
+
+        return startOfRowPositionIndex + textEditorCursor.IndexCoordinates.columnIndex;
+    }
+    
+    public string GetTextRange(int startingPositionIndex, int count)
+    {
+        return new string(_content
+            .Skip(startingPositionIndex)
+            .Take(count)
+            .Select(rc => rc.Value)
+            .ToArray());
+    }
+    
+    public (int rowIndex, int rowStartPositionIndex, (int positionIndex, RowEndingKind rowEndingKind) rowEndingTuple) 
+        FindRowIndexRowStartRowEndingTupleFromPositionIndex(int positionIndex)
+    {
+        for (int i = _rowEndingPositions.Count - 1; i >= 0; i--)
+        {
+            var rowEndingTuple = _rowEndingPositions[i];
+            
+            if (positionIndex >= rowEndingTuple.positionIndex)
+                return (i + 1, rowEndingTuple.positionIndex, 
+                    i == _rowEndingPositions.Count - 1
+                        ? rowEndingTuple
+                        : _rowEndingPositions[i + 1]);
+        }
+
+        return (0, 0, _rowEndingPositions[0]);
+    }
 }

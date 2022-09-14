@@ -5,9 +5,20 @@ namespace BlazorTextEditor.ClassLib.TextEditor;
 
 public class TextEditorCursor
 {
+    public TextEditorCursor()
+    {
+    }
+    
+    public TextEditorCursor((int rowIndex, int columnIndex) rowAndColumnIndex)
+        : this()
+    {
+        IndexCoordinates = rowAndColumnIndex;
+    }
+    
     public (int rowIndex, int columnIndex) IndexCoordinates { get; set; }
     public int PreferredColumnIndex { get; set; }
     public TextCursorKind TextCursorKind { get; set; }
+    public TextEditorSelection TextEditorSelection { get; } = new();
     
     /// <summary>
     /// TODO: handle control modifier

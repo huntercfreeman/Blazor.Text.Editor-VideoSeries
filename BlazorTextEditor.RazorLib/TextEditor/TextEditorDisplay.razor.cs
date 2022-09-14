@@ -38,7 +38,16 @@ public partial class TextEditorDisplay : ComponentBase
     private TextEditorCursorDisplay? _textEditorCursorDisplay;
     private bool _showNewlines = true;
     private bool _showWhitespace = true;
-    private bool _showGetAllTextEscaped = true;
+    private bool _showGetAllTextEscaped;
+    /// <summary>
+    /// Do not select text just because the user has the Left Mouse Button down.
+    /// They might hold down Left Mouse Button from outside the TextEditorDisplay's content div
+    /// then move their mouse over the content div while holding the Left Mouse Button down.
+    /// <br/><br/>
+    /// Instead only select text if an @onmousedown event triggered <see cref="_thinksLeftMouseButtonIsDown"/>
+    /// to be equal to true and the @onmousemove event followed afterwards.
+    /// </summary>
+    private bool _thinksLeftMouseButtonIsDown;
 
     private string TextEditorContentId => $"bte_text-editor-content_{_textEditorGuid}";
     private string MeasureCharacterWidthAndRowHeightId => $"bte_measure-character-width-and-row-height_{_textEditorGuid}";
@@ -102,6 +111,106 @@ public partial class TextEditorDisplay : ComponentBase
     
     private async Task HandleContentOnClickAsync(MouseEventArgs mouseEventArgs)
     {
+        var rowAndColumnIndex = await DetermineRowAndColumnIndex(mouseEventArgs);
+        
+        _textEditorCursor.IndexCoordinates = (rowAndColumnIndex.rowIndex, rowAndColumnIndex.columnIndex);
+        _textEditorCursor.PreferredColumnIndex = rowAndColumnIndex.columnIndex;
+    }
+    
+    private async Task HandleOnKeyDownAsync(KeyboardEventArgs keyboardEventArgs)
+    {
+        if (KeyboardKeyFacts.IsMovementKey(keyboardEventArgs.Key))
+        {
+            TextEditorCursor.MoveCursor(
+                keyboardEventArgs, 
+                _textEditorCursor, 
+                TextEditorStatesSelection.Value);
+        }
+        else
+        {
+            Dispatcher.Dispatch(new EditTextEditorAction(TextEditorKey,
+                new (ImmutableTextEditorCursor, TextEditorCursor)[]
+                {
+                    (new ImmutableTextEditorCursor(_textEditorCursor), _textEditorCursor)
+                }.ToImmutableArray(),
+                keyboardEventArgs,
+                CancellationToken.None));
+            
+            await GetRowsAsync();
+        }
+    }
+    
+    private async Task HandleContentOnMouseDownAsync(MouseEventArgs mouseEventArgs)
+    {
+        var rowAndColumnIndex = await DetermineRowAndColumnIndex(mouseEventArgs);
+
+        _textEditorCursor.IndexCoordinates = (rowAndColumnIndex.rowIndex, rowAndColumnIndex.columnIndex);
+        _textEditorCursor.PreferredColumnIndex = rowAndColumnIndex.columnIndex;
+
+        _textEditorCursorDisplay?.PauseBlinkAnimation();
+
+        var cursorPositionIndex = TextEditorStatesSelection.Value.GetCursorPositionIndex(new TextEditorCursor(rowAndColumnIndex));
+        
+        _textEditorCursor.TextEditorSelection.AnchorPositionIndex = cursorPositionIndex;
+
+        _textEditorCursor.TextEditorSelection.EndingPositionIndex = cursorPositionIndex;
+        
+        _thinksLeftMouseButtonIsDown = true;
+    }
+    
+    /// <summary>
+    /// OnMouseUp is unnecessary
+    /// </summary>
+    /// <param name="mouseEventArgs"></param>
+    private async Task HandleContentOnMouseMoveAsync(MouseEventArgs mouseEventArgs)
+    {
+        // Buttons is a bit flag
+        // '& 1' gets if left mouse button is held
+        if (_thinksLeftMouseButtonIsDown && 
+            (mouseEventArgs.Buttons & 1) == 1)
+        {
+            var rowAndColumnIndex = await DetermineRowAndColumnIndex(mouseEventArgs);
+            
+            _textEditorCursor.IndexCoordinates = (rowAndColumnIndex.rowIndex, rowAndColumnIndex.columnIndex);
+            _textEditorCursor.PreferredColumnIndex = rowAndColumnIndex.columnIndex;
+
+            _textEditorCursorDisplay?.PauseBlinkAnimation();
+            
+            _textEditorCursor.TextEditorSelection.EndingPositionIndex =
+                TextEditorStatesSelection.Value.GetCursorPositionIndex(new TextEditorCursor(rowAndColumnIndex));
+        }
+        else
+        {
+            _thinksLeftMouseButtonIsDown = false;
+        }
+    }
+    
+    private async Task ApplyRoslynSyntaxHighlightingOnClick()
+    {
+        var localTextEditor = TextEditorStatesSelection.Value;
+        
+        var stringContent = TextEditorStatesSelection.Value.GetAllText();
+
+        var syntaxTree = CSharpSyntaxTree.ParseText(stringContent);
+
+        var syntaxNodeRoot = await syntaxTree.GetRootAsync();
+
+        var generalSyntaxCollector = new GeneralSyntaxCollector();
+
+        generalSyntaxCollector.Visit(syntaxNodeRoot);
+
+        var methodIdentifiers = generalSyntaxCollector.MethodDeclarationSyntaxes
+            .Select(mds => mds.Identifier)
+            .ToList();
+
+        var method = methodIdentifiers.First();
+
+        localTextEditor.ApplyDecorationRange(DecorationKind.Method,
+            methodIdentifiers.Select(x => x.Span));
+    }
+    
+    private async Task<(int rowIndex, int columnIndex)> DetermineRowAndColumnIndex(MouseEventArgs mouseEventArgs)
+    {
         var localTextEditor = TextEditorStatesSelection.Value;
         
         _relativeCoordinatesOnClick = await JsRuntime.InvokeAsync<RelativeCoordinates>(
@@ -111,7 +220,7 @@ public partial class TextEditorDisplay : ComponentBase
             mouseEventArgs.ClientY);
 
         if (_characterWidthAndRowHeight is null)
-            return;
+            return (0, 0);
 
         // Gutter padding column offset
         {
@@ -165,55 +274,7 @@ public partial class TextEditorDisplay : ComponentBase
         rowIndex = Math.Max(rowIndex, 0);
         columnIndexInt = Math.Max(columnIndexInt, 0);
         
-        _textEditorCursor.IndexCoordinates = (rowIndex, columnIndexInt);
-        _textEditorCursor.PreferredColumnIndex = columnIndexInt;
-    }
-    
-    private async Task HandleOnKeyDownAsync(KeyboardEventArgs keyboardEventArgs)
-    {
-        if (KeyboardKeyFacts.IsMovementKey(keyboardEventArgs.Key))
-        {
-            TextEditorCursor.MoveCursor(
-                keyboardEventArgs, 
-                _textEditorCursor, 
-                TextEditorStatesSelection.Value);
-        }
-        else
-        {
-            Dispatcher.Dispatch(new EditTextEditorAction(TextEditorKey,
-                new (ImmutableTextEditorCursor, TextEditorCursor)[]
-                {
-                    (new ImmutableTextEditorCursor(_textEditorCursor), _textEditorCursor)
-                }.ToImmutableArray(),
-                keyboardEventArgs,
-                CancellationToken.None));
-            
-            await GetRowsAsync();
-        }
-    }
-    
-    private async Task ApplyRoslynSyntaxHighlightingOnClick()
-    {
-        var localTextEditor = TextEditorStatesSelection.Value;
-        
-        var stringContent = TextEditorStatesSelection.Value.GetAllText();
-
-        var syntaxTree = CSharpSyntaxTree.ParseText(stringContent);
-
-        var syntaxNodeRoot = await syntaxTree.GetRootAsync();
-
-        var generalSyntaxCollector = new GeneralSyntaxCollector();
-
-        generalSyntaxCollector.Visit(syntaxNodeRoot);
-
-        var methodIdentifiers = generalSyntaxCollector.MethodDeclarationSyntaxes
-            .Select(mds => mds.Identifier)
-            .ToList();
-
-        var method = methodIdentifiers.First();
-
-        localTextEditor.ApplyDecorationRange(DecorationKind.Method,
-            methodIdentifiers.Select(x => x.Span));
+        return (rowIndex, columnIndexInt);
     }
 
     private string GetCssClass(byte currentDecorationByte)
@@ -268,6 +329,101 @@ public partial class TextEditorDisplay : ComponentBase
         var paddingRight = $"padding-right: {TextEditorBase.GutterPaddingRightInPixels}px;";
         
         return $"{top} {height} {width} {paddingLeft} {paddingRight}";
+    }
+
+    private string GetTextSelectionStyleCss(int lowerBound, int upperBound, int rowIndex)
+    {
+        if (_characterWidthAndRowHeight is null ||
+            rowIndex >= TextEditorStatesSelection.Value.RowEndingPositions.Length)
+        {
+            return string.Empty;
+        }
+        
+        var startOfRowTuple = TextEditorStatesSelection.Value.GetStartOfRowTuple(rowIndex);
+        var endOfRowTuple = TextEditorStatesSelection.Value.RowEndingPositions[rowIndex];
+
+        var selectionStartingColumnIndex = 0;
+        var selectionEndingColumnIndex = endOfRowTuple.positionIndex 
+                                         - 1;
+
+        var fullWidthOfRowIsSelected = true;
+        
+        if (lowerBound > startOfRowTuple.positionIndex)
+        {
+            selectionStartingColumnIndex = lowerBound
+                                           - startOfRowTuple.positionIndex;
+
+            fullWidthOfRowIsSelected = false;
+        }
+
+        if (upperBound < endOfRowTuple.positionIndex)
+        {
+            selectionEndingColumnIndex = upperBound 
+                                         - startOfRowTuple.positionIndex;
+            
+            fullWidthOfRowIsSelected = false;
+        }
+        
+        var top = $"top: {rowIndex * _characterWidthAndRowHeight.ElementHeightInPixels}px;";
+        var height = $"height: {_characterWidthAndRowHeight.ElementHeightInPixels}px;";
+
+        var mostDigitsInARowLineNumber = TextEditorStatesSelection.Value.RowCount
+            .ToString()
+            .Length;
+        
+        var widthOfGutterInPixels = mostDigitsInARowLineNumber * _characterWidthAndRowHeight.FontWidthInPixels;
+
+        var gutterSizeInPixels = widthOfGutterInPixels 
+                + TextEditorBase.GutterPaddingLeftInPixels 
+                + TextEditorBase.GutterPaddingRightInPixels;
+        
+        var selectionStartInPixels = selectionStartingColumnIndex 
+                                     * _characterWidthAndRowHeight.FontWidthInPixels;
+        
+        // selectionStartInPixels offset from Tab keys a width of many characters
+        {
+            var tabsOnSameRowBeforeCursor = TextEditorStatesSelection.Value
+                .GetTabsCountOnSameRowBeforeCursor(
+                    rowIndex, 
+                    selectionStartingColumnIndex);
+            
+            // 1 of the character width is already accounted for
+
+            var extraWidthPerTabKey = TextEditorBase.TabWidth - 1;
+            
+            selectionStartInPixels += (extraWidthPerTabKey * tabsOnSameRowBeforeCursor * _characterWidthAndRowHeight.FontWidthInPixels);    
+        }
+        
+        var left = $"left: {gutterSizeInPixels + selectionStartInPixels}px;";
+
+        var selectionWidthInPixels = selectionEndingColumnIndex 
+                                     * _characterWidthAndRowHeight.FontWidthInPixels
+                                     - selectionStartInPixels;
+        
+        // Tab keys a width of many characters
+        {
+            var tabsOnSameRowBeforeCursor = TextEditorStatesSelection.Value
+                .GetTabsCountOnSameRowBeforeCursor(
+                    rowIndex, 
+                    selectionEndingColumnIndex);
+            
+            // 1 of the character width is already accounted for
+
+            var extraWidthPerTabKey = TextEditorBase.TabWidth - 1;
+            
+            selectionWidthInPixels += (extraWidthPerTabKey * tabsOnSameRowBeforeCursor * _characterWidthAndRowHeight.FontWidthInPixels);    
+        }
+        
+        var widthCssStyleString = "width: ";
+
+        if (fullWidthOfRowIsSelected)
+            widthCssStyleString += "100%";
+        else if (selectionStartingColumnIndex != 0 && upperBound > endOfRowTuple.positionIndex - 1)
+            widthCssStyleString += $"calc(100% - {selectionStartInPixels}px);";
+        else
+            widthCssStyleString += $"{selectionWidthInPixels}px;";
+        
+        return $"{top} {height} {left} {widthCssStyleString}";
     }
 }
 
