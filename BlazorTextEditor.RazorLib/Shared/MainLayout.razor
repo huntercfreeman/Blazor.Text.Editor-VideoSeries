@@ -1,0 +1,15 @@
+@using BlazorTextEditor.ClassLib.TextEditor
+@inherits LayoutComponentBase
+
+<BlazorTextEditor.RazorLib.BlazorTextEditorRazorLibInitializer />
+
+<div class="bte_main-layout">
+    <BlazorTextEditor.RazorLib.TextEditor.TextEditorDisplay TextEditorKey="TextEditorFacts.TextEditorKeyCodeTest" />
+    <BlazorTextEditor.RazorLib.TextEditor.TextEditorDisplay TextEditorKey="TextEditorFacts.TextEditorKeyEmailTest" />
+    <BlazorTextEditor.RazorLib.TextEditor.TextEditorDisplay TextEditorKey="TextEditorFacts.TextEditorKeyEmptyTest" />
+    
+    <BlazorTextEditor.RazorLib.CounterCase.CounterDisplay />
+    <BlazorTextEditor.RazorLib.CounterCase.CounterDisplay />
+    <BlazorTextEditor.RazorLib.CounterCase.CounterDisplay />
+    <BlazorTextEditor.RazorLib.CounterCase.CounterDisplay />
+</div>
