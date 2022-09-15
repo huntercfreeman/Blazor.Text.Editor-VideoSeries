@@ -1,0 +1,184 @@
+Notes for video 16:
+
+# Intent
+{
+-Render DialogDisplay using its ElementDimensions
+-Position Resize Handles
+}
+
+# Plan
+{
+-----Start #Plan-----
+@In RazorLib/DialogCase: {
+-DragStateDisplay.razor.cs
+	-private string StyleCssString => DialogRecord.ElementDimensions.StyleString;
+}
+@In ClassLib/Dimensions: {
+-Move classes out into separate files
+-ElementDimensions.cs
+	-public string StyleString => GetStyleString();
+	-private string GetStyleString()
+    {
+        var styleBuilder = new StringBuilder();
+        
+        foreach (var dimensionAttribute in DimensionAttributes)
+        {
+            styleBuilder.Append(dimensionAttribute.StyleString);
+        }
+
+        return styleBuilder.ToString();
+    }
+-DimensionAttribute.cs
+	-public string StyleString => GetStyleString();
+	-private string GetStyleString()
+    {
+        var immutableDimensionUnits = DimensionUnits.ToImmutableArray();
+
+        if (!immutableDimensionUnits.Any())
+            return string.Empty;
+        
+        var styleBuilder = new StringBuilder($"{DimensionAttributeKind.ToString().ToLower()}: calc(");
+
+        foreach (var dimensionUnit in DimensionUnits)
+        {
+            styleBuilder.Append(dimensionUnit.StyleString);
+        }
+        
+        styleBuilder.Append(");");
+
+        return styleBuilder.ToString();
+    }
+-public static class DimensionOperatorKindExtensions
+{
+    public static string GetStyleString(this DimensionOperatorKind dimensionOperatorKind)
+    {
+        return dimensionOperatorKind switch
+        {
+            DimensionOperatorKind.Add => "+",
+            DimensionOperatorKind.Subtract => "-",
+            DimensionOperatorKind.Multiply => "*",
+            DimensionOperatorKind.Divide => "/",
+            _ => throw new ApplicationException($"The {nameof(DimensionOperatorKind)}: '{dimensionOperatorKind}' was not recognized.")
+        };
+    }
+}
+-ConstructDefaultDialogDimensions needs Position Fixed
+-var styleBuilder = new StringBuilder($"position: {ElementPositionKind.ToString().ToLower()}");
+-DimensionUnitKindExtensions
+}
+-remove from the .css file style for bte_resize-handle
+-bte_resize-handle-cardinal mediumseagreen background
+-bte_resize-handle-diagonal red background
+-@GetNorthResizeHandleStyleCss()
+-    public const double RESIZE_HANDLE_SQUARE_PIXELS = 42; // for the video
+
+-public DimensionOperatorKind DimensionOperatorKind { get; set; } = DimensionOperatorKind.Add;
+-_northResizeHandleDimensions.ElementPositionKind = ElementDimensions.ElementPositionKind;
+
+
+[
+private string GetNorthResizeHandleStyleCss()
+    {
+        var parentElementWidth = ElementDimensions.DimensionAttributes
+            .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Width);
+        
+        var parentElementHeight = ElementDimensions.DimensionAttributes
+            .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Height);
+        
+        var parentElementLeft = ElementDimensions.DimensionAttributes
+            .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Left);
+        
+        var parentElementTop = ElementDimensions.DimensionAttributes
+            .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Top);
+
+        _northResizeHandleDimensions.ElementPositionKind = ElementPositionKind.Absolute;
+        
+        // Width
+        {
+            var resizeHandleWidth = _northResizeHandleDimensions.DimensionAttributes
+                .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Width);
+            
+            resizeHandleWidth.DimensionUnits.Clear();
+
+            resizeHandleWidth.DimensionUnits.AddRange(parentElementWidth.DimensionUnits);
+
+            resizeHandleWidth.DimensionUnits.Add(new DimensionUnit
+            {
+                Value = RESIZE_HANDLE_SQUARE_PIXELS,
+                DimensionUnitKind = DimensionUnitKind.Pixels,
+                DimensionOperatorKind = DimensionOperatorKind.Subtract
+            });
+        }
+        
+        // Height
+        {
+            var resizeHandleHeight = _northResizeHandleDimensions.DimensionAttributes
+                .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Height);
+            
+            resizeHandleHeight.DimensionUnits.Clear();
+
+            resizeHandleHeight.DimensionUnits.Add(new DimensionUnit
+            {
+                Value = RESIZE_HANDLE_SQUARE_PIXELS,
+                DimensionUnitKind = DimensionUnitKind.Pixels
+            });
+        }
+        
+        // Left
+        {
+            var resizeHandleLeft = _northResizeHandleDimensions.DimensionAttributes
+                .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Left);
+            
+            resizeHandleLeft.DimensionUnits.Clear();
+
+            resizeHandleLeft.DimensionUnits.Add(new DimensionUnit
+            {
+                Value = RESIZE_HANDLE_SQUARE_PIXELS / 2,
+                DimensionUnitKind = DimensionUnitKind.Pixels
+            });
+        }
+        
+        // Top
+        {
+            var resizeHandleTop = _northResizeHandleDimensions.DimensionAttributes
+                .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Top);
+            
+            resizeHandleTop.DimensionUnits.Clear();
+
+            resizeHandleTop.DimensionUnits.Add(new DimensionUnit
+            {
+                Value = -1 * RESIZE_HANDLE_SQUARE_PIXELS / 2,
+                DimensionUnitKind = DimensionUnitKind.Pixels
+            });
+        }
+
+        return _northResizeHandleDimensions.StyleString;
+    }
+]
+
+
+-----End #Plan-----
+}
+
+# Youtube Video Description
+{
+	Part 15:
+	https://youtu.be/rjMx3HMpUtQ
+
+	Starting Point Repo:
+	https://github.com/huntercfreeman/BlazorTextEditor
+	
+	BlazorStudio Repo:
+	https://github.com/huntercfreeman/BlazorStudio
+	
+	Fluxor Repo:
+	https://github.com/mrpmorris/Fluxor
+	
+	Photino.Blazor:
+	https://github.com/tryphotino/photino.Blazor
+}
+
+# Youtube Video Title
+{
+	Resizable Dialogs | Blazor Text Editor Part 16
+}
