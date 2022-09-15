@@ -4,12 +4,22 @@
 <BlazorTextEditor.RazorLib.BlazorTextEditorRazorLibInitializer />
 
 <div class="bte_main-layout">
-    <BlazorTextEditor.RazorLib.TextEditor.TextEditorDisplay TextEditorKey="TextEditorFacts.TextEditorKeyCodeTest" />
-    <BlazorTextEditor.RazorLib.TextEditor.TextEditorDisplay TextEditorKey="TextEditorFacts.TextEditorKeyEmailTest" />
-    <BlazorTextEditor.RazorLib.TextEditor.TextEditorDisplay TextEditorKey="TextEditorFacts.TextEditorKeyEmptyTest" />
+    <BlazorTextEditor.RazorLib.DialogCase.DialogInitializer />
     
-    <BlazorTextEditor.RazorLib.CounterCase.CounterDisplay />
-    <BlazorTextEditor.RazorLib.CounterCase.CounterDisplay />
-    <BlazorTextEditor.RazorLib.CounterCase.CounterDisplay />
-    <BlazorTextEditor.RazorLib.CounterCase.CounterDisplay />
+    _message:&nbsp;<input @bind="_message" />
+    
+    <button class="btn btn-primary"
+            @onclick="OpenDialogOnClick">
+        Open Dialog
+    </button>
+    
+    
+    <BlazorTextEditor.RazorLib.TextEditor.TextEditorDisplay TextEditorKey="TextEditorFacts.TextEditorKeyCodeTest"/>
+    <BlazorTextEditor.RazorLib.TextEditor.TextEditorDisplay TextEditorKey="TextEditorFacts.TextEditorKeyEmailTest"/>
+    <BlazorTextEditor.RazorLib.TextEditor.TextEditorDisplay TextEditorKey="TextEditorFacts.TextEditorKeyEmptyTest"/>
+
+    <BlazorTextEditor.RazorLib.CounterCase.CounterDisplay/>
+    <BlazorTextEditor.RazorLib.CounterCase.CounterDisplay/>
+    <BlazorTextEditor.RazorLib.CounterCase.CounterDisplay/>
+    <BlazorTextEditor.RazorLib.CounterCase.CounterDisplay/>
 </div>

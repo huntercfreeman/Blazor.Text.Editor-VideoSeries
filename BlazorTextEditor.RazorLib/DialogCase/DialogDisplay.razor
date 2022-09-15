@@ -1,0 +1,30 @@
+<div class="bte_dialog-display">
+    <div class="bte_dialog-display-toolbar">
+        <div class="bte_dialog-display-title">
+            @DialogRecord.Title
+        </div>
+        
+        <div class="bte_dialog-display-buttons">
+            <div class="bte_dialog-display-button-entry">
+                <IconMinimize />
+            </div>
+            
+            <div class="bte_dialog-display-button-entry">
+                <IconMaximize />
+            </div>
+            
+            <div class="bte_dialog-display-button-entry">
+                <IconClose />
+            </div>
+        </div>
+    </div>
+    
+    <div class="bte_dialog-display-body">
+        <CascadingValue Value="DialogRecord">
+            <DynamicComponent @key="DialogRecord.DialogKey" 
+                              Type="DialogRecord.RendererType"
+                              Parameters="DialogRecord.Parameters"/>    
+        </CascadingValue>
+    </div>
+</div>
+

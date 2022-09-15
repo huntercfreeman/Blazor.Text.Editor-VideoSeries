@@ -78,4 +78,35 @@
     font-size: 24px;
 }
 
+.bte_dialog-display {
+    width: 60vw;
+    height: 60vh;
+    left: 20vw;
+    top: 20vh;
+    position: fixed;
+    z-index: 10;
+    background-color: rgb(252, 252, 245);
+    box-shadow: 0px 0px 2px #000000;
+}
 
+.bte_dialog-display-toolbar {
+    display: flex;
+    justify-content: space-between;
+    background-color: rgb(192, 214, 247);
+}
+
+.bte_dialog-display-buttons {
+    display: flex;
+    align-items: center;
+}
+
+.bte_dialog-display-button-entry {
+    margin-right: 5px;
+    padding: 3px;
+    display: inline-flex;
+    height: fit-content;
+}
+
+.bte_dialog-display-button-entry:hover {
+    background-color: orange;
+}
