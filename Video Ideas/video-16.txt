@@ -179,5 +179,5 @@ private string GetNorthResizeHandleStyleCss()
 
 # Youtube Video Title
 {
-	Resizable Dialogs | Blazor Text Editor Part 16
+	Position Resize Handles | Blazor Text Editor Part 16
 }
