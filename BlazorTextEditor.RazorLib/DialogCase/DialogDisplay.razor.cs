@@ -7,4 +7,9 @@ public partial class DialogDisplay : ComponentBase
 {
     [Parameter]
     public DialogRecord DialogRecord { get; set; } = null!;
+
+    private async Task ReRenderAsync()
+    {
+        await InvokeAsync(StateHasChanged);
+    }
 }

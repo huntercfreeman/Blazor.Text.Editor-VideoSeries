@@ -1,29 +1,35 @@
 <div class="bte_dialog-display">
+    @if (DialogRecord.IsResizable)
+    {
+        <BlazorTextEditor.RazorLib.ResizableCase.ResizableDisplay ElementDimensions="DialogRecord.ElementDimensions"
+                                                                  ReRenderFuncAsync="ReRenderAsync"/>
+    }
+    
     <div class="bte_dialog-display-toolbar">
         <div class="bte_dialog-display-title">
             @DialogRecord.Title
         </div>
-        
+
         <div class="bte_dialog-display-buttons">
             <div class="bte_dialog-display-button-entry">
-                <IconMinimize />
+                <IconMinimize/>
             </div>
-            
+
             <div class="bte_dialog-display-button-entry">
-                <IconMaximize />
+                <IconMaximize/>
             </div>
-            
+
             <div class="bte_dialog-display-button-entry">
-                <IconClose />
+                <IconClose/>
             </div>
         </div>
     </div>
-    
+
     <div class="bte_dialog-display-body">
         <CascadingValue Value="DialogRecord">
-            <DynamicComponent @key="DialogRecord.DialogKey" 
+            <DynamicComponent @key="DialogRecord.DialogKey"
                               Type="DialogRecord.RendererType"
-                              Parameters="DialogRecord.Parameters"/>    
+                              Parameters="DialogRecord.Parameters"/>
         </CascadingValue>
     </div>
 </div>

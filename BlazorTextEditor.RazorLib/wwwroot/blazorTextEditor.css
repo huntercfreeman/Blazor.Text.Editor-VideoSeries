@@ -110,3 +110,42 @@
 .bte_dialog-display-button-entry:hover {
     background-color: orange;
 }
+
+.bte_resize-handle {
+    width: 28px;
+    height: 28px;
+    margin: 7px;
+    background-color: orange;
+}
+
+.bte_resize-handle-north {
+    cursor: n-resize;
+}
+
+.bte_resize-handle-east {
+    cursor: e-resize;
+}
+
+.bte_resize-handle-south {
+    cursor: s-resize;
+}
+
+.bte_resize-handle-west {
+    cursor: w-resize;
+}
+
+.bte_resize-handle-north-east {
+    cursor: ne-resize;
+}
+
+.bte_resize-handle-south-east {
+    cursor: se-resize;
+}
+
+.bte_resize-handle-south-west {
+    cursor: sw-resize;
+}
+
+.bte_resize-handle-north-west {
+    cursor: nw-resize;
+}

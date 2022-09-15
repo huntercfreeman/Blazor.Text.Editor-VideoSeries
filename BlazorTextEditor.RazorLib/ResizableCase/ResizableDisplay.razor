@@ -1,0 +1,35 @@
+<div class="bte_resizable-display">
+    @* Cardinal Resize Handles *@
+    <div class="bte_resize-handle bte_resize-handle-north"
+         @onmousedown="() => SubscribeToDragEvent(DragEventHandlerNorthResizeHandleAsync)">
+    </div>
+    
+    <div class="bte_resize-handle bte_resize-handle-east"
+         @onmousedown="() => SubscribeToDragEvent(DragEventHandlerEastResizeHandleAsync)">
+    </div>
+    
+    <div class="bte_resize-handle bte_resize-handle-south"
+         @onmousedown="() => SubscribeToDragEvent(DragEventHandlerSouthResizeHandleAsync)">
+    </div>
+    
+    <div class="bte_resize-handle bte_resize-handle-west"
+         @onmousedown="() => SubscribeToDragEvent(DragEventHandlerWestResizeHandleAsync)">
+    </div>
+    
+    @* Diagonal Resize Handles *@
+    <div class="bte_resize-handle bte_resize-handle-north-east"
+         @onmousedown="() => SubscribeToDragEvent(DragEventHandlerNorthEastResizeHandleAsync)">
+    </div>
+    
+    <div class="bte_resize-handle bte_resize-handle-south-east"
+         @onmousedown="() => SubscribeToDragEvent(DragEventHandlerSouthEastResizeHandleAsync)">
+    </div>
+    
+    <div class="bte_resize-handle bte_resize-handle-south-west"
+         @onmousedown="() => SubscribeToDragEvent(DragEventHandlerSouthWestResizeHandleAsync)">
+    </div>
+    
+    <div class="bte_resize-handle bte_resize-handle-north-west"
+         @onmousedown="() => SubscribeToDragEvent(DragEventHandlerNorthWestResizeHandleAsync)">
+    </div>
+</div>

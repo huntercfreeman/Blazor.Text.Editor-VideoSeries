@@ -1,0 +1,272 @@
+Notes for video 15:
+
+# Intent
+{
+	-Setup for Resizable Dialogs
+}
+
+# Plan
+{
+-----Start #Plan-----
+@In ClassLib/Dimensions: {
+-ElementDimensions.cs
+-DimensionAttribute.cs
+-public enum DimensionAttributeKind
+{
+    Width,
+    Height,
+    Left,
+    Right,
+    Top,
+    Bottom
+}
+-public enum ElementPositionKind
+{
+    Static,
+    Absolute,
+    Fixed,
+    Inherit,
+    Relative,
+    Revert,
+    Sticky,
+    Unset,
+}
+-DimensionUnit.cs
+-public enum DimensionUnitKind
+{
+    Pixels,
+    ViewportWidth,
+    ViewportHeight,
+    Percentage,
+    RootCharacterWidth,
+    RootCharacterHeight,
+    CharacterWidth,
+    CharacterHeight,
+}
+-public enum DimensionOperatorKind
+{
+    Add,
+    Subtract,
+    Multiply,
+    Divide
+}
+
+-DimensionUnitHelper.cs
+-DimensionUnitKindExtensionMethods.cs
+-DimensionOperatorKindExtensionMethods.cs
+}
+@In ClassLib/Store/DialogCase: {
+-DialogRecord.cs:
+	-Create ElementDimensions ElementDimensions
+		-Create ctor for ElementDimensions in other folder
+	-Create bool IsMinimized
+	-Create bool IsMaximized set;
+	-Create bool IsResizable = true; 
+	-Create static ConstructDefaultDialogDimensions()
+	{
+		Width = 60vw,
+		Height = 60vh,
+		Left = 20vw,
+		Top = 20vh
+	}
+}
+@In ClassLib/Store/DragCase: {
+-DragState.cs
+-DragStateReducer.cs
+-SetDragStateAction
+}
+@In RazorLib/DragCase: {
+-DragDisplay.razor
+-DragDisplay.razor.cs
+}
+@In RazorLib/ResizableCase: {
+-ResizableDisplay.razor
+	-@onmousedown="() ... SubscribeToDragEvent"
+		-DragEventHandlerNorthResizeHandleAsync
+	-Cardinal Resize Handles
+		-North
+		-East
+		-South
+		-West
+	-Diagonal Resize Handles
+		-NorthEast
+		-SouthEast
+		-SouthWest
+		-NorthWest
+-ResizableDisplay.razor.cs
+	-Inherits ComponentBase
+	-[Inject] IState<State>
+	-[Inject] IDispatcher
+	-[Parameter, EditorRequired] ElementDimensions
+	-[Parameter, EditorRequired] ReRenderFuncAsync
+	-const RESIZE_HANDLE_SQUARE_PIXELS = 7;
+	-_dragStateEventHandler
+	-_previousDragMouseEventArgs
+	-_northResizeHandleDimensions
+	-_eastResizeHandleDimensions
+	-_southResizeHandleDimensions
+  -_westResizeHandleDimensions 	
+  -_northEastResizeHandleDimensions
+  -_southEastResizeHandleDimensions
+  -_southWestResizeHandleDimensions
+  -_northWestResizeHandleDimensions
+  -Implement IDisposable
+  	--DragStateWrap.StateChanged -= ...
+  -override OnInitialized()
+  	-DragStateWrap.StateChanged += ...
+	-if (!DragStateWrap.Value.ShouldDisplay)
+		-_dragStateEventHandler = null;
+		-_previousDragMouseEventArgs = null;
+	-else
+		-var mouseEventArgs = ...
+		-if (_dragStateEventHandler)
+			- if (_previousDragMouseEventArgs)
+				-await _dragStateEventHandler(mouseEventArgs)
+			-_previousDragMouseEventArgs = mouseEventArgs
+			-await ReRenderFuncAsync.Invoke()
+			-GetNorthResizeHandleStyleCss()
+			{
+				Width = ,
+				Height =,
+				Left =,
+				Top =,
+				DimensionsPositionKind = Absolute
+			}
+			-GetNorthResizeHandleStyleCss()
+			{
+				Width = ,
+				Height =,
+				Left =,
+				Top =,
+				DimensionsPositionKind = Absolute
+			}
+			-GetEastResizeHandleStyleCss()
+			{
+				Width = ,
+				Height =,
+				Left =,
+				Top =,
+				DimensionsPositionKind = Absolute
+			}
+			-GetEastResizeHandleStyleCss()
+			{
+				Width = ,
+				Height =,
+				Left =,
+				Top =,
+				DimensionsPositionKind = Absolute
+			}
+			-GetEastResizeHandleStyleCss()
+			{
+				Width = ,
+				Height =,
+				Left =,
+				Top =,
+				DimensionsPositionKind = Absolute
+			}
+			-GetNorthEastResizeHandleStyleCss()
+			{
+				Width = ,
+				Height =,
+				Left =,
+				Top =,
+				DimensionsPositionKind = Absolute
+			}
+			-GetSouthEastResizeHandleStyleCss()
+			{
+				Width = ,
+				Height =,
+				Left =,
+				Top =,
+				DimensionsPositionKind = Absolute
+			}
+			-GetSouthWestResizeHandleStyleCss()
+			{
+				Width = ,
+				Height =,
+				Left =,
+				Top =,
+				DimensionsPositionKind = Absolute
+			}
+			-GetNorthWestResizeHandleStyleCss()
+			{
+				Width = ,
+				Height =,
+				Left =,
+				Top =,
+				DimensionsPositionKind = Absolute
+			}
+			-One SubscribeToDragEvent(param)
+				-_dragStateEventHandler = param
+				-Dispatch(SetDragState(true, null))
+			-DragEventHandlerNorthResizeHandleAsync()
+			{
+			}
+			-DragEventHandlerNorthResizeHandleAsync()
+			{
+			}
+			-DragEventHandlerEastResizeHandleAsync()
+			{
+			}
+			-DragEventHandlerSouthResizeHandleAsync()
+			{
+			}
+			-DragEventHandlerWestResizeHandleAsync()
+			{
+			}
+			-DragEventHandlerNorthEastResizeHandleAsync()
+			{
+			}
+			-DragEventHandlerSouthEastHandleAsync()
+			{
+			}
+			-DragEventHandlerSouthWestHandleAsync()
+			{
+			}
+		  -DragEventHandlerNorthWestHandleAsync()
+			{
+			}
+			-DragEventHandlerMoveHandleAsync()
+			{
+			}
+-ResizableRowSeparator.razor
+-ResizableRowSeparator.razor.cs
+-ResizableColumnSeparator.razor
+-ResizableColumnSeparator.razor.cs
+}
+@In RazorLib/DialogCase: {
+-DialogDisplay.razor
+	-TransformableDisplay
+-DialogDisplay.razor.cs
+	-StyleCssString => ElementDimensions
+	-FireSubscribeToDragEventWithMoveHandle()
+	-async Task ReRenderAsync()
+	-MinimizeOnClick()
+	-MaximizeOnClick()
+	-CloseOnClick()
+}
+-----End #Plan-----
+}
+
+# Youtube Video Description
+{
+	Part 14:
+	https://youtu.be/3NizjzSCphg
+
+	Starting Point Repo:
+	https://github.com/huntercfreeman/BlazorTextEditor
+	
+	BlazorStudio Repo:
+	https://github.com/huntercfreeman/BlazorStudio
+	
+	Fluxor Repo:
+	https://github.com/mrpmorris/Fluxor
+	
+	Photino.Blazor:
+	https://github.com/tryphotino/photino.Blazor
+}
+
+# Youtube Video Title
+{
+	Setup for Resizable Dialogs | Blazor Text Editor Part 15
+}
