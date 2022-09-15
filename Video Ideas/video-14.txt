@@ -1,113 +1,76 @@
-Notes for video 13:
+Notes for video 14:
 
 # Intent
 {
-	-Run Photino.Blazor app host
-	-Move over code to Photino.Blazor
+	-Add non-resizable Dialogs
 }
 
 # Plan
 {
+-In ClassLib:
+	-record DialogStates
+	-record DialogRecord
+	-record DialogKey
+	-record RegisterDialogAction(DialogRecord DialogRecord)
+	-record DisposeDialogAction(DialogRecord DialogRecord)
+	-class DialogStatesReducer
 
--[
--clone the repo found at https://github.com/tryphotino/photino.Blazor
+-In RazorLib:
+	-DialogDisplay (Blazor Component)
+	-DialogInitializer (Blazor Component)
+	-ExampleDialog (Blazor Component)
+	-Icons/Codicon
+		-IconBase.cs
+		-IconClose.razor
+		-IconMaximize.razor
+		-IconMinimize.razor
+		-README.md [
+codicon is an open source repository for icons used by Visual Studio Code
 
--delete the .git folder in photino.Blazor
+https://github.com/microsoft/vscode-codicons
 
--for the .sln add reference to Photino.Blazor.csproj
-
--.sln add reference to HelloWorld.csproj (the Photino.Blazor sample)
-
--run HelloWorld.csproj
-
--make BlazorTextEditor.NativeApp.csproj
-
--modify the text for BlazorTextEditor.NativeApp.csproj
-	to ensure it has what is needed from HelloWorld.csproj
-	
--copy over all files from the HelloWorld project in the solution explorer
-
--Fix namespace in Program.cs after pasting the files to
-	BlazorTextEditor.NativeApp
-	
--Run BlazorTextEditor.NativeApp and the Photino.Blazor counter works
-
--add to BlazorTextEditor.NativeApp/wwwroot the following css and js
-
--@* Razor Lib .css *@
-    <link href="_content/BlazorTextEditor.RazorLib/blazorTextEditor.css" rel="stylesheet"/>
-
--@* Razor Lib .js *@
-<script src="_content/BlazorTextEditor.RazorLib/blazorTextEditor.js"></script>
-
--Add project reference to BlazorTextEditor.RazorLib for BlazorTextEditor.NativeApp
-
--Add appBuilder.Services.AddBlazorTextEditorRazorLibServices();
-	in Program.cs
-
--Make BlazorTextEditor.RazorLib/Shared directory
-
--Make BlazorTextEditor.RazorLib/Shared/MainLayout.razor
--Make BlazorTextEditor.RazorLib/Shared/MainLayout.razor.cs
-
--MainLayout inherits LayoutComponentBase
-
--Add <BlazorTextEditor.RazorLib.Shared.MainLayout /> to
-	BlazorTextEditor.NativeApp/App.razor
-
--Run the app and show MainLayout text
-
--add the following to MainLayout.razor [
-<BlazorTextEditor.RazorLib.TextEditor.TextEditorDisplay TextEditorKey="TextEditorFacts.TextEditorKeyCodeTest" />
-<BlazorTextEditor.RazorLib.TextEditor.TextEditorDisplay TextEditorKey="TextEditorFacts.TextEditorKeyEmailTest" />
-<BlazorTextEditor.RazorLib.TextEditor.TextEditorDisplay TextEditorKey="TextEditorFacts.TextEditorKeyEmptyTest" />
-
-<BlazorTextEditor.RazorLib.CounterCase.CounterDisplay />
-<BlazorTextEditor.RazorLib.CounterCase.CounterDisplay />
-<BlazorTextEditor.RazorLib.CounterCase.CounterDisplay />
-<BlazorTextEditor.RazorLib.CounterCase.CounterDisplay />
-]
-
--Run the app
-
--Add missing css by copying it from BlazorTextEditor.Server/wwwroot/css
-
--In BlazorTextEditor.NativeApp/wwwroot/index.html reference
-	-<link rel="stylesheet" href="css/bootstrap/bootstrap.min.css"/>
-	-<link href="css/site.css" rel="stylesheet"/>
-]
-
-- add the following to top of MainLayout.razor
--<BlazorTextEditor.RazorLib.BlazorTextEditorRazorLibInitializer />
-
--<div class="bte_main-layout">
-
--blazorTextEditor.css add [
-.bte_main-layout {
-    font-size: 24px;
+any codicon icons are found in this directory
+		]
+		
+	-Add to blazorTextEditor.css [
+	.bte_dialog-display {
+	// width: 60; height: 60; left: 20; top: 20;
+    z-index: 10;
+    background-color: rgb(252, 252, 245);
+    box-shadow: 0px 0px 2px #000000;
 }
-]
 
--In PhotinoWebViewManager.cs change SendMessage(string message) [
-protected override void SendMessage(string message)
-        {
-            Task.Run(() => { Dispatcher.InvokeAsync(() => _window.SendWebMessage(message)); })
-                .Wait();
-            
-            // https://github.com/tryphotino/photino.Blazor/commit/ad36699b6935711efeea1bed1fdb94916d10318d
-            // Task.Run(() => Dispatcher.InvokeAsync(() => _window.SendWebMessage(message)));
-        }
-]
+.bte_dialog-display-tool-bar {
+    display: flex;
+    justify-content: space-between;
+    background-color: rgb(192, 214, 247);
+}
 
+.bte_dialog-display-buttons {
+    display: flex;
+    align-items: center;
+}
+
+.bte_dialog-display-button-entry {
+    margin-right: 5px;
+    padding: 3px;
+    display: inline-flex;
+    height: fit-content;
+}
+
+.bte_dialog-display-button-entry:hover {
+    background-color: orange;
+}
+	]
 }
 
 # Youtube Video Description
 {
-	Part 12:
-	https://youtu.be/lgwuofuoh90
+	Part 13:
+	https://youtu.be/H1zM1kAlf40
 
-	Photino.Blazor:
-	https://github.com/tryphotino/photino.Blazor
+	vscode-codicons Repo:
+	https://github.com/microsoft/vscode-codicons
 
 	Starting Point Repo:
 	https://github.com/huntercfreeman/BlazorTextEditor
@@ -117,9 +80,12 @@ protected override void SendMessage(string message)
 	
 	Fluxor Repo:
 	https://github.com/mrpmorris/Fluxor
+	
+	Photino.Blazor:
+	https://github.com/tryphotino/photino.Blazor
 }
 
 # Youtube Video Title
 {
-	Photino and Photino.Blazor | Blazor Text Editor Part 13
+	Static Dialogs | Blazor Text Editor Part 14
 }
