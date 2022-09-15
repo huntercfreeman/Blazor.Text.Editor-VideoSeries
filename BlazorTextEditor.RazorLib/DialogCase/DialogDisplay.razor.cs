@@ -8,6 +8,8 @@ public partial class DialogDisplay : ComponentBase
     [Parameter]
     public DialogRecord DialogRecord { get; set; } = null!;
 
+    private string StyleCssString => DialogRecord.ElementDimensions.StyleString;
+    
     private async Task ReRenderAsync()
     {
         await InvokeAsync(StateHasChanged);

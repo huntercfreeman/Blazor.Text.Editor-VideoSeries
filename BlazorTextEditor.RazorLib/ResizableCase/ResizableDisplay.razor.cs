@@ -18,7 +18,7 @@ public partial class ResizableDisplay : ComponentBase, IDisposable
     [Parameter, EditorRequired]
     public Func<Task> ReRenderFuncAsync { get; set; } = null!;
     
-    public const int RESIZE_HANDLE_SQUARE_PIXELS = 7;
+    public const double RESIZE_HANDLE_SQUARE_PIXELS = 42;
 
     private Func<MouseEventArgs, Task>? _dragEventHandler;
     private MouseEventArgs? _previousDragMouseEventArgs;
@@ -72,42 +72,633 @@ public partial class ResizableDisplay : ComponentBase, IDisposable
     #region ResizeHandleStyleCss
     private string GetNorthResizeHandleStyleCss()
     {
-        return string.Empty;
+        var parentElementWidth = ElementDimensions.DimensionAttributes
+            .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Width);
+        
+        var parentElementHeight = ElementDimensions.DimensionAttributes
+            .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Height);
+        
+        var parentElementLeft = ElementDimensions.DimensionAttributes
+            .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Left);
+        
+        var parentElementTop = ElementDimensions.DimensionAttributes
+            .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Top);
+
+        _northResizeHandleDimensions.ElementPositionKind = ElementPositionKind.Absolute;
+        
+        // Width
+        {
+            var resizeHandleWidth = _northResizeHandleDimensions.DimensionAttributes
+                .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Width);
+            
+            resizeHandleWidth.DimensionUnits.Clear();
+            
+            resizeHandleWidth.DimensionUnits.AddRange(parentElementWidth.DimensionUnits);
+
+            // width: calc(60vw - 42px);
+            resizeHandleWidth.DimensionUnits.Add(new DimensionUnit
+            {
+                Value = RESIZE_HANDLE_SQUARE_PIXELS,
+                DimensionUnitKind = DimensionUnitKind.Pixels,
+                DimensionOperatorKind = DimensionOperatorKind.Subtract
+            });
+        }
+        
+        // Height
+        {
+            var resizeHandleHeight = _northResizeHandleDimensions.DimensionAttributes
+                .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Height);
+            
+            resizeHandleHeight.DimensionUnits.Clear();
+
+            resizeHandleHeight.DimensionUnits.Add(new DimensionUnit
+            {
+                Value = RESIZE_HANDLE_SQUARE_PIXELS,
+                DimensionUnitKind = DimensionUnitKind.Pixels
+            });
+        }
+        
+        // Left
+        {
+            var resizeHandleLeft = _northResizeHandleDimensions.DimensionAttributes
+                .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Left);
+            
+            resizeHandleLeft.DimensionUnits.Clear();
+
+            resizeHandleLeft.DimensionUnits.Add(new DimensionUnit
+            {
+                Value = RESIZE_HANDLE_SQUARE_PIXELS / 2,
+                DimensionUnitKind = DimensionUnitKind.Pixels
+            });
+        }
+        
+        // Top
+        {
+            var resizeHandleTop = _northResizeHandleDimensions.DimensionAttributes
+                .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Top);
+            
+            resizeHandleTop.DimensionUnits.Clear();
+
+            resizeHandleTop.DimensionUnits.Add(new DimensionUnit
+            {
+                Value = -1 * RESIZE_HANDLE_SQUARE_PIXELS / 2,
+                DimensionUnitKind = DimensionUnitKind.Pixels
+            });
+        }
+
+        return _northResizeHandleDimensions.StyleString;
     }
     
     private string GetEastResizeHandleStyleCss()
     {
-        return string.Empty;
+        var parentElementWidth = ElementDimensions.DimensionAttributes
+            .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Width);
+        
+        var parentElementHeight = ElementDimensions.DimensionAttributes
+            .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Height);
+        
+        var parentElementLeft = ElementDimensions.DimensionAttributes
+            .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Left);
+        
+        var parentElementTop = ElementDimensions.DimensionAttributes
+            .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Top);
+
+        _eastResizeHandleDimensions.ElementPositionKind = ElementPositionKind.Absolute;
+        
+        // Width
+        {
+            var resizeHandleWidth = _eastResizeHandleDimensions.DimensionAttributes
+                .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Width);
+            
+            resizeHandleWidth.DimensionUnits.Clear();
+            
+            resizeHandleWidth.DimensionUnits.Add(new DimensionUnit
+            {
+                Value = RESIZE_HANDLE_SQUARE_PIXELS,
+                DimensionUnitKind = DimensionUnitKind.Pixels
+            });
+        }
+        
+        // Height
+        {
+            var resizeHandleHeight = _eastResizeHandleDimensions.DimensionAttributes
+                .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Height);
+            
+            resizeHandleHeight.DimensionUnits.Clear();
+            
+            resizeHandleHeight.DimensionUnits.AddRange(parentElementHeight.DimensionUnits);
+
+            resizeHandleHeight.DimensionUnits.Add(new DimensionUnit
+            {
+                Value = RESIZE_HANDLE_SQUARE_PIXELS,
+                DimensionUnitKind = DimensionUnitKind.Pixels,
+                DimensionOperatorKind = DimensionOperatorKind.Subtract
+            });
+        }
+        
+        // Left
+        {
+            var resizeHandleLeft = _eastResizeHandleDimensions.DimensionAttributes
+                .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Left);
+            
+            resizeHandleLeft.DimensionUnits.Clear();
+            
+            resizeHandleLeft.DimensionUnits.AddRange(parentElementWidth.DimensionUnits);
+
+            resizeHandleLeft.DimensionUnits.Add(new DimensionUnit
+            {
+                Value = RESIZE_HANDLE_SQUARE_PIXELS / 2,
+                DimensionUnitKind = DimensionUnitKind.Pixels,
+                DimensionOperatorKind = DimensionOperatorKind.Subtract
+            });
+        }
+        
+        // Top
+        {
+            var resizeHandleTop = _eastResizeHandleDimensions.DimensionAttributes
+                .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Top);
+            
+            resizeHandleTop.DimensionUnits.Clear();
+
+            resizeHandleTop.DimensionUnits.Add(new DimensionUnit
+            {
+                Value = RESIZE_HANDLE_SQUARE_PIXELS / 2,
+                DimensionUnitKind = DimensionUnitKind.Pixels
+            });
+        }
+
+        return _eastResizeHandleDimensions.StyleString;
     }
     
     private string GetSouthResizeHandleStyleCss()
     {
-        return string.Empty;
+        var parentElementWidth = ElementDimensions.DimensionAttributes
+            .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Width);
+        
+        var parentElementHeight = ElementDimensions.DimensionAttributes
+            .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Height);
+        
+        var parentElementLeft = ElementDimensions.DimensionAttributes
+            .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Left);
+        
+        var parentElementTop = ElementDimensions.DimensionAttributes
+            .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Top);
+
+        _southResizeHandleDimensions.ElementPositionKind = ElementPositionKind.Absolute;
+        
+        // Width
+        {
+            var resizeHandleWidth = _southResizeHandleDimensions.DimensionAttributes
+                .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Width);
+            
+            resizeHandleWidth.DimensionUnits.Clear();
+            
+            resizeHandleWidth.DimensionUnits.AddRange(parentElementWidth.DimensionUnits);
+            
+            resizeHandleWidth.DimensionUnits.Add(new DimensionUnit
+            {
+                Value = RESIZE_HANDLE_SQUARE_PIXELS,
+                DimensionUnitKind = DimensionUnitKind.Pixels,
+                DimensionOperatorKind = DimensionOperatorKind.Subtract
+            });
+        }
+        
+        // Height
+        {
+            var resizeHandleHeight = _southResizeHandleDimensions.DimensionAttributes
+                .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Height);
+            
+            resizeHandleHeight.DimensionUnits.Clear();
+
+            resizeHandleHeight.DimensionUnits.Add(new DimensionUnit
+            {
+                Value = RESIZE_HANDLE_SQUARE_PIXELS,
+                DimensionUnitKind = DimensionUnitKind.Pixels
+            });
+        }
+        
+        // Left
+        {
+            var resizeHandleLeft = _southResizeHandleDimensions.DimensionAttributes
+                .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Left);
+            
+            resizeHandleLeft.DimensionUnits.Clear();
+            
+            resizeHandleLeft.DimensionUnits.Add(new DimensionUnit
+            {
+                Value = RESIZE_HANDLE_SQUARE_PIXELS / 2,
+                DimensionUnitKind = DimensionUnitKind.Pixels
+            });
+        }
+        
+        // Top
+        {
+            var resizeHandleTop = _southResizeHandleDimensions.DimensionAttributes
+                .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Top);
+            
+            resizeHandleTop.DimensionUnits.Clear();
+            
+            resizeHandleTop.DimensionUnits.AddRange(parentElementHeight.DimensionUnits);
+
+            resizeHandleTop.DimensionUnits.Add(new DimensionUnit
+            {
+                Value = RESIZE_HANDLE_SQUARE_PIXELS / 2,
+                DimensionUnitKind = DimensionUnitKind.Pixels,
+                DimensionOperatorKind = DimensionOperatorKind.Subtract
+            });
+        }
+
+        return _southResizeHandleDimensions.StyleString;
     }
     
     private string GetWestResizeHandleStyleCss()
     {
-        return string.Empty;
+        var parentElementWidth = ElementDimensions.DimensionAttributes
+            .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Width);
+        
+        var parentElementHeight = ElementDimensions.DimensionAttributes
+            .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Height);
+        
+        var parentElementLeft = ElementDimensions.DimensionAttributes
+            .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Left);
+        
+        var parentElementTop = ElementDimensions.DimensionAttributes
+            .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Top);
+
+        _westResizeHandleDimensions.ElementPositionKind = ElementPositionKind.Absolute;
+        
+        // Width
+        {
+            var resizeHandleWidth = _westResizeHandleDimensions.DimensionAttributes
+                .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Width);
+            
+            resizeHandleWidth.DimensionUnits.Clear();
+            
+            resizeHandleWidth.DimensionUnits.Add(new DimensionUnit
+            {
+                Value = RESIZE_HANDLE_SQUARE_PIXELS,
+                DimensionUnitKind = DimensionUnitKind.Pixels
+            });
+        }
+        
+        // Height
+        {
+            var resizeHandleHeight = _westResizeHandleDimensions.DimensionAttributes
+                .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Height);
+            
+            resizeHandleHeight.DimensionUnits.Clear();
+            
+            resizeHandleHeight.DimensionUnits.AddRange(parentElementHeight.DimensionUnits);
+
+            resizeHandleHeight.DimensionUnits.Add(new DimensionUnit
+            {
+                Value = RESIZE_HANDLE_SQUARE_PIXELS,
+                DimensionUnitKind = DimensionUnitKind.Pixels,
+                DimensionOperatorKind = DimensionOperatorKind.Subtract
+            });
+        }
+        
+        // Left
+        {
+            var resizeHandleLeft = _westResizeHandleDimensions.DimensionAttributes
+                .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Left);
+            
+            resizeHandleLeft.DimensionUnits.Clear();
+            
+            resizeHandleLeft.DimensionUnits.Add(new DimensionUnit
+            {
+                Value = -1 * RESIZE_HANDLE_SQUARE_PIXELS / 2,
+                DimensionUnitKind = DimensionUnitKind.Pixels
+            });
+        }
+        
+        // Top
+        {
+            var resizeHandleTop = _westResizeHandleDimensions.DimensionAttributes
+                .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Top);
+            
+            resizeHandleTop.DimensionUnits.Clear();
+
+            resizeHandleTop.DimensionUnits.Add(new DimensionUnit
+            {
+                Value = RESIZE_HANDLE_SQUARE_PIXELS / 2,
+                DimensionUnitKind = DimensionUnitKind.Pixels
+            });
+        }
+
+        return _westResizeHandleDimensions.StyleString;
     }
     
     private string GetNorthEastResizeHandleStyleCss()
     {
-        return string.Empty;
+        var parentElementWidth = ElementDimensions.DimensionAttributes
+            .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Width);
+        
+        var parentElementHeight = ElementDimensions.DimensionAttributes
+            .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Height);
+        
+        var parentElementLeft = ElementDimensions.DimensionAttributes
+            .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Left);
+        
+        var parentElementTop = ElementDimensions.DimensionAttributes
+            .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Top);
+
+        _northEastResizeHandleDimensions.ElementPositionKind = ElementPositionKind.Absolute;
+        
+        // Width
+        {
+            var resizeHandleWidth = _northEastResizeHandleDimensions.DimensionAttributes
+                .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Width);
+            
+            resizeHandleWidth.DimensionUnits.Clear();
+            
+            resizeHandleWidth.DimensionUnits.Add(new DimensionUnit
+            {
+                Value = RESIZE_HANDLE_SQUARE_PIXELS,
+                DimensionUnitKind = DimensionUnitKind.Pixels
+            });
+        }
+        
+        // Height
+        {
+            var resizeHandleHeight = _northEastResizeHandleDimensions.DimensionAttributes
+                .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Height);
+            
+            resizeHandleHeight.DimensionUnits.Clear();
+            
+            resizeHandleHeight.DimensionUnits.Add(new DimensionUnit
+            {
+                Value = RESIZE_HANDLE_SQUARE_PIXELS,
+                DimensionUnitKind = DimensionUnitKind.Pixels
+            });
+        }
+        
+        // Left
+        {
+            var resizeHandleLeft = _northEastResizeHandleDimensions.DimensionAttributes
+                .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Left);
+            
+            resizeHandleLeft.DimensionUnits.Clear();
+            
+            resizeHandleLeft.DimensionUnits.AddRange(parentElementWidth.DimensionUnits);
+            
+            resizeHandleLeft.DimensionUnits.Add(new DimensionUnit
+            {
+                Value = RESIZE_HANDLE_SQUARE_PIXELS / 2,
+                DimensionUnitKind = DimensionUnitKind.Pixels,
+                DimensionOperatorKind = DimensionOperatorKind.Subtract
+            });
+        }
+        
+        // Top
+        {
+            var resizeHandleTop = _northEastResizeHandleDimensions.DimensionAttributes
+                .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Top);
+            
+            resizeHandleTop.DimensionUnits.Clear();
+
+            resizeHandleTop.DimensionUnits.Add(new DimensionUnit
+            {
+                Value = -1 * RESIZE_HANDLE_SQUARE_PIXELS / 2,
+                DimensionUnitKind = DimensionUnitKind.Pixels
+            });
+        }
+
+        return _northEastResizeHandleDimensions.StyleString;
     }
     
     private string GetSouthEastResizeHandleStyleCss()
     {
-        return string.Empty;
+        var parentElementWidth = ElementDimensions.DimensionAttributes
+            .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Width);
+        
+        var parentElementHeight = ElementDimensions.DimensionAttributes
+            .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Height);
+        
+        var parentElementLeft = ElementDimensions.DimensionAttributes
+            .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Left);
+        
+        var parentElementTop = ElementDimensions.DimensionAttributes
+            .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Top);
+
+        _southEastResizeHandleDimensions.ElementPositionKind = ElementPositionKind.Absolute;
+        
+        // Width
+        {
+            var resizeHandleWidth = _southEastResizeHandleDimensions.DimensionAttributes
+                .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Width);
+            
+            resizeHandleWidth.DimensionUnits.Clear();
+            
+            resizeHandleWidth.DimensionUnits.Add(new DimensionUnit
+            {
+                Value = RESIZE_HANDLE_SQUARE_PIXELS,
+                DimensionUnitKind = DimensionUnitKind.Pixels
+            });
+        }
+        
+        // Height
+        {
+            var resizeHandleHeight = _southEastResizeHandleDimensions.DimensionAttributes
+                .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Height);
+            
+            resizeHandleHeight.DimensionUnits.Clear();
+            
+            resizeHandleHeight.DimensionUnits.Add(new DimensionUnit
+            {
+                Value = RESIZE_HANDLE_SQUARE_PIXELS,
+                DimensionUnitKind = DimensionUnitKind.Pixels
+            });
+        }
+        
+        // Left
+        {
+            var resizeHandleLeft = _southEastResizeHandleDimensions.DimensionAttributes
+                .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Left);
+            
+            resizeHandleLeft.DimensionUnits.Clear();
+            
+            resizeHandleLeft.DimensionUnits.AddRange(parentElementWidth.DimensionUnits);
+            
+            resizeHandleLeft.DimensionUnits.Add(new DimensionUnit
+            {
+                Value = RESIZE_HANDLE_SQUARE_PIXELS / 2,
+                DimensionUnitKind = DimensionUnitKind.Pixels,
+                DimensionOperatorKind = DimensionOperatorKind.Subtract
+            });
+        }
+        
+        // Top
+        {
+            var resizeHandleTop = _southEastResizeHandleDimensions.DimensionAttributes
+                .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Top);
+            
+            resizeHandleTop.DimensionUnits.Clear();
+            
+            resizeHandleTop.DimensionUnits.AddRange(parentElementHeight.DimensionUnits);
+            
+            resizeHandleTop.DimensionUnits.Add(new DimensionUnit
+            {
+                Value = RESIZE_HANDLE_SQUARE_PIXELS / 2,
+                DimensionUnitKind = DimensionUnitKind.Pixels,
+                DimensionOperatorKind = DimensionOperatorKind.Subtract
+            });
+        }
+
+        return _southEastResizeHandleDimensions.StyleString;
     }
     
     private string GetSouthWestResizeHandleStyleCss()
     {
-        return string.Empty;
+        var parentElementWidth = ElementDimensions.DimensionAttributes
+            .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Width);
+        
+        var parentElementHeight = ElementDimensions.DimensionAttributes
+            .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Height);
+        
+        var parentElementLeft = ElementDimensions.DimensionAttributes
+            .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Left);
+        
+        var parentElementTop = ElementDimensions.DimensionAttributes
+            .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Top);
+
+        _southWestResizeHandleDimensions.ElementPositionKind = ElementPositionKind.Absolute;
+        
+        // Width
+        {
+            var resizeHandleWidth = _southWestResizeHandleDimensions.DimensionAttributes
+                .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Width);
+            
+            resizeHandleWidth.DimensionUnits.Clear();
+            
+            resizeHandleWidth.DimensionUnits.Add(new DimensionUnit
+            {
+                Value = RESIZE_HANDLE_SQUARE_PIXELS,
+                DimensionUnitKind = DimensionUnitKind.Pixels
+            });
+        }
+        
+        // Height
+        {
+            var resizeHandleHeight = _southWestResizeHandleDimensions.DimensionAttributes
+                .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Height);
+            
+            resizeHandleHeight.DimensionUnits.Clear();
+            
+            resizeHandleHeight.DimensionUnits.Add(new DimensionUnit
+            {
+                Value = RESIZE_HANDLE_SQUARE_PIXELS,
+                DimensionUnitKind = DimensionUnitKind.Pixels
+            });
+        }
+        
+        // Left
+        {
+            var resizeHandleLeft = _southWestResizeHandleDimensions.DimensionAttributes
+                .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Left);
+            
+            resizeHandleLeft.DimensionUnits.Clear();
+            
+            resizeHandleLeft.DimensionUnits.Add(new DimensionUnit
+            {
+                Value = -1 * RESIZE_HANDLE_SQUARE_PIXELS / 2,
+                DimensionUnitKind = DimensionUnitKind.Pixels
+            });
+        }
+        
+        // Top
+        {
+            var resizeHandleTop = _southWestResizeHandleDimensions.DimensionAttributes
+                .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Top);
+            
+            resizeHandleTop.DimensionUnits.Clear();
+            
+            resizeHandleTop.DimensionUnits.AddRange(parentElementHeight.DimensionUnits);
+            
+            resizeHandleTop.DimensionUnits.Add(new DimensionUnit
+            {
+                Value = RESIZE_HANDLE_SQUARE_PIXELS / 2,
+                DimensionUnitKind = DimensionUnitKind.Pixels,
+                DimensionOperatorKind = DimensionOperatorKind.Subtract
+            });
+        }
+
+        return _southWestResizeHandleDimensions.StyleString;
     }
     
     private string GetNorthWestResizeHandleStyleCss()
     {
-        return string.Empty;
+        var parentElementWidth = ElementDimensions.DimensionAttributes
+            .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Width);
+        
+        var parentElementHeight = ElementDimensions.DimensionAttributes
+            .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Height);
+        
+        var parentElementLeft = ElementDimensions.DimensionAttributes
+            .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Left);
+        
+        var parentElementTop = ElementDimensions.DimensionAttributes
+            .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Top);
+
+        _northWestResizeHandleDimensions.ElementPositionKind = ElementPositionKind.Absolute;
+        
+        // Width
+        {
+            var resizeHandleWidth = _northWestResizeHandleDimensions.DimensionAttributes
+                .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Width);
+            
+            resizeHandleWidth.DimensionUnits.Clear();
+            
+            resizeHandleWidth.DimensionUnits.Add(new DimensionUnit
+            {
+                Value = RESIZE_HANDLE_SQUARE_PIXELS,
+                DimensionUnitKind = DimensionUnitKind.Pixels
+            });
+        }
+        
+        // Height
+        {
+            var resizeHandleHeight = _northWestResizeHandleDimensions.DimensionAttributes
+                .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Height);
+            
+            resizeHandleHeight.DimensionUnits.Clear();
+            
+            resizeHandleHeight.DimensionUnits.Add(new DimensionUnit
+            {
+                Value = RESIZE_HANDLE_SQUARE_PIXELS,
+                DimensionUnitKind = DimensionUnitKind.Pixels
+            });
+        }
+        
+        // Left
+        {
+            var resizeHandleLeft = _northWestResizeHandleDimensions.DimensionAttributes
+                .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Left);
+            
+            resizeHandleLeft.DimensionUnits.Clear();
+            
+            resizeHandleLeft.DimensionUnits.Add(new DimensionUnit
+            {
+                Value = -1 * RESIZE_HANDLE_SQUARE_PIXELS / 2,
+                DimensionUnitKind = DimensionUnitKind.Pixels
+            });
+        }
+        
+        // Top
+        {
+            var resizeHandleTop = _northWestResizeHandleDimensions.DimensionAttributes
+                .Single(x => x.DimensionAttributeKind == DimensionAttributeKind.Top);
+            
+            resizeHandleTop.DimensionUnits.Clear();
+            
+            resizeHandleTop.DimensionUnits.Add(new DimensionUnit
+            {
+                Value = -1 * RESIZE_HANDLE_SQUARE_PIXELS / 2,
+                DimensionUnitKind = DimensionUnitKind.Pixels
+            });
+        }
+
+        return _northWestResizeHandleDimensions.StyleString;
     }
     #endregion
 

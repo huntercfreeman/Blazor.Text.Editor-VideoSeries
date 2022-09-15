@@ -10,7 +10,6 @@ Notes for video 16:
 {
 -----Start #Plan-----
 @In RazorLib/DialogCase: {
--DragStateDisplay.razor.cs
 	-private string StyleCssString => DialogRecord.ElementDimensions.StyleString;
 }
 @In ClassLib/Dimensions: {

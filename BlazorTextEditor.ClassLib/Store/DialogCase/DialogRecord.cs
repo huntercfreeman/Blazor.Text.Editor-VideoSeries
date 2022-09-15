@@ -15,7 +15,10 @@ public record DialogRecord(
 
     public static ElementDimensions ConstructDefaultDialogDimensions()
     {
-        var elementDimensions = new ElementDimensions();
+        var elementDimensions = new ElementDimensions
+        {
+            ElementPositionKind = ElementPositionKind.Fixed
+        };
         
         // Width
         {

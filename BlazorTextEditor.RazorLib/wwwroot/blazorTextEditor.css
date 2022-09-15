@@ -79,11 +79,6 @@
 }
 
 .bte_dialog-display {
-    width: 60vw;
-    height: 60vh;
-    left: 20vw;
-    top: 20vh;
-    position: fixed;
     z-index: 10;
     background-color: rgb(252, 252, 245);
     box-shadow: 0px 0px 2px #000000;
@@ -111,11 +106,12 @@
     background-color: orange;
 }
 
-.bte_resize-handle {
-    width: 28px;
-    height: 28px;
-    margin: 7px;
-    background-color: orange;
+.bte_resize-handle-cardinal {
+    background-color: mediumseagreen;
+}
+
+.bte_resize-handle-diagonal {
+    background-color: red;
 }
 
 .bte_resize-handle-north {
