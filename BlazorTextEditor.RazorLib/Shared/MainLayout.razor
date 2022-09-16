@@ -1,29 +1,18 @@
 @using BlazorTextEditor.ClassLib.TextEditor
 @inherits LayoutComponentBase
 
-
 <div class="bte_main-layout @UnselectableClassCss">
     <BlazorTextEditor.RazorLib.BlazorTextEditorRazorLibInitializer />
     <BlazorTextEditor.RazorLib.DialogCase.DialogInitializer />
     <BlazorTextEditor.RazorLib.DragCase.DragDisplay />
     
-    @nameof(MainLayout)&nbsp;rendered:&nbsp;@_renderCount&nbsp;times
-    <br/>
+    <BlazorTextEditorHeader />
     
-    _message:&nbsp;<input @bind="_message" />
+    <BlazorTextEditorBody BodyElementDimensions="_bodyElementDimensions" />
     
-    <button class="btn btn-primary"
-            @onclick="OpenDialogOnClick">
-        Open Dialog
-    </button>
+    <BlazorTextEditor.RazorLib.ResizableCase.ResizableRow TopElementDimensions="_bodyElementDimensions"
+                                                          BottomElementDimensions="_footerElementDimensions"
+                                                          ReRenderFuncAsync="ReRenderAsync" />
     
-    
-    <BlazorTextEditor.RazorLib.TextEditor.TextEditorDisplay TextEditorKey="TextEditorFacts.TextEditorKeyCodeTest"/>
-    <BlazorTextEditor.RazorLib.TextEditor.TextEditorDisplay TextEditorKey="TextEditorFacts.TextEditorKeyEmailTest"/>
-    <BlazorTextEditor.RazorLib.TextEditor.TextEditorDisplay TextEditorKey="TextEditorFacts.TextEditorKeyEmptyTest"/>
-
-    <BlazorTextEditor.RazorLib.CounterCase.CounterDisplay/>
-    <BlazorTextEditor.RazorLib.CounterCase.CounterDisplay/>
-    <BlazorTextEditor.RazorLib.CounterCase.CounterDisplay/>
-    <BlazorTextEditor.RazorLib.CounterCase.CounterDisplay/>
+    <BlazorTextEditorFooter FooterElementDimensions="_footerElementDimensions" />
 </div>

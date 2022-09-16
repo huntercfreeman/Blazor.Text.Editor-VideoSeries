@@ -76,6 +76,55 @@
 
 .bte_main-layout {
     font-size: 24px;
+    width: 100vw;
+    height: 100vh;
+    overflow: auto;
+}
+
+.bte_header {
+    padding: 5px;
+    border-bottom: 2px solid black;
+    height: 3rem;
+    background-color: #7fa1e1;
+}
+
+.bte_body {
+    display: flex;
+    border-bottom: 2px solid black;
+    height: calc(100% - 9rem);
+    overflow: auto;
+    background-color: rgb(253, 253, 253);
+}
+
+.bte_folder-explorer-display {
+    padding: 5px;
+}
+
+.bte_footer {
+    padding: 5px;
+    height: 6rem;
+    background-color: #d4d4d4;
+}
+
+.bte_section-title {
+    font-size: 1.75rem;
+}
+
+.bte_editor-display {
+    padding: 5px;
+    border-left: 2px solid black;
+}
+
+.bte_resize-column {
+    background-color: black;
+    height: 100%;
+    cursor: e-resize;
+}
+
+.bte_resize-row {
+    background-color: black;
+    width: 100%;
+    cursor: n-resize;
 }
 
 .bte_dialog-display {

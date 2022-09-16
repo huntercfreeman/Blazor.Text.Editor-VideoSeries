@@ -11,13 +11,11 @@ public partial class ResizableDisplay : ComponentBase, IDisposable
 {
     [Inject]
     private IState<DragState> DragStateWrap { get; set; } = null!;
-
     [Inject]
     private IDispatcher Dispatcher { get; set; } = null!;
 
     [Parameter, EditorRequired]
     public ElementDimensions ElementDimensions { get; set; } = null!;
-
     [Parameter, EditorRequired]
     public Func<Task> ReRenderFuncAsync { get; set; } = null!;
 

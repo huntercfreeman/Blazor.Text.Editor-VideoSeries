@@ -1,3 +1,4 @@
+using BlazorTextEditor.ClassLib.Dimensions;
 using BlazorTextEditor.ClassLib.Store.DialogCase;
 using BlazorTextEditor.ClassLib.Store.DragCase;
 using BlazorTextEditor.RazorLib.DialogCase;
@@ -22,10 +23,54 @@ public partial class MainLayout : LayoutComponentBase, IDisposable
     private bool _previousDragStateWrapShouldDisplay;
 
     private int _renderCount = 1;
+    private ElementDimensions _bodyElementDimensions = new();
+    private ElementDimensions _footerElementDimensions = new();
 
     protected override void OnInitialized()
     {
         DragStateWrap.StateChanged += DragStateWrapOnStateChanged;
+        
+        var bodyHeight = _bodyElementDimensions.DimensionAttributes
+            .Single(da => da.DimensionAttributeKind == DimensionAttributeKind.Height);
+        
+        bodyHeight.DimensionUnits.AddRange(new []
+        {
+            new DimensionUnit
+            {
+                Value = 67,
+                DimensionUnitKind = DimensionUnitKind.Percentage
+            },
+            new DimensionUnit
+            {
+                Value = 2.5,
+                DimensionUnitKind = DimensionUnitKind.Pixels,
+                DimensionOperatorKind = DimensionOperatorKind.Subtract
+            },
+            new DimensionUnit
+            {
+                Value = 3,
+                DimensionUnitKind = DimensionUnitKind.RootCharacterHeight,
+                DimensionOperatorKind = DimensionOperatorKind.Subtract
+            }
+        });
+
+        var footerHeight = _footerElementDimensions.DimensionAttributes
+            .Single(da => da.DimensionAttributeKind == DimensionAttributeKind.Height);
+        
+        footerHeight.DimensionUnits.AddRange(new []
+        {
+            new DimensionUnit
+            {
+                Value = 33,
+                DimensionUnitKind = DimensionUnitKind.Percentage
+            },
+            new DimensionUnit
+            {
+                Value = 2.5,
+                DimensionUnitKind = DimensionUnitKind.Pixels,
+                DimensionOperatorKind = DimensionOperatorKind.Subtract
+            }
+        });
         
         base.OnInitialized();
     }
@@ -56,6 +101,11 @@ public partial class MainLayout : LayoutComponentBase, IDisposable
             {
                 { nameof(ExampleDialog.Message), _message }
             })));
+    }
+    
+    private async Task ReRenderAsync()
+    {
+        await InvokeAsync(StateHasChanged);
     }
 
     public void Dispose()
