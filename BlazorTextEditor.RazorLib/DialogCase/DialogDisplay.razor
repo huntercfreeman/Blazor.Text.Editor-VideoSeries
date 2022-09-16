@@ -2,11 +2,13 @@
      style="@StyleCssString">
     @if (DialogRecord.IsResizable)
     {
-        <BlazorTextEditor.RazorLib.ResizableCase.ResizableDisplay ElementDimensions="DialogRecord.ElementDimensions"
+        <BlazorTextEditor.RazorLib.ResizableCase.ResizableDisplay @ref="_resizableDisplay" 
+                                                                  ElementDimensions="DialogRecord.ElementDimensions"
                                                                   ReRenderFuncAsync="ReRenderAsync"/>
     }
     
-    <div class="bte_dialog-display-toolbar">
+    <div class="bte_dialog-display-toolbar"
+         @onmousedown="SubscribeMoveHandle">
         <div class="bte_dialog-display-title">
             @DialogRecord.Title
         </div>

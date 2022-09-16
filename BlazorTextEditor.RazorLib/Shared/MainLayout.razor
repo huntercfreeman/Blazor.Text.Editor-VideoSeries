@@ -1,10 +1,14 @@
 @using BlazorTextEditor.ClassLib.TextEditor
 @inherits LayoutComponentBase
 
-<BlazorTextEditor.RazorLib.BlazorTextEditorRazorLibInitializer />
 
-<div class="bte_main-layout">
+<div class="bte_main-layout @UnselectableClassCss">
+    <BlazorTextEditor.RazorLib.BlazorTextEditorRazorLibInitializer />
     <BlazorTextEditor.RazorLib.DialogCase.DialogInitializer />
+    <BlazorTextEditor.RazorLib.DragCase.DragDisplay />
+    
+    @nameof(MainLayout)&nbsp;rendered:&nbsp;@_renderCount&nbsp;times
+    <br/>
     
     _message:&nbsp;<input @bind="_message" />
     

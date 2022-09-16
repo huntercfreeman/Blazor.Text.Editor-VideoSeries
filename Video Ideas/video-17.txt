@@ -18,13 +18,6 @@ Notes for video 17:
 
 #####
 
-@MainLayout.razor
--<BlazorTextEditor.RazorLib.BlazorTextEditorRazorLibInitializer/>
--@UnselectableClassCss"
--@nameof(MainLayout)&nbsp;rendered:&nbsp;@_renderCount&nbsp;times
-
-#####
-
 @MainLayout.razor.cs
 - NOT A FLUXOR COMPONENT
 -IDisposable
@@ -59,6 +52,15 @@ Notes for video 17:
     DragStateWrap.StateChanged -= DragStateWrapOnStateChanged;
 }
 
+@MainLayout.razor
+-<BlazorTextEditor.RazorLib.BlazorTextEditorRazorLibInitializer/>
+-<BlazorTextEditor.RazorLib.DragCase.DragDisplay/>
+-@UnselectableClassCss"
+-@nameof(MainLayout)&nbsp;rendered:&nbsp;@_renderCount&nbsp;times
+-<br/>
+
+#####
+
 @ResizableDisplay.razor.cs
 -private Func<(MouseEventArgs firstMouseEventArgs, MouseEventArgs secondMouseEventArgs), Task>? _dragEventHandler;
 -private async Task DragEventHandlerEastResizeHandleAsync((MouseEventArgs firstMouseEventArgs, MouseEventArgs secondMouseEventArgs) mouseEventArgsTuple)
@@ -75,6 +77,7 @@ Notes for video 17:
 #########
 
 @blazorTextEditor.css
+-remove background color for resize handles
 -.bte_drag-display {
     z-index: 30;
     width: 100vw;
@@ -118,6 +121,53 @@ private async Task DragEventHandlerMoveHandleAsync(
         mouseEventArgsTuple.secondMouseEventArgs);
 
     await InvokeAsync(StateHasChanged);
+}
+
+-Resize folder
+-ResizeService.cs
+{
+
+-public static void ResizeNorth(ElementDimensions elementDimensions, MouseEventArgs firstMouseEventArgs, MouseEventArgs secondMouseEventArgs)
+
+ClientX and ClientY
+
+ResizeNorth()
+{
+	-var deltaY
+	-Height -= deltaY
+	-Top += deltaY
+}
+
+ResizeEast()
+{
+	-var deltaX
+	-Width += deltaX
+}
+
+ResizeSouth()
+{
+	-var deltaY
+	-Height += deltaY
+}
+
+ResizeWest()
+{
+	-var deltaX
+	-Width -= deltaX
+	-Left += deltaX
+}
+
+-- compose the diagonals of cardinals
+
+Move()
+{
+	-var deltaY
+	-var deltaX
+	
+	-Top += deltaY
+	-Left += deltaX
+}
+
 }
 
 # Youtube Video Description

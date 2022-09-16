@@ -106,14 +106,6 @@
     background-color: orange;
 }
 
-.bte_resize-handle-cardinal {
-    background-color: mediumseagreen;
-}
-
-.bte_resize-handle-diagonal {
-    background-color: red;
-}
-
 .bte_resize-handle-north {
     cursor: n-resize;
 }
@@ -144,4 +136,13 @@
 
 .bte_resize-handle-north-west {
     cursor: nw-resize;
+}
+
+.bte_drag-display {
+    z-index: 30;
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
 }
