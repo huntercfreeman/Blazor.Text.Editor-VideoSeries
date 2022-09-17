@@ -3,4 +3,21 @@
     <div class="bte_section-title">
         Folder Explorer
     </div>
+    
+    <input @bind="_filePath" @bind:event="oninput" />
+    
+    <button class="btn btn-primary"
+            @onclick="DispatchSetFolderExplorerStateOnClick">
+        
+        Open In Folder Explorer
+    </button>
+    
+    <div>
+        @foreach (var absoluteFilePath in _absoluteFilePaths)
+        {
+            <div>
+                @absoluteFilePath.FilenameWithExtension
+            </div>
+        }
+    </div>
 </div>
