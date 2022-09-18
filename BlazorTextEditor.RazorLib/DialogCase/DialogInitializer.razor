@@ -5,6 +5,7 @@
 
     foreach (var dialogRecord in dialogRecords)
     {
-        <DialogDisplay DialogRecord="dialogRecord" />
+        <DialogDisplay @key="dialogRecord.DialogKey" 
+                       DialogRecord="dialogRecord" />
     }
 }

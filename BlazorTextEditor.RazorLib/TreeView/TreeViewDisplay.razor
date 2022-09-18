@@ -1,2 +1,34 @@
 @typeparam TItem
 
+<div class="bte_tree-view-display">
+    <span class="bte_tree-view-display-title @IsActiveDescendantClassCss"
+          style="@($"padding-left: {PaddingLeft}px;")"
+          @onclick="SetActiveDescendantOnClick">
+        <span class="bte_tree-view-display-expansion"
+              @onclick="ToggleIsExpandedOnClick"
+              @onclick:stopPropagation="true">
+            @if (TreeViewModel.IsExpanded)
+            {
+                <IconChevronDown />
+            }
+            else
+            {
+                <IconChevronRight />
+            }
+        </span>
+        
+        @ItemRenderFragment(TreeViewModel)
+    </span>
+    
+    <div class="bte_tree-view-display-body">
+        @foreach (var child in TreeViewModel.Children)
+        {
+            <TreeViewDisplay @key="child.Id"
+                             TreeViewModel="child"
+                             ItemRenderFragment="ItemRenderFragment"
+                             GetRootFunc="() => Root"
+                             Depth="Depth + 1" />
+
+        }
+    </div>
+</div>

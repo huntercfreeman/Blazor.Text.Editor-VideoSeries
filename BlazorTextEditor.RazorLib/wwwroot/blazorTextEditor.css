@@ -195,3 +195,7 @@
     left: 0;
     top: 0;
 }
+
+.bte_tree-view-display-title.bte_active {
+    background-color: #ADD6FF;
+}

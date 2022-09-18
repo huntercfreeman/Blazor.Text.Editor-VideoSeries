@@ -1,3 +1,5 @@
+@using BlazorTextEditor.RazorLib.TreeView
+
 <div class="bte_folder-explorer-display"
      style="@FolderExplorerElementDimensions.StyleString">
     <div class="bte_section-title">
@@ -13,11 +15,13 @@
     </button>
     
     <div>
-        @foreach (var absoluteFilePath in _absoluteFilePaths)
+        @if (_rootTreeViewModel is not null)
         {
-            <div>
-                @absoluteFilePath.FilenameWithExtension
-            </div>
+            <TreeViewDisplay TreeViewModel="_rootTreeViewModel">
+                <ItemRenderFragment Context="treeViewModel">
+                    @treeViewModel.Item.FilenameWithExtension
+                </ItemRenderFragment>                
+            </TreeViewDisplay>
         }
     </div>
 </div>

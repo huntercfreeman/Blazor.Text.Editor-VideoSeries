@@ -1,7 +1,9 @@
 using System.Collections.Immutable;
 using BlazorTextEditor.ClassLib.Dimensions;
 using BlazorTextEditor.ClassLib.FileSystem.Classes;
+using BlazorTextEditor.ClassLib.FileSystem.Interfaces;
 using BlazorTextEditor.ClassLib.Store.FolderExplorerCase;
+using BlazorTextEditor.ClassLib.TreeView;
 using Fluxor;
 using Microsoft.AspNetCore.Components;
 
@@ -18,7 +20,7 @@ public partial class FolderExplorerDisplay : ComponentBase, IDisposable
     public ElementDimensions FolderExplorerElementDimensions { get; set; } = null!;
 
     private string _filePath = string.Empty;
-    private ImmutableArray<AbsoluteFilePath> _absoluteFilePaths = ImmutableArray<AbsoluteFilePath>.Empty;
+    private TreeViewModel<IAbsoluteFilePath>? _rootTreeViewModel;
 
     protected override void OnInitialized()
     {
@@ -31,23 +33,38 @@ public partial class FolderExplorerDisplay : ComponentBase, IDisposable
     {
         if (FolderExplorerStateWrap.Value.AbsoluteFilePath is null)
             return;
-        
-        var absoluteFilePathString = 
-            FolderExplorerStateWrap.Value.AbsoluteFilePath.GetAbsoluteFilePathString();
+
+        _rootTreeViewModel = new TreeViewModel<IAbsoluteFilePath>(
+            FolderExplorerStateWrap.Value.AbsoluteFilePath, 
+            LoadChildrenAsync);
+
+        _rootTreeViewModel.LoadChildrenFuncAsync.Invoke(_rootTreeViewModel);
+    }
+    
+    private Task LoadChildrenAsync(TreeViewModel<IAbsoluteFilePath> treeViewModel)
+    {
+        var absoluteFilePathString = treeViewModel.Item.GetAbsoluteFilePathString();
 
         var childFiles = Directory
             .GetFiles(absoluteFilePathString)
+            .OrderBy(filename => filename)
             .Select(cf => new AbsoluteFilePath(cf, false));
         
         var childDirectories = Directory
             .GetDirectories(absoluteFilePathString)
+            .OrderBy(filename => filename)
             .Select(cd => new AbsoluteFilePath(cd, true));
 
-        _absoluteFilePaths = childDirectories
+        var childTreeViewModels = childDirectories
             .Union(childFiles)
-            .ToImmutableArray();
-    }
+            .Select(afp => new TreeViewModel<IAbsoluteFilePath>(afp, LoadChildrenAsync));
 
+        treeViewModel.Children.Clear();
+        treeViewModel.Children.AddRange(childTreeViewModels);
+        
+        return Task.CompletedTask;
+    }
+    
     private void DispatchSetFolderExplorerStateOnClick()
     {
         if (!Directory.Exists(_filePath))
