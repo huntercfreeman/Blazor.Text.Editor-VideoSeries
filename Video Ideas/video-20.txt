@@ -1,0 +1,126 @@
+Notes for video 20:
+
+# Intent
+{
+-Folder Explorer 
+	-(Generic TreeView Blazor Component)
+}
+
+# Plan
+{
+-_rootTreeViewModel
+-@using BlazorTextEditor.RazorLib.TreeView
+-<TreeViewDisplay/>
+	-Pass Parameter TreeViewModel
+		-_rootTreeViewModel
+	-ItemRenderFragment Context=""
+-FolderExplorerStateWrapOnStateChanged()
+	-_rootTreeViewModel = 
+		new(AbsoluteFilePath, LoadChildrenAsync)
+-Use IAbsoluteFilePath the interface
+-LoadChildrenFuncAsync should be
+-LoadChildrenAsync()
+	-Func<TreeViewModel<TItem>, Task>
+	-OrderBy filename
+	-treeViewModel.Children.AddRange
+-Add [Parameter](s) to TreeViewDisplay.razor
+	-ItemRenderFragment
+	-TreeViewModel
+-if (_rootTreeViewModel is not null)
+	-<TreeViewDisplay/>
+-TreeViewDisplay component
+<"bte_tree-view-display">
+	<"bte_tree-view-display-title">
+		<"bte_tree-view-display-expansion">
+		
+		</"bte_tree-view-display-expansion">
+	</"bte_tree-view-display-title">
+	
+	<div class="bte_tree-view-display-body">
+        foreach ()
+        {
+        	<TreeViewDisplay @key="child.Id" ... />
+		}
+    </div>
+</"bte_tree-view-display">
+-Add @key to the DialogInitializer.razor
+-[Parameter]GetRootFunc?
+-Root => GetRootFunc is null ? TreeViewModel : GetRootFunc.Invoke();
+-Nullable ActiveDescendant
+-tabindex="@TitleTabIndex"
+	-ActiveDescendant is not null &&
+	-ActiveDescendant.Id == TreeViewModel.Id
+		? 0
+		: -1
+-@ref="_titleElementReference"
+-@onclick="ToggleIsExpanded"
+-FireAndForgetLoadChildren()
+	-In a later video add a 
+		caching mechanism of some sort
+-ToggleIsExpanded()
+-the expansion element @onclick:stopPropagation="true"
+-title element @onclick="SetActiveDescendantOnClick"
+-UpdateActiveDescendantAndRerender()
+-.bte_tree-view-display-title.bte_active {
+    background-color: #ADD6FF;
+}
+-IsActiveDescendant => (take from TitleTabIndex)
+-IsActiveDescendantClassCss
+-### RUN THE PROGRAM ###
+	-The IsActiveDescendantClassCss should not clear
+		correctly.
+-_previousTreeViewModel
+-public void Dispose()
+    {
+        TreeViewModel.OnStateChanged -= TreeViewModelOnOnStateChanged;
+    }
+-protected override Task OnParametersSetAsync()
+    {
+        if (_previousTreeViewModel is null || 
+            _previousTreeViewModel.Id != TreeViewModel.Id)
+        {
+            if (_previousTreeViewModel is not null)
+            {
+                _previousTreeViewModel.OnStateChanged -= TreeViewModelOnOnStateChanged;
+            }
+            
+            TreeViewModel.OnStateChanged += TreeViewModelOnOnStateChanged;
+        }
+        
+        return base.OnParametersSetAsync();
+    }
+
+
+-https://github.com/microsoft/vscode-codicons
+	-ZOOM IN A LOT (~200%)
+	-chevron-right
+	-chevron-down
+-TreeViewDisplay component
+	-@if(IsExpanded)
+}
+
+# Youtube Video Description
+{
+	Part 19:
+	https://youtu.be/cOqvu2wQtYA
+
+	vscode-codicons:
+	https://github.com/microsoft/vscode-codicons
+
+	Starting Point Repo:
+	https://github.com/huntercfreeman/BlazorTextEditor
+	
+	BlazorStudio Repo:
+	https://github.com/huntercfreeman/BlazorStudio
+	
+	Fluxor Repo:
+	https://github.com/mrpmorris/Fluxor
+	
+	Photino.Blazor:
+	https://github.com/tryphotino/photino.Blazor
+}
+
+# Youtube Video Title
+{
+	TreeView Component | Blazor Text Editor Part 20
+}
