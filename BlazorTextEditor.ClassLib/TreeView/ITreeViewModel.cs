@@ -27,11 +27,6 @@ public class TreeViewModel<TItem> : ITreeViewModel
     public event EventHandler<bool>? OnStateChanged;
     public event EventHandler? OnActiveDescendantChanged;
 
-    public void SetActiveDescendant()
-    {
-        
-    }
-
     public void InvokeOnStateChanged(bool setFocus)
     {
         OnStateChanged?.Invoke(this, setFocus);

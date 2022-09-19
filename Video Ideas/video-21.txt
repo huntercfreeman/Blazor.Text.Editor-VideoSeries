@@ -1,0 +1,208 @@
+Notes for video 21:
+
+# Intent
+{
+-Add Keyboard events
+	-Folder Explorer 
+		-(Generic TreeView Blazor Component)
+}
+
+# Plan
+
+make finalize video-21.txt
+
+-Update Font-Sizes so easier to see on video
+######################################
+.bte_main-layout {
+change font-size to 32px for video was 24px
+    font-size: 32px;
+    
+}
+.bte_text-editor-cursor {
+	-change width: 1.5px; 
+		-to width: 4px;
+}
+.bte_text-editor-caret-row {
+	change 
+		-border: 1.5px solid red; 
+			-to border: 4px solid red;
+}
+input[type="checkbox"]{
+    width: 1.75rem;
+    height: 1.75rem;
+}
+private const int PADDING_LEFT_PER_DEPTH_IN_PIXELS = 24;
+######################################
+
+-_previousTreeViewModel = TreeViewModel
+	in OnParametersSetAsync
+-PaddingLeft property should be private not public
+-string RootTabIndex
+-HandleRootOnKeyDown
+	-MovementKeys.ARROW_DOWN
+	-AlternateMovementKeys.ARROW_DOWN
+-SetActiveDescendantAndRerender(TreeViewModel<TItem>? treeViewModel)
+-.bte_tree-view-display:focus {
+    outline-offset: -5px;
+    outline: solid #ADD6FF 10px;
+}
+-Delete TreeViewModel.SetActiveDescendant
+-TitleTabIndex ? 0 : -1
+-.bte_tree-view-display-title.bte_active {
+    background-color: #d9dcdf;
+}
+-.bte_tree-view-display-title.bte_active:focus {
+    background-color: #ADD6FF;
+}
+-@ref="_titleElementReference"
+-TreeViewModelOnStateChanged rename bool argument
+	to setFocus
+@onkeydown="HandleTitleOnKeyDown"
+@onkeydown:preventDefault="true"
+-public class CustomKeyDownEventArgs : EventArgs
+{
+    public string Key { get; set; }
+    public string Code { get; set; }
+    public bool CtrlWasPressed { get; set; }
+    public bool ShiftWasPressed { get; set; }
+    public bool AltWasPressed { get; set; }
+}
+-[EventHandler("oncustomkeydown", typeof(CustomKeyDownEventArgs), enableStopPropagation: true, enablePreventDefault: true)]
+public static class EventHandlers
+{
+}
+-Blazor.registerCustomEventType('customkeydown', {
+    browserEventName: 'keydown',
+    createEventArgs: e => {
+        if (e.code !== "Tab") {
+            e.preventDefault();
+        }
+        
+        return {
+            "key": e.key,
+            "code": e.code,
+            "ctrlWasPressed": e.ctrlKey,
+            "shiftWasPressed": e.shiftKey,
+            "altWasPressed": e.altKey
+        };
+    }
+});
+@onkeydown:stopPropagation="true"
+-@using BlazorTextEditor.ClassLib.CustomEvents
+-@oncustomkeydown="HandleTitleOnCustomKeyDown"
+@onkeydown:stopPropagation="true"
+-In TreeViewDisplay.razor:
+	-@if (TreeViewModel.IsExpanded)
+		-then for over and render children
+-[Parameter]
+    public int Index { get; set; }
+-var immutableChildArray = TreeViewModel.Children.ToImmutableArray();
+-var index = i;
+-[Parameter]
+    public TreeViewDisplay<TItem>? ParentTreeViewDisplay { get; set; }
+-switch (customKeyDownEventArgs.Key)
+        {
+            case KeyboardKeyFacts.MovementKeys.ARROW_LEFT:
+            case KeyboardKeyFacts.AlternateMovementKeys.ARROW_LEFT:
+            {
+                // CASE: TreeViewModel.IsExpanded
+                // CASE: !TreeViewModel.IsExpanded && ParentTreeViewDisplay is not null
+
+                break;
+            }
+            case KeyboardKeyFacts.MovementKeys.ARROW_DOWN:
+            case KeyboardKeyFacts.AlternateMovementKeys.ARROW_DOWN:
+            {
+            	local
+                // CASE: TreeViewModel.IsExpanded && has children
+                // CASE: Parent is not null
+                //     SUB_CASE: TreeViewModel is NOT the last child
+                //     SUB_CASE: TreeViewModel is the last child
+                //     {
+                //         /*
+                //                  * Algorithm:
+                //                  *
+                //                  * Capture a variable reference named 'targetDisplay' to the TreeViewDisplay.
+                //                  *
+                //                  * while (targetDisplay is final child of their respective parent // so targetDisplay.Parent.Last() == targetDisplay)
+                //                  * {
+                //                  *     if (targetDisplay.Parent is null)
+                //                  *         break;
+                //                  * 
+                //                  *     update targetDisplay = targetDisplay.Parent;
+                //                  * }
+                //                  * 
+                //                  * 
+                //                  *
+                //                  *  if (targetDisplay.ParentTreeViewDisplay is null ||
+                //                         targetDisplay.Index == ParentTreeViewDisplay.TreeViewModel.Children.Count - 1)
+                //                  *      do nothing
+                //
+                //                     targetDisplay = targetDisplay.nextSibling
+                //                  * 
+                //                  * SetActiveDescendantAndRerender(targetDisplay);
+                //                  */
+                //     }
+
+                break;
+            }
+            case KeyboardKeyFacts.MovementKeys.ARROW_UP:
+            case KeyboardKeyFacts.AlternateMovementKeys.ARROW_UP:
+            {
+                // CASE: ParentDisplay is null
+                // CASE: ParentDisplay is NOT null
+                //     SUB_CASE: First child of parent
+                //     SUB_CASE: NOT first child of parent
+                //         SUB_CASE: Previous sibling IsExpanded && PreviousSibling.Children.Any()
+
+                break;
+            }
+            case KeyboardKeyFacts.MovementKeys.ARROW_RIGHT:
+            case KeyboardKeyFacts.AlternateMovementKeys.ARROW_RIGHT:
+            {
+                // -CASE: TreeViewModel.IsExpanded  && TreeViewModel.Children.Any()
+                //     -CASE: (NOT) TreeViewModel.IsExpanded
+                //         -SUB_CASE: TreeViewModel.IsExpandable
+                //         -SUB_CASE: (NOT) TreeViewModel.IsExpandable
+
+                break;
+            }
+            case KeyboardKeyFacts.MovementKeys.HOME:
+            {
+                // if (customKeyDownEventArgs.CtrlWasPressed)
+                // else if (Root.Children.Any())
+
+                break;
+            }
+            case KeyboardKeyFacts.MovementKeys.END:
+            {
+                // if (customKeyDownEventArgs.CtrlWasPressed)
+                // else if (Root.Children.Any())
+
+                break;
+            }
+        }
+}
+
+# Youtube Video Description
+{
+	Part 20:
+	https://youtu.be/jG3kvr0VNhA
+
+	Starting Point Repo:
+	https://github.com/huntercfreeman/BlazorTextEditor
+	
+	BlazorStudio Repo:
+	https://github.com/huntercfreeman/BlazorStudio
+	
+	Fluxor Repo:
+	https://github.com/mrpmorris/Fluxor
+	
+	Photino.Blazor:
+	https://github.com/tryphotino/photino.Blazor
+}
+
+# Youtube Video Title
+{
+	TreeView Component ( Keyboard ) | Blazor Text Editor Part 21
+}

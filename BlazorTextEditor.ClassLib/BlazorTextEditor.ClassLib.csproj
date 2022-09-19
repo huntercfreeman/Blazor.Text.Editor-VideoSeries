@@ -12,6 +12,9 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Reference Include="Microsoft.AspNetCore.Components">
+        <HintPath>..\..\..\.nuget\packages\microsoft.aspnetcore.components\6.0.1\lib\net6.0\Microsoft.AspNetCore.Components.dll</HintPath>
+      </Reference>
       <Reference Include="Microsoft.AspNetCore.Components.Web">
         <HintPath>..\..\..\.nuget\packages\microsoft.aspnetcore.components.web\6.0.7\lib\net6.0\Microsoft.AspNetCore.Components.Web.dll</HintPath>
       </Reference>

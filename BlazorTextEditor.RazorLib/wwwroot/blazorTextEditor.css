@@ -1,3 +1,8 @@
+input[type="checkbox"]{
+    width: 1.75rem;
+    height: 1.75rem;
+}
+
 .bte_text-editor {
 }
 
@@ -34,7 +39,7 @@
 
 .bte_text-editor-cursor {
     position: absolute;
-    width: 1.5px;
+    width: 4px;
     display: inline-block;
     background-color: black;
     margin: 0;
@@ -46,7 +51,7 @@
 }
 
 .bte_text-editor-caret-row {
-    border: 1.5px solid red;
+    border: 4px solid red;
     position: absolute;
     left: 0;
     width: 100%;
@@ -75,7 +80,7 @@
 }
 
 .bte_main-layout {
-    font-size: 24px;
+    font-size: 32px;
     width: 100vw;
     height: 100vh;
     overflow: auto;
@@ -196,6 +201,15 @@
     top: 0;
 }
 
+.bte_tree-view-display:focus {
+    outline: solid #ADD6FF 10px;
+    outline-offset: -5px;
+}
+
 .bte_tree-view-display-title.bte_active {
+    background-color: #d9dcdf;
+}
+
+.bte_tree-view-display-title.bte_active:focus {
     background-color: #ADD6FF;
 }
