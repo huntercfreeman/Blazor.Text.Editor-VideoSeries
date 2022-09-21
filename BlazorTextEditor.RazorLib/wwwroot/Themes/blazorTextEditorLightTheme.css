@@ -1,0 +1,22 @@
+.bte_light-theme {
+    --bte_primary-font-color: black;
+    --bte_method-foreground-color: red;
+    --bte_text-editor-cursor-foreground-color: black;
+    --bte_text-selection-background-color: #ADD6FF;
+    --bte_header-background-color: #7fa1e1;
+    --bte_primary-border-color: black;
+    --bte_body-background-color: rgb(253, 253, 253);
+    --bte_footer-background-color: #d4d4d4;
+    --bte_resize-column-background-color: black;
+    --bte_resize-row-background-color: black;
+    --bte_dialog-display-background-color: rgb(252, 252, 245);
+    --bte_primary-box-shadow-color: #000000;
+    --bte_dialog-display-toolbar-background-color: rgb(192, 214, 247);
+    --bte_primary-hover-background-color: orange;
+    --primary-outline-color: #ADD6FF;
+    --primary-active-not-focused-background-color: #d9dcdf;
+    --primary-active-focused-background-color: #ADD6FF;
+    --bte_text-editor-caret-row-border-color: red;
+    --bte_newline-foreground-color: #007F00;
+    --bte_newline-background-color: #faeee2;
+}

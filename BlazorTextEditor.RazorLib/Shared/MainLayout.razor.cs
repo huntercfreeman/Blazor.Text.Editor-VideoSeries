@@ -1,6 +1,7 @@
 using BlazorTextEditor.ClassLib.Dimensions;
 using BlazorTextEditor.ClassLib.Store.DialogCase;
 using BlazorTextEditor.ClassLib.Store.DragCase;
+using BlazorTextEditor.ClassLib.Store.ThemeCase;
 using BlazorTextEditor.RazorLib.DialogCase;
 using Fluxor;
 using Microsoft.AspNetCore.Components;
@@ -11,6 +12,8 @@ public partial class MainLayout : LayoutComponentBase, IDisposable
 {
     [Inject]
     private IState<DragState> DragStateWrap { get; set; } = null!;
+    [Inject]
+    private IState<ThemeState> ThemeStateWrap { get; set; } = null!;
     [Inject]
     private IDispatcher Dispatcher { get; set; } = null!;
 
@@ -29,6 +32,7 @@ public partial class MainLayout : LayoutComponentBase, IDisposable
     protected override void OnInitialized()
     {
         DragStateWrap.StateChanged += DragStateWrapOnStateChanged;
+        ThemeStateWrap.StateChanged += ThemeStateWrapOnStateChanged;
         
         var bodyHeight = _bodyElementDimensions.DimensionAttributes
             .Single(da => da.DimensionAttributeKind == DimensionAttributeKind.Height);
@@ -74,7 +78,12 @@ public partial class MainLayout : LayoutComponentBase, IDisposable
         
         base.OnInitialized();
     }
-    
+
+    private void ThemeStateWrapOnStateChanged(object? sender, EventArgs e)
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
     protected override void OnAfterRender(bool firstRender)
     {
         _renderCount++;
@@ -111,5 +120,6 @@ public partial class MainLayout : LayoutComponentBase, IDisposable
     public void Dispose()
     {
         DragStateWrap.StateChanged -= DragStateWrapOnStateChanged;
+        ThemeStateWrap.StateChanged -= ThemeStateWrapOnStateChanged;
     }
 }

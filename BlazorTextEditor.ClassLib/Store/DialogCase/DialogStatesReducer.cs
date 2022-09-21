@@ -8,6 +8,12 @@ public class DialogStatesReducer
     public static DialogStates ReduceRegisterDialogRecordAction(DialogStates previousDialogStates,
         RegisterDialogRecordAction registerDialogRecordAction)
     {
+        if (previousDialogStates.DialogRecords
+            .Any(x => x.DialogKey == registerDialogRecordAction.DialogRecord.DialogKey))
+        {
+            return previousDialogStates;
+        }
+        
         var nextList = previousDialogStates.DialogRecords
             .Add(registerDialogRecordAction.DialogRecord);
 

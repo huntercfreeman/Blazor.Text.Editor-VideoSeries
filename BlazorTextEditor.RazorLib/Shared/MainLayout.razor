@@ -1,7 +1,7 @@
 @using BlazorTextEditor.ClassLib.TextEditor
 @inherits LayoutComponentBase
 
-<div class="bte_main-layout @UnselectableClassCss">
+<div class="bte_main-layout @UnselectableClassCss @ThemeStateWrap.Value.ActiveThemeRecord.ClassCssString">
     <BlazorTextEditor.RazorLib.BlazorTextEditorRazorLibInitializer />
     <BlazorTextEditor.RazorLib.DialogCase.DialogInitializer />
     <BlazorTextEditor.RazorLib.DragCase.DragDisplay />
