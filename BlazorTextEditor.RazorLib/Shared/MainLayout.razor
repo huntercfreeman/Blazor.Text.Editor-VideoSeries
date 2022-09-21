@@ -1,7 +1,9 @@
 @using BlazorTextEditor.ClassLib.TextEditor
+@using BlazorTextEditor.ClassLib.Context
 @inherits LayoutComponentBase
 
-<div class="bte_main-layout @UnselectableClassCss @ThemeStateWrap.Value.ActiveThemeRecord.ClassCssString">
+<ContextBoundary ContextRecord="ContextFacts.GlobalContext"
+                 ClassCssString="@($"bte_main-layout {UnselectableClassCss} {ThemeStateWrap.Value.ActiveThemeRecord.ClassCssString}")">
     <BlazorTextEditor.RazorLib.BlazorTextEditorRazorLibInitializer />
     <BlazorTextEditor.RazorLib.DialogCase.DialogInitializer />
     <BlazorTextEditor.RazorLib.DragCase.DragDisplay />
@@ -15,4 +17,4 @@
                                                           ReRenderFuncAsync="ReRenderAsync" />
     
     <BlazorTextEditorFooter FooterElementDimensions="_footerElementDimensions" />
-</div>
+</ContextBoundary>

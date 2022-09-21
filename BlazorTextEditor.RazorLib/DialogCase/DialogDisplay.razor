@@ -1,12 +1,14 @@
-<div class="bte_dialog-display"
-     style="@StyleCssString">
+@using BlazorTextEditor.ClassLib.Context
+<ContextBoundary ContextRecord="ContextFacts.DialogDisplayContext"
+                 ClassCssString="bte_dialog-display"
+                 StyleCssString="@StyleCssString">
     @if (DialogRecord.IsResizable)
     {
-        <BlazorTextEditor.RazorLib.ResizableCase.ResizableDisplay @ref="_resizableDisplay" 
+        <BlazorTextEditor.RazorLib.ResizableCase.ResizableDisplay @ref="_resizableDisplay"
                                                                   ElementDimensions="DialogRecord.ElementDimensions"
                                                                   ReRenderFuncAsync="ReRenderAsync"/>
     }
-    
+
     <div class="bte_dialog-display-toolbar"
          @onmousedown="SubscribeMoveHandle">
         <div class="bte_dialog-display-title">
@@ -37,5 +39,4 @@
                               Parameters="DialogRecord.Parameters"/>
         </CascadingValue>
     </div>
-</div>
-
+</ContextBoundary>

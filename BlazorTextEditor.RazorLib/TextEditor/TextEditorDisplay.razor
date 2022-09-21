@@ -1,237 +1,242 @@
 @using System.Text
+@using BlazorTextEditor.ClassLib.Context
 @using BlazorTextEditor.ClassLib.TextEditor
-<div @ref="_textEditorDisplayElementReference"
-     @onclick="FocusTextEditorOnClickAsync"
-     @onkeydown="HandleOnKeyDownAsync"
-     @onkeydown:preventDefault="true"
-     class="bte_text-editor">
 
-    <div>
-        <input type="checkbox" @bind="_showWhitespace" />
-        
-        <span>Show Whitespace</span>
-    </div>
+<ContextBoundary ContextRecord="ContextFacts.TextEditorContext">
+    <div @ref="_textEditorDisplayElementReference"
+         @onclick="FocusTextEditorOnClickAsync"
+         @onkeydown="HandleOnKeyDownAsync"
+         @onkeydown:preventDefault="true"
+         class="bte_text-editor">
     
-    <div>
-        <input type="checkbox" @bind="_showNewlines" />
-        
-        <span>Show Newlines</span>
-    </div>
-    
-    <div>
-        <input type="checkbox" @bind="_showGetAllTextEscaped" />
-        
-        <span>Show GetAllTextEscaped</span>
-    </div>
-    
-    @if (_showGetAllTextEscaped)
-    {
-        @GetAllTextEscaped
-    }
-    
-    
-<div>
-        AnchorPositionIndex:&nbsp;
-        @if (_textEditorCursor.TextEditorSelection.AnchorPositionIndex.HasValue)
-        {
-            <text>@_textEditorCursor.TextEditorSelection.AnchorPositionIndex.Value</text>
-        }
-        else
-        {
-            <text>null</text>
-        }
-    </div>
-    
-    <div>
-        Selection&nbsp;EndingPositionIndex:&nbsp;
-        @_textEditorCursor.TextEditorSelection.EndingPositionIndex
-    </div>
-    
-    <div>
-        @if (_textEditorCursor.TextEditorSelection.AnchorPositionIndex.HasValue &&
-             _textEditorCursor.TextEditorSelection.AnchorPositionIndex.Value != 
-                _textEditorCursor.TextEditorSelection.EndingPositionIndex)
-        {
-            var lowerBound = _textEditorCursor.TextEditorSelection.AnchorPositionIndex.Value; 
-            var upperBound = _textEditorCursor.TextEditorSelection.EndingPositionIndex;
-                
-            if (lowerBound > upperBound)
-            {
-                (lowerBound, upperBound) = (upperBound, lowerBound);
-            }
+        <div>
+            <input type="checkbox" @bind="_showWhitespace" />
             
-            var result = TextEditorStatesSelection.Value.GetTextRange(lowerBound,
-                upperBound - lowerBound);
-
-            if (result.Length != 0)
+            <span>Show Whitespace</span>
+        </div>
+        
+        <div>
+            <input type="checkbox" @bind="_showNewlines" />
+            
+            <span>Show Newlines</span>
+        </div>
+        
+        <div>
+            <input type="checkbox" @bind="_showGetAllTextEscaped" />
+            
+            <span>Show GetAllTextEscaped</span>
+        </div>
+        
+        @if (_showGetAllTextEscaped)
+        {
+            @GetAllTextEscaped
+        }
+        
+        
+    <div>
+            AnchorPositionIndex:&nbsp;
+            @if (_textEditorCursor.TextEditorSelection.AnchorPositionIndex.HasValue)
             {
-                <text>@result.Replace("\r\n", "\\r\\n").Replace("\n", "\\n").Replace("\r", "\\r").Replace(" ", "·").Replace("\t", "--->")</text>
+                <text>@_textEditorCursor.TextEditorSelection.AnchorPositionIndex.Value</text>
             }
             else
             {
                 <text>null</text>
             }
-        }
-        else
-        {
-            <text>null</text>
-        }
-    </div>
-    
-    <button class="btn btn-primary"
-            @onclick="ApplyRoslynSyntaxHighlightingOnClick">
-        ApplyRoslynSyntaxHighlightingOnClick
-    </button>
-
-    <div class="bte_text-editor-content bte_unselectable"
-         id="@TextEditorContentId"
-         @onmousedown="HandleContentOnMouseDownAsync"
-         @onmousemove="HandleContentOnMouseMoveAsync">
-        <div class="bte_measure-character-width-and-row-height bte_row"
-             id="@MeasureCharacterWidthAndRowHeightId">
-            
-            @for (int i = 0; i < _testStringRepeatCount; i++)
-            {
-                <text>
-                    @_testStringForMeasurement    
-                </text>
-            }
         </div>
         
+        <div>
+            Selection&nbsp;EndingPositionIndex:&nbsp;
+            @_textEditorCursor.TextEditorSelection.EndingPositionIndex
+        </div>
         
-    <div class="bte_text-selection-group">
+        <div>
             @if (_textEditorCursor.TextEditorSelection.AnchorPositionIndex.HasValue &&
                  _textEditorCursor.TextEditorSelection.AnchorPositionIndex.Value != 
-                 _textEditorCursor.TextEditorSelection.EndingPositionIndex)
+                    _textEditorCursor.TextEditorSelection.EndingPositionIndex)
             {
                 var lowerBound = _textEditorCursor.TextEditorSelection.AnchorPositionIndex.Value; 
                 var upperBound = _textEditorCursor.TextEditorSelection.EndingPositionIndex;
-                
+                    
                 if (lowerBound > upperBound)
                 {
                     (lowerBound, upperBound) = (upperBound, lowerBound);
                 }
-
-                var localTextEditor = TextEditorStatesSelection.Value;
                 
-                var selectionIndex = lowerBound;
-                
-                var firstRowToSelectData = localTextEditor.FindRowIndexRowStartRowEndingTupleFromPositionIndex(selectionIndex);
-                var lastRowToSelectData = localTextEditor.FindRowIndexRowStartRowEndingTupleFromPositionIndex(upperBound);
-                
-                List<int> rowIndicesToSelect = new();
-
-                for (int i = firstRowToSelectData.rowIndex; i <= lastRowToSelectData.rowIndex; i++)
+                var result = TextEditorStatesSelection.Value.GetTextRange(lowerBound,
+                    upperBound - lowerBound);
+    
+                if (result.Length != 0)
                 {
-                    var rowIndex = i;
+                    <text>@result.Replace("\r\n", "\\r\\n").Replace("\n", "\\n").Replace("\r", "\\r").Replace(" ", "·").Replace("\t", "--->")</text>
+                }
+                else
+                {
+                    <text>null</text>
+                }
+            }
+            else
+            {
+                <text>null</text>
+            }
+        </div>
+        
+        <button class="btn btn-primary"
+                @onclick="ApplyRoslynSyntaxHighlightingOnClick">
+            ApplyRoslynSyntaxHighlightingOnClick
+        </button>
+    
+        <div class="bte_text-editor-content bte_unselectable"
+             id="@TextEditorContentId"
+             @onmousedown="HandleContentOnMouseDownAsync"
+             @onmousemove="HandleContentOnMouseMoveAsync">
+            <div class="bte_measure-character-width-and-row-height bte_row"
+                 id="@MeasureCharacterWidthAndRowHeightId">
+                
+                @for (int i = 0; i < _testStringRepeatCount; i++)
+                {
+                    <text>
+                        @_testStringForMeasurement    
+                    </text>
+                }
+            </div>
+            
+            
+        <div class="bte_text-selection-group">
+                @if (_textEditorCursor.TextEditorSelection.AnchorPositionIndex.HasValue &&
+                     _textEditorCursor.TextEditorSelection.AnchorPositionIndex.Value != 
+                     _textEditorCursor.TextEditorSelection.EndingPositionIndex)
+                {
+                    var lowerBound = _textEditorCursor.TextEditorSelection.AnchorPositionIndex.Value; 
+                    var upperBound = _textEditorCursor.TextEditorSelection.EndingPositionIndex;
                     
-                    <div class="bte_text-selection"
-                         style="@GetTextSelectionStyleCss(lowerBound, upperBound, rowIndex)">
+                    if (lowerBound > upperBound)
+                    {
+                        (lowerBound, upperBound) = (upperBound, lowerBound);
+                    }
+    
+                    var localTextEditor = TextEditorStatesSelection.Value;
+                    
+                    var selectionIndex = lowerBound;
+                    
+                    var firstRowToSelectData = localTextEditor.FindRowIndexRowStartRowEndingTupleFromPositionIndex(selectionIndex);
+                    var lastRowToSelectData = localTextEditor.FindRowIndexRowStartRowEndingTupleFromPositionIndex(upperBound);
+                    
+                    List<int> rowIndicesToSelect = new();
+    
+                    for (int i = firstRowToSelectData.rowIndex; i <= lastRowToSelectData.rowIndex; i++)
+                    {
+                        var rowIndex = i;
+                        
+                        <div class="bte_text-selection"
+                             style="@GetTextSelectionStyleCss(lowerBound, upperBound, rowIndex)">
+                        </div>
+                    }
+                }
+            </div>
+    
+            @if (_rows is not null &&
+                 _rows.Any())
+            {
+                var tabKeyOutput = "&nbsp;&nbsp;&nbsp;&nbsp;";
+                var spaceKeyOutput = "&nbsp;";
+        
+                if (_showWhitespace)
+                {
+                    tabKeyOutput = "--->";
+                    spaceKeyOutput = "·";
+                }
+                
+                for (var i = 0; i < _rows.Count; i++)
+                {
+                    var index = i;
+                    var row = _rows[index];
+                    
+                    <div class="bte_gutter"
+                         style="@GetGutterStyleCss(index)">
+                        @(index + 1)
+                    </div>
+                    
+                    <div class="bte_row"
+                         style="@GetRowStyleCss(index)">
+                        @if (row.Any())
+                        {
+                            var spanBuilder = new StringBuilder();
+                            var currentDecorationByte = row.First().DecorationByte;
+    
+                            foreach (var richCharacter in row)
+                            {
+                                if (currentDecorationByte == richCharacter.DecorationByte)
+                                {
+                                    switch (richCharacter.Value)
+                                    {
+                                        case '\t':
+                                            spanBuilder.Append(tabKeyOutput);
+                                            break;
+                                        case ' ':
+                                            spanBuilder.Append(spaceKeyOutput);
+                                            break;
+                                        case '\r':
+                                            break;
+                                        case '\n':
+                                            break;
+                                        case '<':
+                                            spanBuilder.Append("&lt;");
+                                            break;
+                                        case '>':
+                                            spanBuilder.Append("&gt;");
+                                            break;
+                                        case '"':
+                                            spanBuilder.Append("&quot;");
+                                            break;
+                                        case '\'':
+                                            spanBuilder.Append("&#39;");
+                                            break;
+                                        case '&':
+                                            spanBuilder.Append("&amp;");
+                                            break;
+                                        default:
+                                            spanBuilder.Append(richCharacter.Value);
+                                            break;
+                                    }
+                                }
+                                else
+                                {
+                                    <span class="@GetCssClass(currentDecorationByte)">
+                                        @((MarkupString)spanBuilder.ToString())
+                                    </span>
+    
+                                    spanBuilder.Clear();
+                                    spanBuilder.Append(richCharacter.Value);
+                                    currentDecorationByte = richCharacter.DecorationByte;
+                                }
+                            }
+    
+                            /* Final grouping of contiguous characters */
+                            <span class="@GetCssClass(currentDecorationByte)">
+                                @((MarkupString)spanBuilder.ToString())
+                            </span>
+                        }
+                        
+                        @if(_showNewlines) {
+                            var rowEndingTuple = TextEditorStatesSelection.Value.RowEndingPositions[i];
+                            
+                            <span class="bte_newline">
+                                @rowEndingTuple.rowEndingKind.AsCharactersHtmlEscaped()    
+                            </span>
+                        }
                     </div>
                 }
             }
+          
+            @if (_characterWidthAndRowHeight is not null)
+            {
+                <TextEditorCursorDisplay @ref="_textEditorCursorDisplay" 
+                                         TextEditorCursor="_textEditorCursor"
+                                         FontWidthAndElementHeight="_characterWidthAndRowHeight"
+                                         TextEditor="TextEditorStatesSelection.Value" />    
+            }
         </div>
-
-        @if (_rows is not null &&
-             _rows.Any())
-        {
-            var tabKeyOutput = "&nbsp;&nbsp;&nbsp;&nbsp;";
-            var spaceKeyOutput = "&nbsp;";
-    
-            if (_showWhitespace)
-            {
-                tabKeyOutput = "--->";
-                spaceKeyOutput = "·";
-            }
-            
-            for (var i = 0; i < _rows.Count; i++)
-            {
-                var index = i;
-                var row = _rows[index];
-                
-                <div class="bte_gutter"
-                     style="@GetGutterStyleCss(index)">
-                    @(index + 1)
-                </div>
-                
-                <div class="bte_row"
-                     style="@GetRowStyleCss(index)">
-                    @if (row.Any())
-                    {
-                        var spanBuilder = new StringBuilder();
-                        var currentDecorationByte = row.First().DecorationByte;
-
-                        foreach (var richCharacter in row)
-                        {
-                            if (currentDecorationByte == richCharacter.DecorationByte)
-                            {
-                                switch (richCharacter.Value)
-                                {
-                                    case '\t':
-                                        spanBuilder.Append(tabKeyOutput);
-                                        break;
-                                    case ' ':
-                                        spanBuilder.Append(spaceKeyOutput);
-                                        break;
-                                    case '\r':
-                                        break;
-                                    case '\n':
-                                        break;
-                                    case '<':
-                                        spanBuilder.Append("&lt;");
-                                        break;
-                                    case '>':
-                                        spanBuilder.Append("&gt;");
-                                        break;
-                                    case '"':
-                                        spanBuilder.Append("&quot;");
-                                        break;
-                                    case '\'':
-                                        spanBuilder.Append("&#39;");
-                                        break;
-                                    case '&':
-                                        spanBuilder.Append("&amp;");
-                                        break;
-                                    default:
-                                        spanBuilder.Append(richCharacter.Value);
-                                        break;
-                                }
-                            }
-                            else
-                            {
-                                <span class="@GetCssClass(currentDecorationByte)">
-                                    @((MarkupString)spanBuilder.ToString())
-                                </span>
-
-                                spanBuilder.Clear();
-                                spanBuilder.Append(richCharacter.Value);
-                                currentDecorationByte = richCharacter.DecorationByte;
-                            }
-                        }
-
-                        /* Final grouping of contiguous characters */
-                        <span class="@GetCssClass(currentDecorationByte)">
-                            @((MarkupString)spanBuilder.ToString())
-                        </span>
-                    }
-                    
-                    @if(_showNewlines) {
-                        var rowEndingTuple = TextEditorStatesSelection.Value.RowEndingPositions[i];
-                        
-                        <span class="bte_newline">
-                            @rowEndingTuple.rowEndingKind.AsCharactersHtmlEscaped()    
-                        </span>
-                    }
-                </div>
-            }
-        }
-      
-        @if (_characterWidthAndRowHeight is not null)
-        {
-            <TextEditorCursorDisplay @ref="_textEditorCursorDisplay" 
-                                     TextEditorCursor="_textEditorCursor"
-                                     FontWidthAndElementHeight="_characterWidthAndRowHeight"
-                                     TextEditor="TextEditorStatesSelection.Value" />    
-        }
     </div>
-</div>
+</ContextBoundary>
+

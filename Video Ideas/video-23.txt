@@ -1,0 +1,194 @@
+Notes for video 23
+
+# Intent
+{
+-Add ContextBoundary Blazor Component
+}
+
+# Plan
+{
+[]Add ContextBoundary Blazor Component
+	[]public record ContextRecord
+	{
+		ContextKey ContextKey,
+		string DisplayNameFriendly,
+		string ContextNameInternal
+	}
+	[]public static class ContextFacts
+	{
+		public static readonly ContextRecord GlobalContext = new(
+			ContextKey.NewContextKey(),
+			"Global",
+			"global");
+		
+		public static readonly ContextRecord FolderExplorerContext = new(
+			ContextKey.NewContextKey(),
+			"Folder Explorer",
+			"folder-explorer");
+			
+		public static readonly ContextRecord DialogDisplayContext = new(
+		ContextKey.NewContextKey(),
+		"Dialog Display",
+		"dialog-display");
+		
+		public static readonly ContextRecord MainLayoutHeaderContext = new(
+		ContextKey.NewContextKey(),
+		"MainLayout Header",
+		"main-layout-header");
+		
+		public static readonly ContextRecord MainLayoutFooterContext = new(
+        ContextKey.NewContextKey(),
+        "MainLayout Footer",
+        "main-layout-footer");
+		
+		public static readonly ContextRecord EditorContext = new(
+		ContextKey.NewContextKey(),
+		"Editor",
+		"editor");
+		
+		public static readonly ContextRecord TextEditorContext = new(
+		ContextKey.NewContextKey(),
+		"Text Editor",
+		"text-editor");
+		
+		public static readonly ImmutableArray<ContextRecord> ContextRecords = new [] 
+		{
+			MainLayoutHeaderContext,
+		    DialogDisplayContext,
+		    FolderExplorerContext,
+		    GlobalContext,
+		    EditorContext,
+		    TextEditorContext
+		}.ToImmutableArray();
+	}
+	/Store/ContextCase/ContextStates.cs
+	{
+		[FeatureState]
+		public record ContextStates(ImmutableArray<ContextRecord> ActiveContextRecords)
+		{
+			public ContextStates() : this(ImmutableArray<ContextRecord>.Empty)
+			{
+				ActiveContextRecords = new []
+				{
+					ContextFacts.GlobalContext
+				}.ToImmutableArray();
+			}
+		} 
+	}
+	public record SetActiveContextRecordsAction(ImmutableArray<ContextRecord> ContextRecords);
+	public class ContextStatesReducer
+	{
+		[ReducerMethod]
+		public static ContextStates ReduceSetActiveContextRecordsAction(ContextStates previousContextStates,
+		    SetActiveContextRecordsAction setActiveContextRecordsAction)
+		{
+		    return previousContextStates with
+		    {
+		        ActiveContextRecords = setActiveContextRecordsAction.ContextRecords
+		    }; 
+		}
+	}
+	RazorLib/ContextCase/
+	ContextBoundary.razor.cs : ComponentBase
+	{
+		[Inject]
+    	private IDispatcher Dispatcher { get; set; } = null!;
+    	
+    	[CascadingParameter]
+	    public ContextBoundary? ParentContextBoundary { get; set; } = 	null!;
+	    
+	    [Parameter, EditorRequired]
+		public ContextRecord ContextRecord { get; set; } = null!;
+		[Parameter, EditorRequired]
+		public string ClassCssString { get; set; } = null!;
+		[Parameter, EditorRequired]
+		public string StyleCssString { get; set; } = null!;
+		[Parameter, EditorRequired]
+		public int TabIndex { get; set; } = -1;
+		[Parameter, EditorRequired]
+		public RenderFragment ChildContent { get; set; } = null!;
+		
+		public void DispatchSetActiveContextStatesAction(List<ContextRecord> contextRecords)
+    {
+        contextRecords.Add(ContextRecord); 
+		    
+        if (ParentContextBoundary is not null)
+        {
+            ParentContextBoundary.DispatchSetActiveContextStatesAction(contextRecords);
+        }
+        else
+        {
+            Dispatcher.Dispatch(new SetActiveContextRecordsAction(contextRecords.ToImmutableArray()));
+        }
+    }
+		
+		public void HandleOnFocusIn()
+		{
+		    DispatchSetActiveContextStatesAction(new());
+		}
+	}
+	ContextBoundary.razor
+	{
+		<div class="@ClassCssString"
+		     style="@StyleCssString"
+		     tabindex="@TabIndex"
+		     @onfocusin="HandleOnFocusIn"
+		     @onfocusin:stopPropagation="true">
+	
+			<CascadingValue Value="this">
+		        @ChildContent
+		    </CascadingValue>  
+		</div>
+	}
+	[]Add ContextBoundary.razor to _Imports.razor
+	[]BlazorTextEditorHeader.razor change to ContextBoundary
+	[]MainLayout.razor change to ContextBoundary
+		[]@($"")
+	[]ActiveContextRecordsDisplay.razor
+		{
+			@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+			<div class="bte_active-context-records-display">
+				
+				Context:&nbsp;
+				@foreach (var contextRecord in ContextStatesWrap.Value.ActiveContextRecords)
+				{
+					<span>@contextRecord.DisplayNameFriendly&nbsp;->&nbsp;</span>
+				}
+			</div>
+		}
+	[]ActiveContextRecordsDisplay.razor.cs
+		[]Add to BlazorTextEditorHeader.razor
+	[].bte_header { display: flex; } in blazorTextEditor.css
+	[]RUN THE PROGRAM AND SHOW THE ACTIVE CONTEXT RECORDS CHANGING
+	[]FolderExplorerDisplay.razor change to ContextBoundary
+	[]DialogDisplay.razor change to ContextBoundary
+	[]EditorDisplay.razor change to ContextBoundary
+	[]TextEditorDisplay.razor change to ContextBoundary
+[]Add Dropdown Blazor Component
+[]Add Menu Blazor Component
+[]Add ContextMenu functionality
+}
+
+# Youtube Video Description
+{
+	Part 22:
+	https://youtu.be/OaP2TOLGtmI
+
+	Starting Point Repo:
+	https://youtu.be/OaP2TOLGtmI
+	
+	BlazorStudio Repo:
+	https://github.com/huntercfreeman/BlazorStudio
+	
+	Fluxor Repo:
+	https://github.com/mrpmorris/Fluxor
+	
+	Photino.Blazor:
+	https://github.com/tryphotino/photino.Blazor
+}
+
+# Youtube Video Title
+{
+	Setup for Context Menu / Right Click Menu | Blazor Text Editor Part 23
+}

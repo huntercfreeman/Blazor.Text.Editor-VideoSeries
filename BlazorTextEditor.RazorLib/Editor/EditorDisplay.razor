@@ -1,6 +1,9 @@
 @using BlazorTextEditor.ClassLib.TextEditor
+@using BlazorTextEditor.ClassLib.Context
 
-<div class="bte_editor-display"
-     style="@EditorElementDimensions.StyleString">
+<ContextBoundary ContextRecord="ContextFacts.EditorContext"
+                 ClassCssString="bte_editor-display"
+                 StyleCssString="@EditorElementDimensions.StyleString">
+    
     <BlazorTextEditor.RazorLib.TextEditor.TextEditorDisplay TextEditorKey="TextEditorFacts.TextEditorKeyCodeTest"/>    
-</div>
+</ContextBoundary>

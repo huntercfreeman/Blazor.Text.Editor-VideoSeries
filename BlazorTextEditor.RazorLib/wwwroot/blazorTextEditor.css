@@ -219,3 +219,7 @@ input[type="checkbox"]{
     color: var(--bte_newline-foreground-color);
     background-color: var(--bte_newline-background-color);
 }
+
+.bte_header {
+    display: flex;
+}

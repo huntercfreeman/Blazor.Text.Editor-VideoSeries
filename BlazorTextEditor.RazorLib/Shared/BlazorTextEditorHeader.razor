@@ -1,3 +1,9 @@
-<div class="bte_header">
+@using BlazorTextEditor.ClassLib.Context
+
+<ContextBoundary ContextRecord="ContextFacts.MainLayoutHeaderContext"
+                 ClassCssString="bte_header">
+
     <BlazorTextEditor.RazorLib.Settings.SettingsDialogEntryPoint />
-</div>
+    
+    <ActiveContextRecordsDisplay />
+</ContextBoundary>
