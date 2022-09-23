@@ -19,4 +19,5 @@
     --bte_text-editor-caret-row-border-color: red;
     --bte_newline-foreground-color: #007F00;
     --bte_newline-background-color: #faeee2;
+    --bte_dropdown-display-default-background-color: rgb(253, 253, 253);
 }

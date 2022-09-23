@@ -1,0 +1,94 @@
+Notes for video 24
+
+# Intent
+{
+-Add Dropdown Blazor Component
+
+
+
+
+-Add Menu Blazor Component
+-Add ContextMenu functionality
+}
+
+# Plan
+{
+[]Add Dropdown Blazor Component
+	[]DropdownDisplay : ComponentBase
+		[]<div class="bte_dropdown-display">
+			Dropdown Display
+		  </div>
+  	[]BlazorTextEditorHeader.razor
+  		[]@using BlazorTextEditor.RazorLib.Dropdown
+  		[]<DropdownDisplay />
+  		[]### RUN THE PROGRAM ###
+	[]DropdownDisplay : ComponentBase
+		[][Parameter, EditorRequired] RenderFragment ChildContent
+		[]@ChildContent
+	[]BlazorTextEditorHeader.razor
+		[]<DropdownDisplay>Dropdown ChildContent</DropdownDisplay>
+	[]DropdownDisplay : ComponentBase
+		[][Parameter, EditorRequired] bool ShouldDisplay
+		[]@if (ShouldDisplay)
+	[]BlazorTextEditorHeader.razor
+		[]bool _shouldDisplayDropdown
+		[]void ToggleShouldDisplayDropdown()
+		[]{<button @onclick="ToggleShouldDisplayDropdown"
+            class="btn btn-primary">
+        Toggle Dropdown
+    </button>}
+    	[]<div style="position: relative;">
+    	[]{
+    		[Parameter, EditorRequired]
+			public DropdownPositionKind DropdownPositionKind { get; set; } = DropdownPositionKind.Vertical;
+
+			private string DropdownPositionKindStyleCss => DropdownPositionKind switch
+			{
+				DropdownPositionKind.Vertical => "position: absolute;",
+				DropdownPositionKind.Horizontal => "position: absolute; display: inline;",
+				DropdownPositionKind.Unset => string.Empty,
+				_ => $"The {nameof(DropdownPositionKind)}: {DropdownPositionKind} was unrecognized."
+			};
+    	}
+    	[]{
+    	@if (ShouldDisplay)
+		{
+			<div class="bte_dropdown-position-marker"
+				 style="@DropdownPositionKindStyleCss">
+			
+				<div class="bte_dropdown-display">
+					@ChildContent
+				</div>
+			</div>
+		}
+    	}
+    	rgb(48, 51, 101)
+	[]Then add the Fluxor state management once
+		the video shows the UI functioning.
+	[]Add OutOfBoundsClickDisplay
+[]Add Menu Blazor Component
+[]Add ContextMenu functionality
+}
+
+# Youtube Video Description
+{
+	Part 23:
+	https://youtu.be/tAH6ugmxdNU
+
+	Starting Point Repo:
+	https://youtu.be/OaP2TOLGtmI
+	
+	BlazorStudio Repo:
+	https://github.com/huntercfreeman/BlazorStudio
+	
+	Fluxor Repo:
+	https://github.com/mrpmorris/Fluxor
+	
+	Photino.Blazor:
+	https://github.com/tryphotino/photino.Blazor
+}
+
+# Youtube Video Title
+{
+	Dropdown and Menu Components | Blazor Text Editor Part 24
+}

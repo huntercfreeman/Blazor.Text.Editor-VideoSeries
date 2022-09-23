@@ -223,3 +223,26 @@ input[type="checkbox"]{
 .bte_header {
     display: flex;
 }
+
+.bte_dropdown-display-default-background {
+    background-color: var(--bte_dropdown-display-default-background-color);
+    box-shadow: 0px 0px 2px var(--bte_primary-box-shadow-color);
+}
+
+.bte_out-of-bounds-click-display {
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+}
+
+.bte_dropdown-display {
+    z-index: 20;
+    position: absolute;
+}
+
+.bte_dropdown-position-marker {
+    z-index: 20;
+    position: absolute;
+}
