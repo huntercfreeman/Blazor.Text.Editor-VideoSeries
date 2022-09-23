@@ -90,5 +90,5 @@ Notes for video 24
 
 # Youtube Video Title
 {
-	Dropdown and Menu Components | Blazor Text Editor Part 24
+	Vertical and Horizontal Dropdowns | Blazor Text Editor Part 24
 }
