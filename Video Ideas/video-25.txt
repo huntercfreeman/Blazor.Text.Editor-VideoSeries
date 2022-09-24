@@ -12,7 +12,6 @@ Notes for video 25
 
 # Plan
 {
--make sure keyboard does not sound annoying in the recording
 -Add Menu Component
 -Add 'File' Menu Component instance to the
 	Header of the app.
