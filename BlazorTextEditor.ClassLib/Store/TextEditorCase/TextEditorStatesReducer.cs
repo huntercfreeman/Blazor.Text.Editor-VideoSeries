@@ -8,15 +8,16 @@ public class TextEditorStatesReducer
     public static TextEditorStates ReduceRegisterTextEditorStateAction(TextEditorStates previousTextEditorStates,
         RegisterTextEditorStateAction registerTextEditorStateAction)
     {
-        if (previousTextEditorStates.TextEditorMap.ContainsKey(registerTextEditorStateAction.TextEditorKey))
+        if (previousTextEditorStates.TextEditorList
+            .Any(x => x.Key == registerTextEditorStateAction.TextEditorBase.Key))
             return previousTextEditorStates;
         
-        var nextMap = previousTextEditorStates.TextEditorMap
-            .Add(registerTextEditorStateAction.TextEditorKey, registerTextEditorStateAction.TextEditorBase);
+        var nextMap = previousTextEditorStates.TextEditorList
+            .Add(registerTextEditorStateAction.TextEditorBase);
 
         return previousTextEditorStates with
         {
-            TextEditorMap = nextMap
+            TextEditorList = nextMap
         };
     }
     
@@ -24,17 +25,17 @@ public class TextEditorStatesReducer
     public static TextEditorStates ReduceEditTextEditorAction(TextEditorStates previousTextEditorStates,
         EditTextEditorAction editTextEditorAction)
     {
-        var textEditor = previousTextEditorStates.TextEditorMap
-            [editTextEditorAction.TextEditorKey];
+        var textEditor = previousTextEditorStates.TextEditorList
+            .Single(x => x.Key == editTextEditorAction.TextEditorKey);
 
         var nextTextEditor = textEditor.PerformEditTextEditorAction(editTextEditorAction);
 
-        var nextMap = previousTextEditorStates.TextEditorMap
-            .SetItem(editTextEditorAction.TextEditorKey, nextTextEditor);
+        var nextMap = previousTextEditorStates.TextEditorList
+            .Replace(textEditor, nextTextEditor);
 
         return previousTextEditorStates with
         {
-            TextEditorMap = nextMap
+            TextEditorList = nextMap
         };
     }
 }

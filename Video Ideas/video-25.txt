@@ -65,5 +65,5 @@ Notes for video 25
 
 # Youtube Video Title
 {
-	Add A Menu / Context Menu Component | Blazor Text Editor Part 25
+	Read from File System a file into the Text Editor | Blazor Text Editor Part 25
 }

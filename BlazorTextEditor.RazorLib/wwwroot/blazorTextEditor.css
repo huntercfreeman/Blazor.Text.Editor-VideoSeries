@@ -140,6 +140,7 @@ input[type="checkbox"]{
 }
 
 .bte_dialog-display-toolbar {
+    height: 3rem;
     display: flex;
     justify-content: space-between;
     background-color: var(--bte_dialog-display-toolbar-background-color);
@@ -159,6 +160,10 @@ input[type="checkbox"]{
 
 .bte_dialog-display-button-entry:hover {
     background-color: var(--bte_primary-hover-background-color);
+}
+
+.bte_dialog-display-body {
+    height: calc(100% - 3rem);
 }
 
 .bte_resize-handle-north {
@@ -207,6 +212,10 @@ input[type="checkbox"]{
     outline-offset: -5px;
 }
 
+.bte_tree-view-display-title {
+    position: relative;
+}
+
 .bte_tree-view-display-title.bte_active {
     background-color: var(--primary-active-not-focused-background-color);
 }
@@ -246,3 +255,19 @@ input[type="checkbox"]{
     z-index: 20;
     position: absolute;
 }
+
+.bte_menu-option-display {
+    position: relative;
+    white-space: nowrap;
+}
+
+.bte_menu-option-display:hover {
+    background-color: var(--bte_primary-hover-background-color);
+}
+
+.bte_input-file-display {
+    height: 100%;
+    overflow: auto;
+}
+
+

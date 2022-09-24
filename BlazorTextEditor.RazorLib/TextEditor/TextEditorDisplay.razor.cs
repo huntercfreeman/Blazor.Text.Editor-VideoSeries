@@ -49,6 +49,8 @@ public partial class TextEditorDisplay : ComponentBase
     /// </summary>
     private bool _thinksLeftMouseButtonIsDown;
 
+    private TextEditorKey? _previousTextEditorKey;
+    
     private string TextEditorContentId => $"bte_text-editor-content_{_textEditorGuid}";
     private string MeasureCharacterWidthAndRowHeightId => $"bte_measure-character-width-and-row-height_{_textEditorGuid}";
     private MarkupString GetAllTextEscaped => (MarkupString) TextEditorStatesSelection.Value
@@ -58,11 +60,23 @@ public partial class TextEditorDisplay : ComponentBase
         .Replace("\n", "\\n<br/>")
         .Replace("\t", "--->")
         .Replace(" ", "·");
-    
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (_previousTextEditorKey is null ||
+            _previousTextEditorKey != TextEditorKey)
+        {
+            await GetRowsAsync();
+        }
+        
+        await base.OnParametersSetAsync();
+    }
+
     protected override void OnInitialized()
     {
         TextEditorStatesSelection
-            .Select(textEditorStates => textEditorStates.TextEditorMap[TextEditorKey]);
+            .Select(textEditorStates => textEditorStates.TextEditorList
+                .Single(x => x.Key == TextEditorKey));
         
         base.OnInitialized();
     }

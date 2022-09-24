@@ -26,8 +26,8 @@ public partial class DropdownDisplay : FluxorComponent
     
     private string DropdownPositionKindStyleCss => DropdownPositionKind switch
     {
-        DropdownPositionKind.Vertical => "position: absolute;",
-        DropdownPositionKind.Horizontal => "position: absolute; display: inline;",
+        DropdownPositionKind.Vertical => "position: absolute; left: 0; top: 100%;",
+        DropdownPositionKind.Horizontal => "position: absolute; left: 100%; top: 0;",
         DropdownPositionKind.Unset => string.Empty,
         _ => throw new ApplicationException($"The {nameof(DropdownPositionKind)}: {DropdownPositionKind} was unrecognized.") 
     };

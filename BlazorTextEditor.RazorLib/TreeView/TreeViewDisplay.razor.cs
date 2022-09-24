@@ -1,7 +1,9 @@
 using System.ComponentModel;
 using BlazorTextEditor.ClassLib.CustomEvents;
 using BlazorTextEditor.ClassLib.Keyboard;
+using BlazorTextEditor.ClassLib.Store.DropdownCase;
 using BlazorTextEditor.ClassLib.TreeView;
+using Fluxor;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 
@@ -9,10 +11,15 @@ namespace BlazorTextEditor.RazorLib.TreeView;
 
 public partial class TreeViewDisplay<TItem> : ComponentBase, IDisposable
 {
+    [Inject]
+    private IDispatcher Dispatcher { get; set; } = null!;
+    
     [Parameter, EditorRequired]
     public TreeViewModel<TItem> TreeViewModel { get; set; } = null!;
     [Parameter, EditorRequired]
     public RenderFragment<TreeViewModel<TItem>> ItemRenderFragment { get; set; } = null!;
+    [Parameter, EditorRequired]
+    public RenderFragment<TreeViewModel<TItem>> ContextMenuEventRenderFragment { get; set; } = null!;
     [Parameter]
     public Func<TreeViewModel<TItem>>? GetRootFunc { get; set; }
     [Parameter]
@@ -26,6 +33,7 @@ public partial class TreeViewDisplay<TItem> : ComponentBase, IDisposable
     
     private TreeViewModel<TItem>? _previousTreeViewModel;
     private ElementReference? _titleElementReference;
+    private DropdownKey _contextMenuEventDropdownKey = DropdownKey.NewDropdownKey();
 
     private TreeViewModel<TItem> Root => GetRootFunc is null
         ? TreeViewModel
@@ -299,6 +307,15 @@ public partial class TreeViewDisplay<TItem> : ComponentBase, IDisposable
 
                 break;
             }
+        }
+
+        if (KeyboardKeyFacts.CheckIsContextMenuEvent(
+                customKeyDownEventArgs.Key,
+                customKeyDownEventArgs.Code,
+                customKeyDownEventArgs.ShiftWasPressed,
+                customKeyDownEventArgs.AltWasPressed))
+        {
+            Dispatcher.Dispatch(new AddActiveDropdownKeyAction(_contextMenuEventDropdownKey));
         }
     }
     

@@ -1,6 +1,7 @@
 @using BlazorTextEditor.ClassLib.Context
 @using BlazorTextEditor.ClassLib.Dropdown
 @using BlazorTextEditor.RazorLib.Dropdown
+@using BlazorTextEditor.RazorLib.Menu
 
 <ContextBoundary ContextRecord="ContextFacts.MainLayoutHeaderContext"
                  ClassCssString="bte_header">
@@ -8,29 +9,15 @@
     <BlazorTextEditor.RazorLib.Settings.SettingsDialogEntryPoint />
     
     <div style="position: relative;">
-        <button @onclick="AddActiveVerticalDropdown"
+        <button @onclick="AddActiveFileDropdown"
                 class="btn btn-primary">
-            Vertical Dropdown
+            File
         </button>
         
-        <DropdownDisplay DropdownKey="_dropdownKeyVerticalDropdown"
+        <DropdownDisplay DropdownKey="_dropdownKeyFileDropdown"
                          DropdownPositionKind="DropdownPositionKind.Vertical">
             <div class="bte_dropdown-display-default-background">
-                Vertical ChildContent    
-            </div>
-        </DropdownDisplay>
-    </div>
-    
-    <div style="position: relative;">
-        <button @onclick="AddActiveHorizontalDropdown"
-                class="btn btn-primary">
-            Horizontal Dropdown
-        </button>
-        
-        <DropdownDisplay DropdownKey="_dropdownKeyHorizontalDropdown"
-                         DropdownPositionKind="DropdownPositionKind.Horizontal">
-            <div class="bte_dropdown-display-default-background">
-                Horizontal ChildContent    
+                <MenuDisplay MenuRecord="_fileMenu" />
             </div>
         </DropdownDisplay>
     </div>

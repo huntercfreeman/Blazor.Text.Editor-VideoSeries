@@ -1,5 +1,7 @@
 @using BlazorTextEditor.ClassLib.CustomEvents
 @using System.Collections.Immutable
+@using BlazorTextEditor.ClassLib.Dropdown
+@using BlazorTextEditor.RazorLib.Dropdown
 
 @typeparam TItem
 
@@ -27,6 +29,12 @@
         </span>
         
         @ItemRenderFragment(TreeViewModel)
+        
+        <DropdownDisplay DropdownKey="_contextMenuEventDropdownKey"
+                         DropdownPositionKind="DropdownPositionKind.Vertical">
+            
+            @ContextMenuEventRenderFragment(TreeViewModel)
+        </DropdownDisplay>
     </span>
     
     <div class="bte_tree-view-display-body">
@@ -45,7 +53,8 @@
                                  GetRootFunc="() => Root"
                                  Depth="Depth + 1"
                                  Index="index"
-                                 ParentTreeViewDisplay="this" />
+                                 ParentTreeViewDisplay="this"
+                                 ContextMenuEventRenderFragment="ContextMenuEventRenderFragment" />
 
             }
         }
