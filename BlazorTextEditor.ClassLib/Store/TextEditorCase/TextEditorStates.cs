@@ -1,4 +1,6 @@
 using System.Collections.Immutable;
+using BlazorTextEditor.ClassLib.FileSystem.Classes;
+using BlazorTextEditor.ClassLib.FileSystem.Interfaces;
 using BlazorTextEditor.ClassLib.TextEditor;
 using Fluxor;
 
@@ -7,17 +9,21 @@ namespace BlazorTextEditor.ClassLib.Store.TextEditorCase;
 [FeatureState]
 public record TextEditorStates(ImmutableList<TextEditorBase> TextEditorList)
 {
+    private static readonly IAbsoluteFilePath TestCaseAbsoluteFilePath = new AbsoluteFilePath(
+        "/home/hunter/RiderProjects/BlazorTextEditor/BlazorTextEditor.RazorLib/TextEditor/TextEditorCursorDisplay.razor.cs",
+        false);
+    
     public TextEditorStates() : this(ImmutableList<TextEditorBase>.Empty)
     {
-        var textEditorCodeTest = new TextEditorBase(TextEditorFacts.InitialInput, TextEditorFacts.TextEditorKeyCodeTest);
-        var textEditorEmailTest = new TextEditorBase("Dear Martin,\r\nI am looking forward to our meeting on Thursday.\nI will be there at 5:00 PM\rRegards, Bob", TextEditorFacts.TextEditorKeyEmailTest);
-        var textEditorEmptyTest = new TextEditorBase(string.Empty, TextEditorFacts.TextEditorKeyEmptyTest);
+        var testCaseFileContents = File
+            .ReadAllText(TestCaseAbsoluteFilePath
+                .GetAbsoluteFilePathString());
         
+        var textEditorTestCase = new TextEditorBase(testCaseFileContents, TextEditorFacts.TextEditorKeyTestCase);
+
         TextEditorList = TextEditorList.AddRange(new []
         {
-            textEditorCodeTest,
-            textEditorEmailTest,
-            textEditorEmptyTest
+            textEditorTestCase
         });
     }
 }

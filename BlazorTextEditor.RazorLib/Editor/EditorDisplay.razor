@@ -5,7 +5,10 @@
                  ClassCssString="bte_editor-display"
                  StyleCssString="@EditorElementDimensions.StyleString">
     
-    <button @onclick="() => {}">Rerender</button>
+    <button @onclick="() => { }"
+            style="height: 3.5rem;">
+        Rerender
+    </button>
     
     <BlazorTextEditor.RazorLib.TextEditor.TextEditorDisplay TextEditorKey="TextEditorStatesWrap.Value.TextEditorList.Last().Key"/>    
 </ContextBoundary>

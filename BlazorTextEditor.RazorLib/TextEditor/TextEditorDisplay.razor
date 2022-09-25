@@ -2,89 +2,49 @@
 @using BlazorTextEditor.ClassLib.Context
 @using BlazorTextEditor.ClassLib.TextEditor
 
-<ContextBoundary ContextRecord="ContextFacts.TextEditorContext">
+<ContextBoundary ContextRecord="ContextFacts.TextEditorContext"
+                 StyleCssString="height: calc(100% - 3.5rem);">
     <div @ref="_textEditorDisplayElementReference"
          @onclick="FocusTextEditorOnClickAsync"
          @onkeydown="HandleOnKeyDownAsync"
          @onkeydown:preventDefault="true"
          class="bte_text-editor">
     
-        <div>
-            <input type="checkbox" @bind="_showWhitespace" />
-            
-            <span>Show Whitespace</span>
-        </div>
-        
-        <div>
-            <input type="checkbox" @bind="_showNewlines" />
-            
-            <span>Show Newlines</span>
-        </div>
-        
-        <div>
-            <input type="checkbox" @bind="_showGetAllTextEscaped" />
-            
-            <span>Show GetAllTextEscaped</span>
-        </div>
-        
-        @if (_showGetAllTextEscaped)
-        {
-            @GetAllTextEscaped
-        }
-        
-        
-    <div>
-            AnchorPositionIndex:&nbsp;
-            @if (_textEditorCursor.TextEditorSelection.AnchorPositionIndex.HasValue)
-            {
-                <text>@_textEditorCursor.TextEditorSelection.AnchorPositionIndex.Value</text>
-            }
-            else
-            {
-                <text>null</text>
-            }
-        </div>
-        
-        <div>
-            Selection&nbsp;EndingPositionIndex:&nbsp;
-            @_textEditorCursor.TextEditorSelection.EndingPositionIndex
-        </div>
-        
-        <div>
-            @if (_textEditorCursor.TextEditorSelection.AnchorPositionIndex.HasValue &&
-                 _textEditorCursor.TextEditorSelection.AnchorPositionIndex.Value != 
-                    _textEditorCursor.TextEditorSelection.EndingPositionIndex)
-            {
-                var lowerBound = _textEditorCursor.TextEditorSelection.AnchorPositionIndex.Value; 
-                var upperBound = _textEditorCursor.TextEditorSelection.EndingPositionIndex;
-                    
-                if (lowerBound > upperBound)
-                {
-                    (lowerBound, upperBound) = (upperBound, lowerBound);
-                }
-                
-                var result = TextEditorStatesSelection.Value.GetTextRange(lowerBound,
-                    upperBound - lowerBound);
+        <div style="height: 7rem; overflow: auto;">
+            <div style="display: flex;">
+                <div>
+                    <input type="checkbox" @bind="_showWhitespace"/>
     
-                if (result.Length != 0)
-                {
-                    <text>@result.Replace("\r\n", "\\r\\n").Replace("\n", "\\n").Replace("\r", "\\r").Replace(" ", "·").Replace("\t", "--->")</text>
-                }
-                else
-                {
-                    <text>null</text>
-                }
-            }
-            else
-            {
-                <text>null</text>
-            }
+                    <span>Show Whitespace</span>
+                </div>
+                
+                &nbsp;
+                <div style="border: 2px solid var(--bte_primary-border-color);"></div>
+                &nbsp;
+    
+                <div>
+                    <input type="checkbox" @bind="_showNewlines"/>
+    
+                    <span>Show Newlines</span>
+                </div>
+            </div>
+
+            <button class="btn btn-primary"
+                    @onclick="ApplyRoslynSyntaxHighlightingOnClick">
+                ApplyRoslyn
+            </button>
+            
+            <button class="btn btn-primary"
+                    @onclick="() => _shouldMeasureDimensions = true">
+                Re-measure
+            </button>
+            
+            <span>
+                Width:&nbsp;@(_textEditorWidthAndHeight?.WidthInPixels.ToString() ?? "null")px,
+                &nbsp;
+                Height:@(_textEditorWidthAndHeight?.HeightInPixels.ToString() ?? "null")px
+            </span>
         </div>
-        
-        <button class="btn btn-primary"
-                @onclick="ApplyRoslynSyntaxHighlightingOnClick">
-            ApplyRoslynSyntaxHighlightingOnClick
-        </button>
     
         <div class="bte_text-editor-content bte_unselectable"
              id="@TextEditorContentId"
@@ -168,46 +128,26 @@
                             {
                                 if (currentDecorationByte == richCharacter.DecorationByte)
                                 {
-                                    switch (richCharacter.Value)
-                                    {
-                                        case '\t':
-                                            spanBuilder.Append(tabKeyOutput);
-                                            break;
-                                        case ' ':
-                                            spanBuilder.Append(spaceKeyOutput);
-                                            break;
-                                        case '\r':
-                                            break;
-                                        case '\n':
-                                            break;
-                                        case '<':
-                                            spanBuilder.Append("&lt;");
-                                            break;
-                                        case '>':
-                                            spanBuilder.Append("&gt;");
-                                            break;
-                                        case '"':
-                                            spanBuilder.Append("&quot;");
-                                            break;
-                                        case '\'':
-                                            spanBuilder.Append("&#39;");
-                                            break;
-                                        case '&':
-                                            spanBuilder.Append("&amp;");
-                                            break;
-                                        default:
-                                            spanBuilder.Append(richCharacter.Value);
-                                            break;
-                                    }
+                                    AppendTextEscaped(
+                                        spanBuilder,
+                                        richCharacter,
+                                        tabKeyOutput,
+                                        spaceKeyOutput);
                                 }
                                 else
                                 {
                                     <span class="@GetCssClass(currentDecorationByte)">
-                                        @((MarkupString)spanBuilder.ToString())
+                                        @((MarkupString )spanBuilder.ToString())
                                     </span>
     
                                     spanBuilder.Clear();
-                                    spanBuilder.Append(richCharacter.Value);
+                                    
+                                    AppendTextEscaped(
+                                        spanBuilder,
+                                        richCharacter,
+                                        tabKeyOutput,
+                                        spaceKeyOutput);
+                                    
                                     currentDecorationByte = richCharacter.DecorationByte;
                                 }
                             }

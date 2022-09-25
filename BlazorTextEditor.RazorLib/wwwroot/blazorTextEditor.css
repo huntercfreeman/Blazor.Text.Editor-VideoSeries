@@ -4,10 +4,31 @@ input[type="checkbox"]{
 }
 
 .bte_text-editor {
+    height: 100%;
 }
 
 .bte_method {
     color: var(--bte_method-foreground-color);
+}
+
+.bte_type {
+    color: var(--bte_type-foreground-color);
+}
+
+.bte_parameter {
+    color: var(--bte_parameter-foreground-color);
+}
+
+.bte_string-literal {
+    color: var(--bte_string-literal-foreground-color);
+}
+
+.bte_keyword {
+    color: var(--bte_keyword-foreground-color);
+}
+
+.bte_comment {
+    color: var(--bte_comment-foreground-color);
 }
 
 .bte_measure-character-width-and-row-height {
@@ -32,7 +53,7 @@ input[type="checkbox"]{
     position: relative;
     display: flex;
     overflow: auto;
-    height: 400px;
+    height: calc(100% - 7rem);
     font-family: monospace;
     margin: 5px;
 }
@@ -80,7 +101,6 @@ input[type="checkbox"]{
 }
 
 .bte_main-layout {
-    font-size: 32px;
     width: 100vw;
     height: 100vh;
     overflow: auto;
@@ -270,4 +290,7 @@ input[type="checkbox"]{
     overflow: auto;
 }
 
-
+em {
+    color: var(--bte_primary-emphasis-foreground-color);
+    font-style: normal;
+}

@@ -1,6 +1,7 @@
 using BlazorTextEditor.ClassLib.Dimensions;
 using BlazorTextEditor.ClassLib.Store.DialogCase;
 using BlazorTextEditor.ClassLib.Store.DragCase;
+using BlazorTextEditor.ClassLib.Store.FontCase;
 using BlazorTextEditor.ClassLib.Store.ThemeCase;
 using BlazorTextEditor.RazorLib.DialogCase;
 using Fluxor;
@@ -14,6 +15,8 @@ public partial class MainLayout : LayoutComponentBase, IDisposable
     private IState<DragState> DragStateWrap { get; set; } = null!;
     [Inject]
     private IState<ThemeState> ThemeStateWrap { get; set; } = null!;
+    [Inject]
+    private IState<FontState> FontStateWrap { get; set; } = null!;
     [Inject]
     private IDispatcher Dispatcher { get; set; } = null!;
 
@@ -33,6 +36,7 @@ public partial class MainLayout : LayoutComponentBase, IDisposable
     {
         DragStateWrap.StateChanged += DragStateWrapOnStateChanged;
         ThemeStateWrap.StateChanged += ThemeStateWrapOnStateChanged;
+        FontStateWrap.StateChanged += FontStateWrapOnStateChanged;
         
         var bodyHeight = _bodyElementDimensions.DimensionAttributes
             .Single(da => da.DimensionAttributeKind == DimensionAttributeKind.Height);
@@ -83,6 +87,11 @@ public partial class MainLayout : LayoutComponentBase, IDisposable
     {
         InvokeAsync(StateHasChanged);
     }
+    
+    private void FontStateWrapOnStateChanged(object? sender, EventArgs e)
+    {
+        InvokeAsync(StateHasChanged);
+    }
 
     protected override void OnAfterRender(bool firstRender)
     {
@@ -121,5 +130,6 @@ public partial class MainLayout : LayoutComponentBase, IDisposable
     {
         DragStateWrap.StateChanged -= DragStateWrapOnStateChanged;
         ThemeStateWrap.StateChanged -= ThemeStateWrapOnStateChanged;
+        FontStateWrap.StateChanged -= FontStateWrapOnStateChanged;
     }
 }

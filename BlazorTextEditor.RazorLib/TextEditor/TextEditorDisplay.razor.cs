@@ -3,6 +3,7 @@ using System.Text;
 using BlazorTextEditor.ClassLib.Keyboard;
 using BlazorTextEditor.ClassLib.RoslynHelpers;
 using BlazorTextEditor.ClassLib.Store.TextEditorCase;
+using BlazorTextEditor.ClassLib.SyntaxHighlighting;
 using BlazorTextEditor.ClassLib.TextEditor;
 using BlazorTextEditor.RazorLib.JavaScriptObjects;
 using Fluxor;
@@ -202,25 +203,8 @@ public partial class TextEditorDisplay : ComponentBase
     private async Task ApplyRoslynSyntaxHighlightingOnClick()
     {
         var localTextEditor = TextEditorStatesSelection.Value;
-        
-        var stringContent = TextEditorStatesSelection.Value.GetAllText();
 
-        var syntaxTree = CSharpSyntaxTree.ParseText(stringContent);
-
-        var syntaxNodeRoot = await syntaxTree.GetRootAsync();
-
-        var generalSyntaxCollector = new GeneralSyntaxCollector();
-
-        generalSyntaxCollector.Visit(syntaxNodeRoot);
-
-        var methodIdentifiers = generalSyntaxCollector.MethodDeclarationSyntaxes
-            .Select(mds => mds.Identifier)
-            .ToList();
-
-        var method = methodIdentifiers.First();
-
-        localTextEditor.ApplyDecorationRange(DecorationKind.Method,
-            methodIdentifiers.Select(x => x.Span));
+        await CSharpRolsynSyntaxHighting.ApplyRoslynSyntaxHighlightingAsync(localTextEditor);
     }
     
     private async Task<(int rowIndex, int columnIndex)> DetermineRowAndColumnIndex(MouseEventArgs mouseEventArgs)
@@ -293,14 +277,20 @@ public partial class TextEditorDisplay : ComponentBase
 
     private string GetCssClass(byte currentDecorationByte)
     {
-        if (currentDecorationByte == 0)
+        var decoration = (DecorationKind)currentDecorationByte;
+
+        return decoration switch
         {
-            return string.Empty;
-        }
-        else
-        {
-            return "bte_method";
-        }
+            DecorationKind.None => string.Empty,
+            DecorationKind.Method => "bte_method",
+            DecorationKind.Type => "bte_type",
+            DecorationKind.Parameter => "bte_parameter",
+            DecorationKind.StringLiteral => "bte_string-literal",
+            DecorationKind.Keyword => "bte_keyword",
+            DecorationKind.Comment => "bte_comment",
+                _ => throw new ApplicationException(
+                    $"The {nameof(DecorationKind)}: {decoration} was not recognized.")
+        };
     }
 
     private string GetRowStyleCss(int index)
@@ -438,6 +428,45 @@ public partial class TextEditorDisplay : ComponentBase
             widthCssStyleString += $"{selectionWidthInPixels}px;";
         
         return $"{top} {height} {left} {widthCssStyleString}";
+    }
+
+    private void AppendTextEscaped(
+        StringBuilder spanBuilder,
+        RichCharacter richCharacter,
+        string tabKeyOutput,
+        string spaceKeyOutput)
+    {
+        switch (richCharacter.Value)
+        {
+            case '\t':
+                spanBuilder.Append(tabKeyOutput);
+                break;
+            case ' ':
+                spanBuilder.Append(spaceKeyOutput);
+                break;
+            case '\r':
+                break;
+            case '\n':
+                break;
+            case '<':
+                spanBuilder.Append("&lt;");
+                break;
+            case '>':
+                spanBuilder.Append("&gt;");
+                break;
+            case '"':
+                spanBuilder.Append("&quot;");
+                break;
+            case '\'':
+                spanBuilder.Append("&#39;");
+                break;
+            case '&':
+                spanBuilder.Append("&amp;");
+                break;
+            default:
+                spanBuilder.Append(richCharacter.Value);
+                break;
+        }
     }
 }
 

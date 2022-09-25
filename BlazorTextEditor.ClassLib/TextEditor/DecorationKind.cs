@@ -3,5 +3,10 @@ namespace BlazorTextEditor.ClassLib.TextEditor;
 public enum DecorationKind
 {
     None,
-    Method
+    Method,
+    Type,
+    Parameter,
+    StringLiteral,
+    Keyword,
+    Comment
 }
