@@ -24,11 +24,12 @@ namespace BlazorTextEditor.NativeApp
             // customize window
             app.MainWindow
                 .SetIconFile("favicon.ico")
-                .SetTitle("Photino Hello World")
+                .SetTitle("Blazor Text Editor")
                 .SetDevToolsEnabled(true)
                 .SetContextMenuEnabled(true)
                 .SetUseOsDefaultSize(false)
-                .SetSize(2500, 1750);
+                .SetSize(2500, 1500)
+                .SetLeft(1300);
 
             AppDomain.CurrentDomain.UnhandledException += (sender, error) =>
             {

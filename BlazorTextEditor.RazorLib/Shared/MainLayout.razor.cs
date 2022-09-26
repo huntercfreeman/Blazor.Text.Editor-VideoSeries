@@ -45,7 +45,7 @@ public partial class MainLayout : LayoutComponentBase, IDisposable
         {
             new DimensionUnit
             {
-                Value = 67,
+                Value = 78,
                 DimensionUnitKind = DimensionUnitKind.Percentage
             },
             new DimensionUnit
@@ -69,7 +69,7 @@ public partial class MainLayout : LayoutComponentBase, IDisposable
         {
             new DimensionUnit
             {
-                Value = 33,
+                Value = 22,
                 DimensionUnitKind = DimensionUnitKind.Percentage
             },
             new DimensionUnit

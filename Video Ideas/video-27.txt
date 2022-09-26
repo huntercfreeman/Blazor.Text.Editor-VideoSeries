@@ -150,7 +150,7 @@ Notes for video 27
 		[]<div style="height: 10rem; overflow: auto;">...</div>
 	[]The <div> that wraps the <TreeViewDisplay/>
 		[]Make it 
-			<div style="height: calc(100% - 10rem); overflow: auto">
+			<div style="height: calc(100% - 10rem); overflow: auto;">
 -TreeViewDisplay.razor blazor component changes
 	[]Add "bte_unselectable" to the <span> with the css class of
 		"bte_tree-view-display-title"

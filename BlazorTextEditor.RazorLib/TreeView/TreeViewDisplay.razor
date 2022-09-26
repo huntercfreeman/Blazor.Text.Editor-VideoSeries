@@ -8,7 +8,7 @@
 <div class="bte_tree-view-display"
      tabindex="@RootTabIndex"
      @onkeydown="HandleRootOnKeyDown">
-    <span class="bte_tree-view-display-title @IsActiveDescendantClassCss"
+    <span class="bte_tree-view-display-title bte_unselectable @IsActiveDescendantClassCss"
           style="@($"padding-left: {PaddingLeft}px;")"
           @onclick="SetActiveDescendantOnClick"
           @ref="_titleElementReference"

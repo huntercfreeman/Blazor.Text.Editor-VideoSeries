@@ -26,4 +26,8 @@
     --bte_string-literal-foreground-color: #A31515;
     --bte_keyword-foreground-color: #0000FF;
     --bte_comment-foreground-color: #007F00;
+    --bte_input-background-color: red;
+    --bte_input-font-color: red;
+    --bte_text-editor-gutter-border-color: red;
+    --bte_text-editor-gutter-background-color: red;
 }

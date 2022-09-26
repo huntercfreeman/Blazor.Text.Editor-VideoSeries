@@ -8,9 +8,10 @@
 
     <BlazorTextEditor.RazorLib.Settings.SettingsDialogEntryPoint />
     
-    <div style="position: relative;">
+    <div style="position: relative; margin-left: 15px;">
         <button @onclick="AddActiveFileDropdown"
-                class="btn btn-primary">
+                class="btn btn-primary"
+                style="display: flex;">
             File
         </button>
         
@@ -21,6 +22,4 @@
             </div>
         </DropdownDisplay>
     </div>
-    
-    <ActiveContextRecordsDisplay />
 </ContextBoundary>

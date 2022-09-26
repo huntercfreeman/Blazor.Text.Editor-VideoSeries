@@ -47,9 +47,12 @@ input[type="checkbox"]{
     white-space: nowrap;
     position: absolute;
     display: flex;
+    box-shadow: -4px 0 0 var(--bte_text-editor-gutter-border-color) inset;
+    background-color: var(--bte_text-editor-gutter-background-color);
 }
 
 .bte_text-editor-content {
+    cursor: text;
     position: relative;
     display: flex;
     overflow: auto;
@@ -109,7 +112,7 @@ input[type="checkbox"]{
 
 .bte_header {
     padding: 5px;
-    border-bottom: 2px solid var(--bte_primary-border-color);
+    border-bottom: 5px solid var(--bte_primary-border-color);
     height: 3rem;
     background-color: var(--bte_header-background-color);
 }
@@ -234,6 +237,13 @@ input[type="checkbox"]{
 
 .bte_tree-view-display-title {
     position: relative;
+    white-space: nowrap;
+    display: flex;
+    cursor: default;
+}
+
+.bte_tree-view-display-title:hover {
+    background-color: var(--bte_primary-hover-background-color);
 }
 
 .bte_tree-view-display-title.bte_active {
@@ -242,6 +252,11 @@ input[type="checkbox"]{
 
 .bte_tree-view-display-title.bte_active:focus {
     background-color: var(--primary-active-focused-background-color);
+}
+
+.bte_tree-view-display-expansion:hover {
+    background-color: var(--bte_primary-font-color);
+    color: var(--bte_body-background-color);
 }
 
 .bte_newline {
@@ -279,6 +294,8 @@ input[type="checkbox"]{
 .bte_menu-option-display {
     position: relative;
     white-space: nowrap;
+    cursor: default;
+    padding: 0 10px;
 }
 
 .bte_menu-option-display:hover {
@@ -293,4 +310,15 @@ input[type="checkbox"]{
 em {
     color: var(--bte_primary-emphasis-foreground-color);
     font-style: normal;
+}
+
+.bte_input {
+    background-color: var(--bte_input-background-color);
+    color: var(--bte_input-font-color);
+    padding: 2px 3px;
+}
+
+.bte_input:focus {
+    outline: solid 2px var(--bte_primary-emphasis-foreground-color);
+    box-shadow: 0 0 21px var(--bte_primary-emphasis-foreground-color);
 }

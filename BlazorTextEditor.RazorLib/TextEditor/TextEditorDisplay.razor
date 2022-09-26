@@ -13,7 +13,9 @@
         <div style="height: 7rem; overflow: auto;">
             <div style="display: flex;">
                 <div>
-                    <input type="checkbox" @bind="_showWhitespace"/>
+                    <input type="checkbox" 
+                           @bind="_showWhitespace"
+                           class="bte_input" />
     
                     <span>Show Whitespace</span>
                 </div>
@@ -23,7 +25,9 @@
                 &nbsp;
     
                 <div>
-                    <input type="checkbox" @bind="_showNewlines"/>
+                    <input type="checkbox" 
+                           @bind="_showNewlines"
+                           class="bte_input" />
     
                     <span>Show Newlines</span>
                 </div>

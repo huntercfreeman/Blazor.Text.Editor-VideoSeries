@@ -1,11 +1,20 @@
+using BlazorTextEditor.ClassLib.Store.IconCase;
+using Fluxor;
+using Fluxor.Blazor.Web.Components;
 using Microsoft.AspNetCore.Components;
 
 namespace BlazorTextEditor.RazorLib.Icons.Codicon;
 
-public class IconBase : ComponentBase
+public class IconBase : FluxorComponent
 {
+    [Inject]
+    private IState<IconState> IconStateWrap { get; set; } = null!;
+
     [Parameter]
-    public int WidthInPixels { get; set; } = 24;
+    public int? WidthInPixelsOverride { get; set; }
     [Parameter]
-    public int HeightInPixels { get; set; } = 24;
+    public int? HeightInPixelsOverride { get; set; }
+    
+    protected int WidthInPixels => WidthInPixelsOverride ?? IconStateWrap.Value.IconSizeInPixels;
+    protected int HeightInPixels => HeightInPixelsOverride ?? IconStateWrap.Value.IconSizeInPixels;
 }

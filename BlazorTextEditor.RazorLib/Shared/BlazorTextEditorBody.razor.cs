@@ -20,7 +20,7 @@ public partial class BlazorTextEditorBody : ComponentBase
         {
             new DimensionUnit
             {
-                Value = 50,
+                Value = 30,
                 DimensionUnitKind = DimensionUnitKind.Percentage
             },
             new DimensionUnit
@@ -38,7 +38,7 @@ public partial class BlazorTextEditorBody : ComponentBase
         {
             new DimensionUnit
             {
-                Value = 50,
+                Value = 70,
                 DimensionUnitKind = DimensionUnitKind.Percentage
             },
             new DimensionUnit

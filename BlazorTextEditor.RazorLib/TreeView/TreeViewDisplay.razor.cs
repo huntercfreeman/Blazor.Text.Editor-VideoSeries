@@ -29,7 +29,7 @@ public partial class TreeViewDisplay<TItem> : ComponentBase, IDisposable
     [Parameter]
     public TreeViewDisplay<TItem>? ParentTreeViewDisplay { get; set; }
 
-    private const int PADDING_LEFT_PER_DEPTH_IN_PIXELS = 24;
+    private const int PADDING_LEFT_PER_DEPTH_IN_PIXELS = 32;
     
     private TreeViewModel<TItem>? _previousTreeViewModel;
     private ElementReference? _titleElementReference;
