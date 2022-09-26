@@ -1,0 +1,217 @@
+Notes for video 27
+
+# Intent
+{
+[]Visual Improvements
+}
+
+# Plan
+{
+-Photino app
+[]Change the Photino app starting position when 
+	running the	program.
+	[]NativeApp/Program.cs
+		[]app.MainWindow
+			[].SetSize(2500, 1500)
+			[].SetLeft(1300);
+			[]Also modify the Title
+				[].SetTitle("Blazor Text Editor")
+				
+-Body and Footer
+[]Change the Body height and Footer height
+	[]RazorLib/Shared/MainLayout.razor.cs
+		[]override OnInitialized()
+			[]bodyHeight...
+				[]78%
+			[]footerHeight
+				[]22%
+
+-Folder Explorer and Editor
+[]Change the Folder Explorer width and the Editor width
+	[]RazorLib/Shared/BlazorTextEditorBody.razor.cs
+		[]override OnInitialized()
+			[]folderExplorerWidth...
+				[]30%
+			[]editorWidth
+				[]70%
+
+-<input /> HTML element .css
+	[]RazorLib/wwwroot
+		[]blazorTextEditor.css
+			[].bte_input
+				[]background-color:
+					var(--bte_input-background-color);
+				[]color:
+					var(--bte_input-font-color);
+				[]padding:
+					2px 3px;
+			[].bte_input:focus
+				[]outline:
+					solid
+					2px
+					var(--bte_primary-emphasis-foreground-color);
+				[]box-shadow:
+					0
+					0
+					21px
+					var(--bte_primary-emphasis-foreground-color);
+		[]blazorTextEditorColors.css
+			[]--bte_input-background-color: red;
+		    []--bte_input-font-color: red;
+	    []Themes/
+	    	[]blazorTextEditorLightTheme.css
+				[]--bte_input-background-color: red;
+		    	[]--bte_input-font-color: red;
+	    	[]blazorTextEditorDarkTheme.css
+				[]--bte_input-background-color: #2d2f34;
+			    []--bte_input-font-color: #d1d2ca;
+	    []{
+			Add class="bte_input" 
+			to all the <input /> HTML elements 
+		}
+-bte_gutter css class gets .css
+	[]RazorLib/wwwroot
+		[]blazorTextEditor.css
+			[].bte_gutter
+				[]box-shadow:
+					-4px 
+					0 
+					0 
+					var(--bte_text-editor-gutter-border-color) 
+					inset;
+				[]background-color:
+					var(--bte_text-editor-gutter-background-color);
+		[]blazorTextEditorColors.css
+			[]--bte_text-editor-gutter-border-color: red;
+			[]--bte_text-editor-gutter-background-color: red;
+		[]Themes/
+			[]blazorTextEditorLightTheme.css
+				[]--bte_text-editor-gutter-border-color: red;
+				[]--bte_text-editor-gutter-background-color: red;
+			[]blazorTextEditorDarkTheme.css
+				[]--bte_text-editor-gutter-border-color: #273840;
+				[]--bte_text-editor-gutter-background-color: #1f2229;
+-dark theme changes
+	[]RazorLib/wwwroot/Themes/
+		[]blazorTextEditorDarkTheme.css
+			[]--bte_header-background-color: #2a2a2e;
+			[]--bte_footer-background-color: #2b2d2d;
+			---- run and show changes ----
+			[]--bte_text-editor-cursor-foreground-color: #e6e6e6;
+			[]--bte_text-selection-background-color: #24557d;
+			---- run and show changes ----
+			[]--bte_primary-border-color: #d7d7d7;
+			[]--bte_resize-column-background-color: #d7d7d7;
+			[]--bte_resize-row-background-color: #d7d7d7;
+			---- run and show changes ----
+			[]--bte_text-editor-caret-row-border-color: #a46c00;
+			---- run and show changes ----
+-.bte_text-editor-content css class changes
+	[]RazorLib/wwwroot
+		[]blazorTextEditor.css
+			[].bte_text-editor-content
+				[]cursor: text;
+-.bte_header css class changes
+	[]RazorLib/wwwroot
+		[]blazorTextEditor.css
+			[].bte_header
+				[]border-bottom: 5px;
+-EditorDisplay 'Rerender' button changes
+	[]RazorLib/Editor
+		[]EditorDisplay.razor
+			[]<button> with text Rerender
+				[]class="btn btn-primary"
+-Header blazor component changes
+	[]RazorLib/Shared
+		[]BlazorTextEditorHeader.razor
+			[]Remove markup reference to blazor component
+				<ActiveContextRecordsDisplay />
+			[]The <div> containing the <button> with the
+				text 'File'.
+				[]Add to the <div> style of "margin-left: 15px;"
+				[]Add to the <button> style of "display: flex;"
+-MenuOptionDisplay blazor component changes
+	[]RazorLib/Menu
+		[]MenuOptionDisplay.razor
+			[]In blazorTextEditor.css add to .bte_menu-option-display
+				[]cursor: default;
+				[]padding: 0 10px;
+			[]In MenuOptionDisplay.razor add the css class
+				"bte_unselectable" to the <div> with the class
+				"bte_menu-option-display"
+-FolderExplorerDisplay.razor blazor component changes
+	[]Add the style, "height: 100%; " to the context boundary
+		[]@($"")
+	[]Wrap 
+		[]<div class=bte_section-title/>
+		[]<input @bind="_filePath" />
+		[]<button @onclick="DispatchSetFolderExplorer..."/>
+	[]In a div with a fixed height
+		[]<div style="height: 10rem; overflow: auto;">...</div>
+	[]The <div> that wraps the <TreeViewDisplay/>
+		[]Make it 
+			<div style="height: calc(100% - 10rem); overflow: auto">
+-TreeViewDisplay.razor blazor component changes
+	[]Add "bte_unselectable" to the <span> with the css class of
+		"bte_tree-view-display-title"
+	[]In blazorTextEditor.css
+		[]For .bte_tree-view-display-title add
+			[]white-space: nowrap;
+			[]display: flex;
+			[]cursor: default;
+		[]For .bte_tree-view-display-title:hover add
+			[]background-color: 
+				var(--bte_primary-hover-background-color);
+-ClassLib/Store/IconCase
+	[]IconState.cs
+	[]IconStateReducer.cs
+	[]SetIconSizeInPixelsAction.cs
+
+-RazorLib/Icons/Codicon/IconBase.cs
+	[]Inject IState<IconState>
+	[]Inherit FluxorComponent
+	[]WidthInPixels and HeightInPixels become
+		[]Expression bound properties
+		[]And in place of the Parameters are
+			two parameters named
+				[]WidthInPixelsOverride
+				[]HeightInPixelsOverride
+	[]The Expression bound property named WidthInPixels
+		goes to WidthInPixelsOverride ??
+			IconStateWrap.Value.IconSizeInPixels
+		[]Repeat for the height
+	[]Clarification: the override ints are nullable
+
+-In TreeViewDisplay.razor.cs
+	[]PADDING_LEFT_PER_DEPTH_IN_PIXELS = 32;
+
+-TreeViewDisplay.razor
+	[]In blazorTextEditor.css
+		[].bte_tree-view-display-expansion:hover -> add
+			[]background-color: var(--bte_primary-font-color);
+			[]color: var(--bte_body-background-color);
+
+}
+
+# Youtube Video Description
+{
+	Part 26:
+	https://youtu.be/53yFsYa-IQ8
+
+	Starting Point Repo:
+	https://github.com/huntercfreeman/BlazorTextEditor
+	
+	BlazorStudio Repo:
+	https://github.com/huntercfreeman/BlazorStudio
+	
+	Fluxor Repo:
+	https://github.com/mrpmorris/Fluxor
+	
+	Photino.Blazor:
+	https://github.com/tryphotino/photino.Blazor
+}
+
+# Youtube Video Title
+{
+	Visual Improvements | Blazor Text Editor Part 27
+}
