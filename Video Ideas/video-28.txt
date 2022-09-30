@@ -45,5 +45,5 @@ Notes for video 28
 
 # Youtube Video Title
 {
-	Setup Custom Virtualize<TItem> Component | Blazor Text Editor Part 28
+	Begin Custom Virtualization Component | Blazor Text Editor Part 28
 }
