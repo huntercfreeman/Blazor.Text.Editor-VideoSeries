@@ -49,6 +49,10 @@
                 Height:@(_textEditorWidthAndHeight?.HeightInPixels.ToString() ?? "null")px
             </span>
         </div>
+        
+        <div style="height: 3.5rem;">
+            Time to first render:&nbsp;<em>@($"{TimeToFirstRender.TotalMilliseconds:N0}")ms</em>
+        </div>
     
         <div class="bte_text-editor-content bte_unselectable"
              id="@TextEditorContentId"

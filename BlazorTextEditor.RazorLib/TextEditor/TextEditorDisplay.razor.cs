@@ -51,6 +51,12 @@ public partial class TextEditorDisplay : ComponentBase
     private bool _thinksLeftMouseButtonIsDown;
 
     private TextEditorKey? _previousTextEditorKey;
+
+    private DateTime _onInitializedDateTime;
+    private DateTime _onAfterFirstRenderDateTime;
+
+    private TimeSpan TimeToFirstRender => _onAfterFirstRenderDateTime
+        .Subtract(_onInitializedDateTime);
     
     private string TextEditorContentId => $"bte_text-editor-content_{_textEditorGuid}";
     private string MeasureCharacterWidthAndRowHeightId => $"bte_measure-character-width-and-row-height_{_textEditorGuid}";
@@ -75,6 +81,8 @@ public partial class TextEditorDisplay : ComponentBase
 
     protected override void OnInitialized()
     {
+        _onInitializedDateTime = DateTime.UtcNow;
+        
         TextEditorStatesSelection
             .Select(textEditorStates => textEditorStates.TextEditorList
                 .Single(x => x.Key == TextEditorKey));
@@ -86,6 +94,8 @@ public partial class TextEditorDisplay : ComponentBase
     {
         if (firstRender)
         {
+            _onAfterFirstRenderDateTime = DateTime.UtcNow;
+            
             await GetRowsAsync();
         }
 

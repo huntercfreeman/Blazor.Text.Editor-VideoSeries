@@ -322,3 +322,7 @@ em {
     outline: solid 2px var(--bte_primary-emphasis-foreground-color);
     box-shadow: 0 0 21px var(--bte_primary-emphasis-foreground-color);
 }
+
+.bte_virtualization-boundary-display {
+    position: absolute;
+}

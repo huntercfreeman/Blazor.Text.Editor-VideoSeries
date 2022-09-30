@@ -1,0 +1,92 @@
+using System.Collections.Immutable;
+using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
+
+namespace BlazorTextEditor.RazorLib.Virtualization;
+
+public partial class VirtualizationDisplay<T> : ComponentBase, IDisposable
+{
+    [Inject]
+    private IJSRuntime JsRuntime { get; set; } = null!;
+    
+    [Parameter, EditorRequired]
+    public Func<VirtualizationRequest, VirtualizationResult<T>> EntriesProviderFunc { get; set; } = null!;
+    [Parameter, EditorRequired]
+    public RenderFragment<T> ChildContent { get; set; } = null!;
+
+    [Parameter]
+    public bool UseHorizontalVirtualization { get; set; } = true;
+    [Parameter]
+    public bool UseVerticalVirtualization { get; set; } = true;
+    
+    private ElementReference _scrollableParentFinder;
+    private readonly Guid _intersectionObserverMapKey = Guid.NewGuid();
+
+    private VirtualizationResult<T> _result = new VirtualizationResult<T>(
+        ImmutableArray<VirtualizationEntry<T>>.Empty, 
+        new VirtualizationBoundary(0, 0, 0, 0),
+        new VirtualizationBoundary(0, 0, 0, 0),
+        new VirtualizationBoundary(0, 0, 0, 0),
+        new VirtualizationBoundary(0, 0, 0, 0));
+
+    private string LeftVirtualizationBoundaryDisplayId =>
+        $"bte_left-virtualization-boundary-display-{_intersectionObserverMapKey}";
+    
+    private string RightVirtualizationBoundaryDisplayId =>
+        $"bte_right-virtualization-boundary-display-{_intersectionObserverMapKey}";
+    
+    private string TopVirtualizationBoundaryDisplayId =>
+        $"bte_virtualization-boundary-display-{_intersectionObserverMapKey}";
+    
+    private string BottomVirtualizationBoundaryDisplayId =>
+        $"bte_bottom-virtualization-boundary-display-{_intersectionObserverMapKey}";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var boundaryIds = new List<object>();
+
+            if (UseHorizontalVirtualization)
+            {
+                boundaryIds.AddRange(new []
+                {
+                    LeftVirtualizationBoundaryDisplayId,
+                    RightVirtualizationBoundaryDisplayId
+                });
+            }
+            
+            if (UseVerticalVirtualization)
+            {
+                boundaryIds.AddRange(new []
+                {
+                    TopVirtualizationBoundaryDisplayId,
+                    BottomVirtualizationBoundaryDisplayId
+                });
+            }
+            
+            await JsRuntime.InvokeVoidAsync(
+                "blazorTextEditorVirtualization.initializeIntersectionObserver",
+                _intersectionObserverMapKey.ToString(),
+                DotNetObjectReference.Create(this),
+                _scrollableParentFinder,
+                boundaryIds);
+        }
+        
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    [JSInvokable]
+    public async Task OnScrollEventAsync(VirtualizationScrollPosition scrollPosition)
+    {
+        
+    }
+
+    public void Dispose()
+    {
+        _ = Task.Run(async () => 
+            await JsRuntime.InvokeVoidAsync(
+                "blazorTextEditorVirtualization.disposeIntersectionObserver",
+                _intersectionObserverMapKey.ToString()));
+    }
+}
