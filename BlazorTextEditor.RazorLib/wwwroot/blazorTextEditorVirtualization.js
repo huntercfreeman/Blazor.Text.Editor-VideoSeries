@@ -8,7 +8,26 @@ window.blazorTextEditorVirtualization = {
         let scrollableParent = scrollableParentFinder.parentElement;
         
         scrollableParent.addEventListener("scroll", (event) => {
-            // TODO: Add scroll events    
+            let hasIntersectingBoundary = false;
+
+            let intersectionObserverMapValue = this.intersectionObserverMap
+                .get(intersectionObserverMapKey);
+            
+            for (let i = 0; i < intersectionObserverMapValue.BoundaryIdIntersectionRatioTuples.length; i++) {
+                let boundaryTuple = intersectionObserverMapValue.BoundaryIdIntersectionRatioTuples[i];
+
+                if (boundaryTuple.IntersectionRatio > 0) {
+                    hasIntersectingBoundary = true;
+                }
+            }
+
+            if (hasIntersectingBoundary) {
+                virtualizationDisplayDotNetObjectReference
+                    .invokeMethodAsync("OnScrollEventAsync", {
+                        ScrollLeftInPixels: scrollableParent.scrollLeft,
+                        ScrollTopInPixels: scrollableParent.scrollTop
+                    });
+            }
         }, true);
 
         let options = {
@@ -49,6 +68,11 @@ window.blazorTextEditorVirtualization = {
         let boundaryIdIntersectionRatioTuples = [];
         
         for (let i = 0; i < boundaryIds.length; i++) {
+
+            let boundaryElement = document.getElementById(boundaryIds[i]);
+            
+            intersectionObserver.observe(boundaryElement);
+            
             boundaryIdIntersectionRatioTuples.push({
                 BoundaryId: boundaryIds[i],
                 IntersectionRatio: 0
@@ -59,8 +83,16 @@ window.blazorTextEditorVirtualization = {
             IntersectionObserver: intersectionObserver,
             BoundaryIdIntersectionRatioTuples: boundaryIdIntersectionRatioTuples
         });
+
+        virtualizationDisplayDotNetObjectReference
+            .invokeMethodAsync("OnScrollEventAsync", {
+                ScrollLeftInPixels: scrollableParent.scrollLeft,
+                ScrollTopInPixels: scrollableParent.scrollTop
+            });
     },
     disposeIntersectionObserver: function (intersectionObserverMapKey) {
+        
+        // TODO: Wrong
         
         let intersectionObserver = this.intersectionObserverMap.get(intersectionObserverMapKey);
 

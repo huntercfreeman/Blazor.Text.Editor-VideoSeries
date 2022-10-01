@@ -33,14 +33,25 @@ public class TextEditorBase
         var rowIndex = 0;
         var previousCharacter = '\0';
 
+        var charactersOnRow = 0;
+
         for (var index = 0; index < content.Length; index++)
         {
             var character = content[index];
+
+            charactersOnRow++;
 
             if (character == KeyboardKeyFacts.WhitespaceCharacters.CARRIAGE_RETURN)
             {
                 _rowEndingPositions.Add((index + 1, RowEndingKind.CarriageReturn));
                 rowIndex++;
+
+                if (charactersOnRow > MostCharactersOnASingleRow)
+                {
+                    MostCharactersOnASingleRow = charactersOnRow;
+                }
+
+                charactersOnRow = 0;
             }
             else if (character == KeyboardKeyFacts.WhitespaceCharacters.NEW_LINE)
             {
@@ -55,6 +66,13 @@ public class TextEditorBase
                 {
                     _rowEndingPositions.Add((index + 1, RowEndingKind.NewLine));
                     rowIndex++;
+                    
+                    if (charactersOnRow > MostCharactersOnASingleRow)
+                    {
+                        MostCharactersOnASingleRow = charactersOnRow;
+                    }
+
+                    charactersOnRow = 0;
                 }
             }
 
@@ -83,6 +101,8 @@ public class TextEditorBase
     public int RowCount => _rowEndingPositions.Count;
 
     public ImmutableArray<EditBlock> EditBlocks => _editBlocks.ToImmutableArray();
+
+    public int MostCharactersOnASingleRow { get; private set; }
 
     public ImmutableArray<(int positionIndex, RowEndingKind rowEndingKind)> RowEndingPositions =>
         _rowEndingPositions.ToImmutableArray();

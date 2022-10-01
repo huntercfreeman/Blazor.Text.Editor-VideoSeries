@@ -6,18 +6,23 @@
 
 @if (UseHorizontalVirtualization)
 {
-    <VirtualizationBoundaryDisplay VirtualizationBoundaryDisplayId="LeftVirtualizationBoundaryDisplayId"
+    <VirtualizationBoundaryDisplay VirtualizationBoundaryDisplayId="@LeftVirtualizationBoundaryDisplayId"
                                    VirtualizationBoundary="_result.LeftVirtualizationBoundary"/>
     
-    <VirtualizationBoundaryDisplay VirtualizationBoundaryDisplayId="RightVirtualizationBoundaryDisplayId"
+    <VirtualizationBoundaryDisplay VirtualizationBoundaryDisplayId="@RightVirtualizationBoundaryDisplayId"
                                    VirtualizationBoundary="_result.RightVirtualizationBoundary"/>
 }
 
 @if (UseVerticalVirtualization)
 {
-    <VirtualizationBoundaryDisplay VirtualizationBoundaryDisplayId="TopVirtualizationBoundaryDisplayId"
+    <VirtualizationBoundaryDisplay VirtualizationBoundaryDisplayId="@TopVirtualizationBoundaryDisplayId"
                                    VirtualizationBoundary="_result.TopVirtualizationBoundary"/>
     
-    <VirtualizationBoundaryDisplay VirtualizationBoundaryDisplayId="BottomVirtualizationBoundaryDisplayId"
+    <VirtualizationBoundaryDisplay VirtualizationBoundaryDisplayId="@BottomVirtualizationBoundaryDisplayId"
                                    VirtualizationBoundary="_result.BottomVirtualizationBoundary"/>
+}
+
+@foreach (var entry in _result.Entries)
+{
+    @ChildContent(entry)
 }

@@ -6,6 +6,7 @@ using BlazorTextEditor.ClassLib.Store.TextEditorCase;
 using BlazorTextEditor.ClassLib.SyntaxHighlighting;
 using BlazorTextEditor.ClassLib.TextEditor;
 using BlazorTextEditor.RazorLib.JavaScriptObjects;
+using BlazorTextEditor.RazorLib.Virtualization;
 using Fluxor;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
@@ -477,6 +478,109 @@ public partial class TextEditorDisplay : ComponentBase
                 spanBuilder.Append(richCharacter.Value);
                 break;
         }
+    }
+
+    private VirtualizationResult<List<RichCharacter>>? EntriesProvider(VirtualizationRequest request)
+    {
+        if (_characterWidthAndRowHeight is null ||
+            _textEditorWidthAndHeight is null ||
+            request.CancellationToken.IsCancellationRequested)
+        {
+            return null;
+        }
+
+        var localTextEditor = TextEditorStatesSelection.Value;
+
+        var verticalStartingIndex = (int)Math.Floor(
+            request.ScrollPosition.ScrollTopInPixels
+            / _characterWidthAndRowHeight.ElementHeightInPixels);
+
+        var verticalTake = (int)Math.Ceiling(
+            _textEditorWidthAndHeight.HeightInPixels 
+            / _characterWidthAndRowHeight.ElementHeightInPixels);
+
+        if (verticalStartingIndex + verticalTake > localTextEditor.RowEndingPositions.Length)
+            verticalTake = localTextEditor.RowEndingPositions.Length - verticalStartingIndex;
+
+        verticalTake = Math.Max(0, verticalTake);
+
+        var horizontalStartingIndex = (int)Math.Floor(
+            request.ScrollPosition.ScrollLeftInPixels
+            / _characterWidthAndRowHeight.FontWidthInPixels);
+
+        var horizontalTake = (int)Math.Ceiling(
+            _textEditorWidthAndHeight.WidthInPixels / 
+            _characterWidthAndRowHeight.FontWidthInPixels);
+
+        var virtualizedEntries = localTextEditor
+            .GetRows(verticalStartingIndex, verticalTake)
+            .Select((row, index) =>
+            {
+                index += verticalStartingIndex;
+                
+                var localHorizontalTake = horizontalTake;
+
+                if (horizontalStartingIndex + localHorizontalTake > row.Count)
+                    localHorizontalTake = row.Count - horizontalStartingIndex;
+                
+                localHorizontalTake = Math.Max(0, localHorizontalTake);
+
+                var horizontallyVirtualizedRow = row
+                    .Skip(horizontalStartingIndex)
+                    .Take(localHorizontalTake)
+                    .ToList();
+
+                return new VirtualizationEntry<List<RichCharacter>>(
+                    index,
+                    horizontallyVirtualizedRow,
+                    horizontallyVirtualizedRow.Count * _characterWidthAndRowHeight.FontWidthInPixels,
+                    _characterWidthAndRowHeight.ElementHeightInPixels,
+                    horizontalStartingIndex * _characterWidthAndRowHeight.FontWidthInPixels,
+                    index * _characterWidthAndRowHeight.ElementHeightInPixels);
+            }).ToImmutableArray();
+
+        var totalWidth = localTextEditor.MostCharactersOnASingleRow 
+                         * _characterWidthAndRowHeight.FontWidthInPixels;
+
+        var totalHeight = localTextEditor.RowEndingPositions.Length * 
+                          _characterWidthAndRowHeight.ElementHeightInPixels;
+        
+        var leftBoundary = new VirtualizationBoundary(
+            WidthInPixels: horizontalStartingIndex * _characterWidthAndRowHeight.FontWidthInPixels,
+            HeightInPixels: null,
+            LeftInPixels: 0,
+            TopInPixels: 0);
+
+        var rightBoundaryLeftInPixels = leftBoundary.WidthInPixels +
+                                        _characterWidthAndRowHeight.FontWidthInPixels * horizontalTake;
+        
+        var rightBoundary = new VirtualizationBoundary(
+            WidthInPixels: totalWidth - rightBoundaryLeftInPixels,
+            HeightInPixels: null,
+            LeftInPixels: rightBoundaryLeftInPixels,
+            TopInPixels: 0);
+        
+        var topBoundary = new VirtualizationBoundary(
+            WidthInPixels: null,
+            HeightInPixels: verticalStartingIndex * _characterWidthAndRowHeight.ElementHeightInPixels,
+            LeftInPixels: 0,
+            TopInPixels: 0);
+        
+        var bottomBoundaryTopInPixels = topBoundary.HeightInPixels +
+                                        _characterWidthAndRowHeight.ElementHeightInPixels * verticalTake;
+        
+        var bottomBoundary = new VirtualizationBoundary(
+            WidthInPixels: null,
+            HeightInPixels: totalHeight - bottomBoundaryTopInPixels,
+            LeftInPixels: 0,
+            TopInPixels: bottomBoundaryTopInPixels);
+
+        return new VirtualizationResult<List<RichCharacter>>(
+            virtualizedEntries,
+            leftBoundary,
+            rightBoundary,
+            topBoundary,
+            bottomBoundary);
     }
 }
 

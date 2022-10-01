@@ -10,9 +10,9 @@ public partial class VirtualizationDisplay<T> : ComponentBase, IDisposable
     private IJSRuntime JsRuntime { get; set; } = null!;
     
     [Parameter, EditorRequired]
-    public Func<VirtualizationRequest, VirtualizationResult<T>> EntriesProviderFunc { get; set; } = null!;
+    public Func<VirtualizationRequest, VirtualizationResult<T>?> EntriesProviderFunc { get; set; } = null!;
     [Parameter, EditorRequired]
-    public RenderFragment<T> ChildContent { get; set; } = null!;
+    public RenderFragment<VirtualizationEntry<T>> ChildContent { get; set; } = null!;
 
     [Parameter]
     public bool UseHorizontalVirtualization { get; set; } = true;
@@ -28,6 +28,9 @@ public partial class VirtualizationDisplay<T> : ComponentBase, IDisposable
         new VirtualizationBoundary(0, 0, 0, 0),
         new VirtualizationBoundary(0, 0, 0, 0),
         new VirtualizationBoundary(0, 0, 0, 0));
+
+    private CancellationTokenSource _scrollEventCancellationTokenSource = new();
+    private VirtualizationRequest _request = null!;
 
     private string LeftVirtualizationBoundaryDisplayId =>
         $"bte_left-virtualization-boundary-display-{_intersectionObserverMapKey}";
@@ -79,11 +82,32 @@ public partial class VirtualizationDisplay<T> : ComponentBase, IDisposable
     [JSInvokable]
     public async Task OnScrollEventAsync(VirtualizationScrollPosition scrollPosition)
     {
+        _scrollEventCancellationTokenSource.Cancel();
+        _scrollEventCancellationTokenSource = new();
+
+        _request = new VirtualizationRequest(
+            scrollPosition,
+            _scrollEventCancellationTokenSource.Token);
         
+        InvokeEntriesProviderFunc();
     }
 
+    public void InvokeEntriesProviderFunc()
+    {
+        var localResult = EntriesProviderFunc.Invoke(_request);
+
+        if (localResult is not null)
+        {
+            _result = localResult;
+
+            InvokeAsync(StateHasChanged);
+        }
+    }
+    
     public void Dispose()
     {
+        _scrollEventCancellationTokenSource.Cancel();
+        
         _ = Task.Run(async () => 
             await JsRuntime.InvokeVoidAsync(
                 "blazorTextEditorVirtualization.disposeIntersectionObserver",
