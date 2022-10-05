@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
 using System.Text;
+using BlazorTextEditor.ClassLib.Clipboard;
 using BlazorTextEditor.ClassLib.Keyboard;
 using BlazorTextEditor.ClassLib.RoslynHelpers;
 using BlazorTextEditor.ClassLib.Store.TextEditorCase;
@@ -23,6 +24,8 @@ public partial class TextEditorDisplay : ComponentBase
     private IDispatcher Dispatcher { get; set; } = null!;
     [Inject]
     private IJSRuntime JsRuntime { get; set; } = null!;
+    [Inject]
+    private IClipboardProvider ClipboardProvider { get; set; } = null!;
 
     [Parameter]
     public TextEditorKey TextEditorKey { get; set; } = null!;
@@ -147,13 +150,65 @@ public partial class TextEditorDisplay : ComponentBase
         }
         else
         {
-            Dispatcher.Dispatch(new EditTextEditorAction(TextEditorKey,
-                new (ImmutableTextEditorCursor, TextEditorCursor)[]
+            if (keyboardEventArgs.Key == "c" && keyboardEventArgs.CtrlKey)
+            {
+                if (_textEditorCursor.TextEditorSelection.AnchorPositionIndex.HasValue &&
+                    _textEditorCursor.TextEditorSelection.AnchorPositionIndex.Value !=
+                    _textEditorCursor.TextEditorSelection.EndingPositionIndex)
                 {
-                    (new ImmutableTextEditorCursor(_textEditorCursor), _textEditorCursor)
-                }.ToImmutableArray(),
-                keyboardEventArgs,
-                CancellationToken.None));
+                    var lowerBound = _textEditorCursor.TextEditorSelection.AnchorPositionIndex.Value;
+                    var upperBound = _textEditorCursor.TextEditorSelection.EndingPositionIndex;
+
+                    if (lowerBound > upperBound)
+                    {
+                        (lowerBound, upperBound) = (upperBound, lowerBound);
+                    }
+
+                    var result = TextEditorStatesSelection.Value.GetTextRange(lowerBound,
+                        upperBound - lowerBound);
+
+                    if (result.Length != 0)
+                        await ClipboardProvider.SetClipboard(result);
+                }
+            }
+            else if (keyboardEventArgs.Key == "v" && keyboardEventArgs.CtrlKey)
+            {
+                var clipboard = await ClipboardProvider.ReadClipboard();
+                
+                foreach (var character in clipboard)
+                {
+                    var code = character switch
+                    {
+                        '\r' => KeyboardKeyFacts.WhitespaceCodes.CARRIAGE_RETURN_CODE,
+                        '\n' => KeyboardKeyFacts.WhitespaceCodes.ENTER_CODE,
+                        '\t' => KeyboardKeyFacts.WhitespaceCodes.TAB_CODE,
+                        ' ' => KeyboardKeyFacts.WhitespaceCodes.SPACE_CODE,
+                        _ => character.ToString()
+                    };
+                    
+                    Dispatcher.Dispatch(new EditTextEditorAction(TextEditorKey,
+                        new (ImmutableTextEditorCursor, TextEditorCursor)[]
+                        {
+                            (new ImmutableTextEditorCursor(_textEditorCursor), _textEditorCursor)
+                        }.ToImmutableArray(),
+                        new KeyboardEventArgs
+                        {
+                            Code = code,
+                            Key = character.ToString()
+                        },
+                        CancellationToken.None));
+                }
+            }
+            else
+            {
+                Dispatcher.Dispatch(new EditTextEditorAction(TextEditorKey,
+                    new (ImmutableTextEditorCursor, TextEditorCursor)[]
+                    {
+                        (new ImmutableTextEditorCursor(_textEditorCursor), _textEditorCursor)
+                    }.ToImmutableArray(),
+                    keyboardEventArgs,
+                    CancellationToken.None));
+            }
             
             _virtualizationDisplay.InvokeEntriesProviderFunc();
         }

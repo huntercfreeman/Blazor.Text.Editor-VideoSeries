@@ -18,10 +18,10 @@ public record TextEditorStates(ImmutableList<TextEditorBase> TextEditorList)
         // var testCaseFileContents = File
         //     .ReadAllText(TestCaseAbsoluteFilePath
         //         .GetAbsoluteFilePathString());
-        
-        
-        
-        var testCaseFileContents = "abc123";
+
+
+
+        var testCaseFileContents = string.Empty;//"abc123";
         
         var textEditorTestCase = new TextEditorBase(testCaseFileContents, TextEditorFacts.TextEditorKeyTestCase);
 
