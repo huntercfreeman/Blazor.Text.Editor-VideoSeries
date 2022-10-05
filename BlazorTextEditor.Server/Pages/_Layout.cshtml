@@ -12,8 +12,12 @@
     <link href="css/site.css" rel="stylesheet"/>
     <link href="BlazorTextEditor.Server.styles.css" rel="stylesheet"/>
     
-    @* Razor Lib .css *@
     <link href="_content/BlazorTextEditor.RazorLib/blazorTextEditor.css" rel="stylesheet"/>
+    
+    <link href="_content/BlazorTextEditor.RazorLib/blazorTextEditorColors.css" rel="stylesheet"/>
+
+    <link href="_content/BlazorTextEditor.RazorLib/Themes/blazorTextEditorDarkTheme.css" rel="stylesheet"/>
+    <link href="_content/BlazorTextEditor.RazorLib/Themes/blazorTextEditorLightTheme.css" rel="stylesheet"/>
     
     <component type="typeof(HeadOutlet)" render-mode="ServerPrerendered"/>
 </head>
@@ -33,8 +37,8 @@
 
 <script src="_framework/blazor.server.js"></script>
 
-@* Razor Lib .css *@
 <script src="_content/BlazorTextEditor.RazorLib/blazorTextEditor.js"></script>
+<script src="_content/BlazorTextEditor.RazorLib/blazorTextEditorVirtualization.js"></script>
 
 </body>
 </html>

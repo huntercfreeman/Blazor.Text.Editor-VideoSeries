@@ -4,7 +4,7 @@
 @using BlazorTextEditor.RazorLib.Virtualization
 
 <ContextBoundary ContextRecord="ContextFacts.TextEditorContext"
-                 StyleCssString="height: calc(100% - 3.5rem);">
+                 StyleCssString="height: 100%;">
     <div @ref="_textEditorDisplayElementReference"
          @onclick="FocusTextEditorOnClickAsync"
          @onkeydown="HandleOnKeyDownAsync"
@@ -118,7 +118,8 @@
                     spaceKeyOutput = "·";
                 }
 
-                <VirtualizationDisplay EntriesProviderFunc="EntriesProvider"
+                <VirtualizationDisplay @ref="_virtualizationDisplay"
+                                       EntriesProviderFunc="EntriesProvider"
                                        Context="virtualizedRow">
                     @{
                         var index = virtualizedRow.Index;
