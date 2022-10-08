@@ -39,7 +39,7 @@ public partial class VirtualizationDisplay<T> : ComponentBase, IDisposable
         $"bte_right-virtualization-boundary-display-{_intersectionObserverMapKey}";
     
     private string TopVirtualizationBoundaryDisplayId =>
-        $"bte_virtualization-boundary-display-{_intersectionObserverMapKey}";
+        $"bte_top-virtualization-boundary-display-{_intersectionObserverMapKey}";
     
     private string BottomVirtualizationBoundaryDisplayId =>
         $"bte_bottom-virtualization-boundary-display-{_intersectionObserverMapKey}";

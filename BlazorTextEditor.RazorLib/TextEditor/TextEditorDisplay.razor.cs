@@ -29,7 +29,6 @@ public partial class TextEditorDisplay : ComponentBase
 
     private Guid _textEditorGuid = Guid.NewGuid();
     private ElementReference _textEditorDisplayElementReference;
-    private List<List<RichCharacter>>? _rows;
     private bool _shouldMeasureDimensions = true;
     private string _testStringForMeasurement = "abcdefghijklmnopqrstuvwxyz0123456789";
     private int _testStringRepeatCount = 6;
@@ -39,7 +38,7 @@ public partial class TextEditorDisplay : ComponentBase
     private TextEditorCursor _textEditorCursor = new();
     private TextEditorCursorDisplay? _textEditorCursorDisplay;
     private bool _showNewlines = true;
-    private bool _showWhitespace = true;
+    private bool _showWhitespace;
     private bool _showGetAllTextEscaped;
     /// <summary>
     /// Do not select text just because the user has the Left Mouse Button down.
@@ -55,6 +54,7 @@ public partial class TextEditorDisplay : ComponentBase
 
     private DateTime _onInitializedDateTime;
     private DateTime _onAfterFirstRenderDateTime;
+    private VirtualizationDisplay<List<RichCharacter>>? _virtualizationDisplay;
 
     private TimeSpan TimeToFirstRender => _onAfterFirstRenderDateTime
         .Subtract(_onInitializedDateTime);
@@ -74,7 +74,7 @@ public partial class TextEditorDisplay : ComponentBase
         if (_previousTextEditorKey is null ||
             _previousTextEditorKey != TextEditorKey)
         {
-            await GetRowsAsync();
+            _virtualizationDisplay?.InvokeEntriesProviderFunc();
         }
         
         await base.OnParametersSetAsync();
@@ -97,7 +97,7 @@ public partial class TextEditorDisplay : ComponentBase
         {
             _onAfterFirstRenderDateTime = DateTime.UtcNow;
             
-            await GetRowsAsync();
+            _virtualizationDisplay?.InvokeEntriesProviderFunc();
         }
 
         if (_shouldMeasureDimensions)
@@ -120,27 +120,10 @@ public partial class TextEditorDisplay : ComponentBase
         await base.OnAfterRenderAsync(firstRender);
     }
 
-    private async Task GetRowsAsync()
-    {
-        var localTextEditor = TextEditorStatesSelection.Value;
-            
-        _rows = localTextEditor.GetRows(0, Int32.MaxValue);
-
-        await InvokeAsync(StateHasChanged);
-    }
-
     private async Task FocusTextEditorOnClickAsync()
     {
         if (_textEditorCursorDisplay is not null) 
             await _textEditorCursorDisplay.FocusAsync();
-    }
-    
-    private async Task HandleContentOnClickAsync(MouseEventArgs mouseEventArgs)
-    {
-        var rowAndColumnIndex = await DetermineRowAndColumnIndex(mouseEventArgs);
-        
-        _textEditorCursor.IndexCoordinates = (rowAndColumnIndex.rowIndex, rowAndColumnIndex.columnIndex);
-        _textEditorCursor.PreferredColumnIndex = rowAndColumnIndex.columnIndex;
     }
     
     private async Task HandleOnKeyDownAsync(KeyboardEventArgs keyboardEventArgs)
@@ -162,7 +145,7 @@ public partial class TextEditorDisplay : ComponentBase
                 keyboardEventArgs,
                 CancellationToken.None));
             
-            await GetRowsAsync();
+            _virtualizationDisplay?.InvokeEntriesProviderFunc();
         }
     }
     
@@ -231,17 +214,26 @@ public partial class TextEditorDisplay : ComponentBase
         if (_characterWidthAndRowHeight is null)
             return (0, 0);
 
+        var positionX = _relativeCoordinatesOnClick.RelativeX;
+        var positionY = _relativeCoordinatesOnClick.RelativeY;
+        
+        // Scroll position offset
+        {
+            positionX += _relativeCoordinatesOnClick.RelativeScrollLeft;
+            positionY += _relativeCoordinatesOnClick.RelativeScrollTop;
+        }
+        
         // Gutter padding column offset
         {
-            _relativeCoordinatesOnClick.RelativeX -= 
+            positionX -= 
                 (TextEditorBase.GutterPaddingLeftInPixels + TextEditorBase.GutterPaddingRightInPixels);
         }
         
-        var columnIndexDouble = _relativeCoordinatesOnClick.RelativeX / _characterWidthAndRowHeight.FontWidthInPixels;
+        var columnIndexDouble = positionX / _characterWidthAndRowHeight.FontWidthInPixels;
 
         var columnIndexInt = (int)Math.Round(columnIndexDouble, MidpointRounding.AwayFromZero);
         
-        var rowIndex = (int) (_relativeCoordinatesOnClick.RelativeY / _characterWidthAndRowHeight.ElementHeightInPixels);
+        var rowIndex = (int) (positionY / _characterWidthAndRowHeight.ElementHeightInPixels);
 
         rowIndex = rowIndex > localTextEditor.RowCount - 1
             ? localTextEditor.RowCount - 1

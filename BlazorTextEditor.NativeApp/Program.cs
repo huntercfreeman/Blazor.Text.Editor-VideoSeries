@@ -28,8 +28,8 @@ namespace BlazorTextEditor.NativeApp
                 .SetDevToolsEnabled(true)
                 .SetContextMenuEnabled(true)
                 .SetUseOsDefaultSize(false)
-                .SetSize(2500, 1500)
-                .SetLeft(1300);
+                .SetSize(2900, 1900)
+                .SetLeft(500);
 
             AppDomain.CurrentDomain.UnhandledException += (sender, error) =>
             {

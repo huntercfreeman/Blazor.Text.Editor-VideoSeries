@@ -105,9 +105,7 @@
             </div>
 
             @if (_characterWidthAndRowHeight is not null &&
-                 _textEditorWidthAndHeight is not null &&
-                 _rows is not null &&
-                 _rows.Any())
+                 _textEditorWidthAndHeight is not null)
             {
                 var tabKeyOutput = "&nbsp;&nbsp;&nbsp;&nbsp;";
                 var spaceKeyOutput = "&nbsp;";
@@ -118,7 +116,7 @@
                     spaceKeyOutput = "·";
                 }
 
-                <VirtualizationDisplay EntriesProviderFunc="EntriesProvider"
+                <VirtualizationDisplay @ref="_virtualizationDisplay" EntriesProviderFunc="EntriesProvider"
                                        Context="virtualizedRow">
                     @{
                         var index = virtualizedRow.Index;

@@ -16,7 +16,7 @@ window.blazorTextEditorVirtualization = {
             for (let i = 0; i < intersectionObserverMapValue.BoundaryIdIntersectionRatioTuples.length; i++) {
                 let boundaryTuple = intersectionObserverMapValue.BoundaryIdIntersectionRatioTuples[i];
 
-                if (boundaryTuple.IntersectionRatio > 0) {
+                if (boundaryTuple.IsIntersecting) {
                     hasIntersectingBoundary = true;
                 }
             }
@@ -49,9 +49,9 @@ window.blazorTextEditorVirtualization = {
                 let boundaryTuple = intersectionObserverMapValue.BoundaryIdIntersectionRatioTuples
                     .find(x => x.BoundaryId === entry.target.id);
 
-                boundaryTuple.IntersectionRatio = entry.intersectionRatio;
+                boundaryTuple.IsIntersecting = entry.isIntersecting;
                 
-                if (boundaryTuple.IntersectionRatio > 0) {
+                if (boundaryTuple.IsIntersecting) {
                     hasIntersectingBoundary = true;
                 }
             }
@@ -75,7 +75,7 @@ window.blazorTextEditorVirtualization = {
             
             boundaryIdIntersectionRatioTuples.push({
                 BoundaryId: boundaryIds[i],
-                IntersectionRatio: 0
+                IsIntersecting: false
             });
         }
 

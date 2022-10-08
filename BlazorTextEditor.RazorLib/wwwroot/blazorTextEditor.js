@@ -27,7 +27,9 @@ window.blazorTextEditor = {
         
         return {
             RelativeX: x,
-            RelativeY: y
+            RelativeY: y,
+            RelativeScrollLeft: element.scrollLeft,
+            RelativeScrollTop: element.scrollTop
         }
     },
 }
