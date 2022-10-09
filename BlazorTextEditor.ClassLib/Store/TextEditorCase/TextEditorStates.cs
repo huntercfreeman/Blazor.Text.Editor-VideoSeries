@@ -19,9 +19,11 @@ public record TextEditorStates(ImmutableList<TextEditorBase> TextEditorList)
     
     public TextEditorStates() : this(ImmutableList<TextEditorBase>.Empty)
     {
-        var testCaseFileContents = File
-            .ReadAllText(TestCaseAbsoluteFilePath
-                .GetAbsoluteFilePathString());
+        // var testCaseFileContents = File
+        //     .ReadAllText(TestCaseAbsoluteFilePath
+        //         .GetAbsoluteFilePathString());
+
+        var testCaseFileContents = string.Empty;
         
         var textEditorTestCase = new TextEditorBase(testCaseFileContents, TextEditorFacts.TextEditorKeyTestCase);
 

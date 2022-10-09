@@ -505,11 +505,18 @@ public class TextEditorBase
     
     public int GetCursorPositionIndex(TextEditorCursor textEditorCursor)
     {
+        return GetPositionIndex(
+            textEditorCursor.IndexCoordinates.rowIndex,
+            textEditorCursor.IndexCoordinates.columnIndex);
+    }
+    
+    public int GetPositionIndex(int rowIndex, int columnIndex)
+    {
         var startOfRowPositionIndex =
-            GetStartOfRowTuple(textEditorCursor.IndexCoordinates.rowIndex)
+            GetStartOfRowTuple(rowIndex)
                 .positionIndex;
 
-        return startOfRowPositionIndex + textEditorCursor.IndexCoordinates.columnIndex;
+        return startOfRowPositionIndex + columnIndex;
     }
     
     public string GetTextRange(int startingPositionIndex, int count)
@@ -536,5 +543,58 @@ public class TextEditorBase
         }
 
         return (0, 0, _rowEndingPositions[0]);
+    }
+
+    /// <returns>Will return -1 if no valid result was found.</returns>
+    public int GetColumnIndexOfCharacterWithDifferingKind(
+        int rowIndex, 
+        int columnIndex, 
+        bool moveBackwards)
+    {
+        var iterateBy = moveBackwards
+            ? -1
+            : 1;
+        
+        var startOfRowPositionIndex = GetStartOfRowTuple(
+            rowIndex)
+            .positionIndex;
+
+        var lastPositionIndexOnRow = _rowEndingPositions[rowIndex].positionIndex - 1;
+        
+        var positionIndex = GetPositionIndex(rowIndex, columnIndex);
+
+        if (moveBackwards)
+        {
+            if (positionIndex <= startOfRowPositionIndex)
+                return -1;
+
+            positionIndex -= 1;
+        }
+        
+        var startingCharacterKind = _content[positionIndex].GetCharacterKind();
+        
+        while (true)
+        {
+            if (positionIndex >= _content.Count ||
+                positionIndex > lastPositionIndexOnRow ||
+                positionIndex < startOfRowPositionIndex)
+            {
+                return -1;
+            }
+            
+            var currentCharacterKind = _content[positionIndex].GetCharacterKind();
+
+            if (currentCharacterKind != startingCharacterKind)
+                break;
+
+            positionIndex += iterateBy;
+        }
+        
+        if (moveBackwards)
+        {
+            positionIndex += 1;
+        }
+
+        return positionIndex - startOfRowPositionIndex;
     }
 }

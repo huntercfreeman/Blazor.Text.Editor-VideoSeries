@@ -33,6 +33,23 @@ public class TextEditorCursor
             localIndexCoordinates.columnIndex = columnIndex;
             localPreferredColumnIndex = columnIndex;
         }
+
+        if (keyboardEventArgs.ShiftKey)
+        {
+            if (textEditorCursor.TextEditorSelection.AnchorPositionIndex is null ||
+                textEditorCursor.TextEditorSelection.EndingPositionIndex == textEditorCursor.TextEditorSelection.AnchorPositionIndex)
+            {
+                var positionIndex = textEditorBase.GetPositionIndex(
+                    localIndexCoordinates.rowIndex,
+                    localIndexCoordinates.columnIndex);
+
+                textEditorCursor.TextEditorSelection.AnchorPositionIndex = positionIndex;
+            }    
+        }
+        else
+        {
+            textEditorCursor.TextEditorSelection.AnchorPositionIndex = null;
+        }
         
         switch (keyboardEventArgs.Key)
         {
@@ -51,7 +68,28 @@ public class TextEditorCursor
                 }
                 else
                 {
-                    MutateIndexCoordinatesAndPreferredColumnIndex(localIndexCoordinates.columnIndex - 1);
+                    if (keyboardEventArgs.CtrlKey)
+                    {
+                        var columnIndexOfCharacterWithDifferingKind = textEditorBase
+                            .GetColumnIndexOfCharacterWithDifferingKind(
+                                localIndexCoordinates.rowIndex,
+                                localIndexCoordinates.columnIndex,
+                                true);
+
+                        if (columnIndexOfCharacterWithDifferingKind == -1)
+                        {
+                            MutateIndexCoordinatesAndPreferredColumnIndex(0);
+                        }
+                        else
+                        {
+                            MutateIndexCoordinatesAndPreferredColumnIndex(
+                                columnIndexOfCharacterWithDifferingKind);
+                        }
+                    }
+                    else
+                    {
+                        MutateIndexCoordinatesAndPreferredColumnIndex(localIndexCoordinates.columnIndex - 1);
+                    }
                 }
                 
                 break;
@@ -98,19 +136,46 @@ public class TextEditorCursor
                 }
                 else if (localIndexCoordinates.columnIndex != lengthOfRow)
                 {
-                    MutateIndexCoordinatesAndPreferredColumnIndex(localIndexCoordinates.columnIndex + 1);
+                    if (keyboardEventArgs.CtrlKey)
+                    {
+                        var columnIndexOfCharacterWithDifferingKind = textEditorBase
+                            .GetColumnIndexOfCharacterWithDifferingKind(
+                                localIndexCoordinates.rowIndex,
+                                localIndexCoordinates.columnIndex,
+                                false);
+
+                        if (columnIndexOfCharacterWithDifferingKind == -1)
+                        {
+                            MutateIndexCoordinatesAndPreferredColumnIndex(lengthOfRow);
+                        }
+                        else
+                        {
+                            MutateIndexCoordinatesAndPreferredColumnIndex(
+                                columnIndexOfCharacterWithDifferingKind);
+                        }
+                    }
+                    else
+                    {
+                        MutateIndexCoordinatesAndPreferredColumnIndex(localIndexCoordinates.columnIndex + 1);
+                    }    
                 }
                 
                 break;
             }
             case KeyboardKeyFacts.MovementKeys.HOME:
             {
+                if (keyboardEventArgs.CtrlKey)
+                    localIndexCoordinates.rowIndex = 0;
+                
                 MutateIndexCoordinatesAndPreferredColumnIndex(0);
                 
                 break;
             }
             case KeyboardKeyFacts.MovementKeys.END:
             {
+                if (keyboardEventArgs.CtrlKey)
+                    localIndexCoordinates.rowIndex = textEditorBase.RowCount - 1;
+                    
                 var lengthOfRow = textEditorBase.GetLengthOfRow(localIndexCoordinates.rowIndex);
                 
                 MutateIndexCoordinatesAndPreferredColumnIndex(lengthOfRow);
@@ -121,5 +186,14 @@ public class TextEditorCursor
 
         textEditorCursor.IndexCoordinates = localIndexCoordinates;
         textEditorCursor.PreferredColumnIndex = localPreferredColumnIndex;
+
+        if (keyboardEventArgs.ShiftKey)
+        {
+            var positionIndex = textEditorBase.GetPositionIndex(
+                localIndexCoordinates.rowIndex,
+                localIndexCoordinates.columnIndex);
+
+            textEditorCursor.TextEditorSelection.EndingPositionIndex = positionIndex;
+        }
     }
 }
