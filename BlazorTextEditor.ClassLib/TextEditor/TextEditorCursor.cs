@@ -34,6 +34,17 @@ public class TextEditorCursor
             localIndexCoordinates.columnIndex = columnIndex;
             localPreferredColumnIndex = columnIndex;
         }
+
+        if (keyboardEventArgs.ShiftKey)
+        {
+            if (textEditorCursor.TextEditorSelection.AnchorPositionIndex is null ||
+                textEditorCursor.TextEditorSelection.AnchorPositionIndex == textEditorCursor.TextEditorSelection.EndingPositionIndex)
+            {
+                textEditorCursor.TextEditorSelection.AnchorPositionIndex = textEditorBase.GetPositionIndex(
+                    localIndexCoordinates.rowIndex, 
+                    localIndexCoordinates.columnIndex); 
+            }
+        }
         
         switch (keyboardEventArgs.Key)
         {
@@ -181,5 +192,12 @@ public class TextEditorCursor
 
         textEditorCursor.IndexCoordinates = localIndexCoordinates;
         textEditorCursor.PreferredColumnIndex = localPreferredColumnIndex;
+        
+        if (keyboardEventArgs.ShiftKey)
+        {
+            textEditorCursor.TextEditorSelection.EndingPositionIndex = textEditorBase.GetPositionIndex(
+                localIndexCoordinates.rowIndex, 
+                localIndexCoordinates.columnIndex); 
+        }
     }
 }

@@ -505,20 +505,25 @@ public class TextEditorBase
     
     public int GetCursorPositionIndex(TextEditorCursor textEditorCursor)
     {
-        var startOfRowPositionIndex =
-            GetStartOfRowTuple(textEditorCursor.IndexCoordinates.rowIndex)
-                .positionIndex;
-
-        return startOfRowPositionIndex + textEditorCursor.IndexCoordinates.columnIndex;
+        return GetPositionIndex(
+            textEditorCursor.IndexCoordinates.rowIndex, 
+            textEditorCursor.IndexCoordinates.columnIndex);
     }
     
     public int GetImmutableCursorPositionIndex(ImmutableTextEditorCursor immutableTextEditorCursor)
     {
+        return GetPositionIndex(
+            immutableTextEditorCursor.RowIndex, 
+            immutableTextEditorCursor.ColumnIndex);
+    }
+    
+    public int GetPositionIndex(int rowIndex, int columnIndex)
+    {
         var startOfRowPositionIndex =
-            GetStartOfRowTuple(immutableTextEditorCursor.RowIndex)
+            GetStartOfRowTuple(rowIndex)
                 .positionIndex;
 
-        return startOfRowPositionIndex + immutableTextEditorCursor.ColumnIndex;
+        return startOfRowPositionIndex + columnIndex;
     }
     
     public string GetTextRange(int startingPositionIndex, int count)
