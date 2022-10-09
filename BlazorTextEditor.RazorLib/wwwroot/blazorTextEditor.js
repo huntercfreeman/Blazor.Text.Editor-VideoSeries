@@ -46,53 +46,50 @@ window.blazorTextEditor = {
         }
 
         let intersectionObserver = new IntersectionObserver((entries) => {
+            let intersectionObserverMapValue = this.intersectionObserverMap
+                .get(intersectionObserverMapKey);
+            
             for (let i = 0; i < entries.length; i++) {
 
                 let entry = entries[i];
 
-                let boundaryTuple = intersectionObserverMapValue.BoundaryIdIntersectionRatioTuples
-                    .find(x => x.BoundaryId === entry.target.id);
+                let cursorTuple = intersectionObserverMapValue.CursorIsIntersectingTuples
+                    .find(x => x.CursorElementId === entry.target.id);
 
-                boundaryTuple.IsIntersecting = entry.isIntersecting;
-
-                if (boundaryTuple.IsIntersecting) {
-                    hasIntersectingBoundary = true;
-                }
-            }
-
-            if (hasIntersectingBoundary) {
-                virtualizationDisplayDotNetObjectReference
-                    .invokeMethodAsync("OnScrollEventAsync", {
-                        ScrollLeftInPixels: scrollableParent.scrollLeft,
-                        ScrollTopInPixels: scrollableParent.scrollTop
-                    });
+                cursorTuple.IsIntersecting = entry.isIntersecting;
             }
         }, options);
 
-        let boundaryIdIntersectionRatioTuples = [];
+        let cursorIsIntersectingTuples = [];
 
-        for (let i = 0; i < boundaryIds.length; i++) {
+        let cursorElement = document.getElementById(cursorElementId);
 
-            let boundaryElement = document.getElementById(boundaryIds[i]);
+        intersectionObserver.observe(cursorElement);
 
-            intersectionObserver.observe(boundaryElement);
-
-            boundaryIdIntersectionRatioTuples.push();
-        }
+        cursorIsIntersectingTuples.push({
+            CursorElementId: cursorElementId,
+            IsIntersecting: false
+        });
 
         this.intersectionObserverMap.set(intersectionObserverMapKey, {
             IntersectionObserver: intersectionObserver,
-            CursorIsIntersectingTuples: {
-                BoundaryId: cursorElementId,
-                IsIntersecting: false
-            }
+            CursorIsIntersectingTuples: cursorIsIntersectingTuples
         });
+    },
+    revealCursor: function (intersectionObserverMapKey,
+                            cursorElementId) {
 
-        virtualizationDisplayDotNetObjectReference
-            .invokeMethodAsync("OnScrollEventAsync", {
-                ScrollLeftInPixels: scrollableParent.scrollLeft,
-                ScrollTopInPixels: scrollableParent.scrollTop
-            });
+        let intersectionObserverMapValue = this.intersectionObserverMap
+            .get(intersectionObserverMapKey);
+
+        let cursorTuple = intersectionObserverMapValue.CursorIsIntersectingTuples
+            .find(x => x.CursorElementId === cursorElementId);
+        
+        if (!cursorTuple.IsIntersecting) {
+            let cursorElement = document.getElementById(cursorElementId);
+            
+            cursorElement.scrollIntoView();
+        }
     },
     disposeTextEditorCursorIntersectionObserver: function (intersectionObserverMapKey) {
 

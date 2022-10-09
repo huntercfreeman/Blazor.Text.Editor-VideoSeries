@@ -43,6 +43,11 @@
                     @onclick="() => _shouldMeasureDimensions = true">
                 Re-measure
             </button>
+            
+            <button class="btn btn-primary"
+                    @onclick="InvokeCursorScrollIntoViewIfNotVisibleAsync">
+                Reveal Cursor
+            </button>
 
             <span>
                 Width:&nbsp;@(_textEditorWidthAndHeight?.WidthInPixels.ToString() ?? "null")px,

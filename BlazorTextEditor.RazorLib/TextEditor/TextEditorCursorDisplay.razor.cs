@@ -104,6 +104,17 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
         if (_textEditorCursorDisplayElementReference is not null)
             await _textEditorCursorDisplayElementReference.Value.FocusAsync();
     }
+    
+    public async Task ScrollIntoViewIfNotVisibleAsync()
+    {
+        if (_textEditorCursorDisplayElementReference is null)
+            return;
+
+        await JsRuntime.InvokeVoidAsync(
+            "blazorTextEditor.revealCursor", 
+            _intersectionObserverMapKey.ToString(),
+            TextEditorCursorDisplayId);
+    }
 
     public void PauseBlinkAnimation()
     {

@@ -574,6 +574,12 @@ public partial class TextEditorDisplay : ComponentBase
             topBoundary,
             bottomBoundary);
     }
+
+    private async Task InvokeCursorScrollIntoViewIfNotVisibleAsync()
+    {
+        if (_textEditorCursorDisplay is not null)
+            await _textEditorCursorDisplay.ScrollIntoViewIfNotVisibleAsync();
+    }
 }
 
 
