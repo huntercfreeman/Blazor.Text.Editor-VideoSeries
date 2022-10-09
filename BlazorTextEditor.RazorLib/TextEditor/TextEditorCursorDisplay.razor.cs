@@ -37,13 +37,23 @@ public partial class TextEditorCursorDisplay : ComponentBase, IDisposable
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (IsFocusTarget)
+        if (firstRender)
         {
-            await JsRuntime.InvokeVoidAsync(
-                "blazorTextEditor.initializeTextEditorCursorIntersectionObserver",
-                _intersectionObserverMapKey.ToString(),
-                ScrollableContainerId,
-                TextEditorCursorDisplayId);
+            if (IsFocusTarget)
+            {
+                await JsRuntime.InvokeVoidAsync(
+                    "blazorTextEditor.initializeTextEditorCursorIntersectionObserver",
+                    _intersectionObserverMapKey.ToString(),
+                    ScrollableContainerId,
+                    TextEditorCursorDisplayId);
+            }
+        }
+
+        if (TextEditorCursor.ShouldRevealCursor)
+        {
+            TextEditorCursor.ShouldRevealCursor = false;
+
+            await ScrollIntoViewIfNotVisibleAsync();
         }
         
         await base.OnAfterRenderAsync(firstRender);
