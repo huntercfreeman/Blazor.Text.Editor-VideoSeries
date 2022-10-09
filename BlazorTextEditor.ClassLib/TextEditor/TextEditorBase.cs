@@ -512,6 +512,15 @@ public class TextEditorBase
         return startOfRowPositionIndex + textEditorCursor.IndexCoordinates.columnIndex;
     }
     
+    public int GetImmutableCursorPositionIndex(ImmutableTextEditorCursor immutableTextEditorCursor)
+    {
+        var startOfRowPositionIndex =
+            GetStartOfRowTuple(immutableTextEditorCursor.RowIndex)
+                .positionIndex;
+
+        return startOfRowPositionIndex + immutableTextEditorCursor.ColumnIndex;
+    }
+    
     public string GetTextRange(int startingPositionIndex, int count)
     {
         return new string(_content
@@ -537,4 +546,63 @@ public class TextEditorBase
 
         return (0, 0, _rowEndingPositions[0]);
     }
+
+    public int GetColumnIndexOfClosestCharacterWithDifferentTypeOnSameRow(
+        ImmutableTextEditorCursor immutableTextEditorCursor,
+        bool goBackwards)
+    {
+        var indexIteration = goBackwards ? -1 : 1;
+
+        var currentRowFirstPositionIndexInclusive = immutableTextEditorCursor.RowIndex == 0
+            ? 0
+            : GetStartOfRowTuple(immutableTextEditorCursor.RowIndex).positionIndex;
+        
+        var nextRowFirstPositionInclusive = 
+            _rowEndingPositions[immutableTextEditorCursor.RowIndex]
+                .positionIndex;
+        
+        var positionIndex = GetImmutableCursorPositionIndex(immutableTextEditorCursor);
+
+        RichCharacterKind initialRichCharacterKind;
+        
+        if (goBackwards)
+        {
+            if (positionIndex <= (currentRowFirstPositionIndexInclusive - 1) ||
+                positionIndex >= nextRowFirstPositionInclusive)
+            {
+                return -1;
+            }
+
+            positionIndex -= 1;
+            
+            initialRichCharacterKind = _content[positionIndex].GetRichCharacterKind();
+        }
+        else
+        {
+            initialRichCharacterKind = _content[positionIndex].GetRichCharacterKind();
+        }
+
+        while (true)
+        {
+            if (positionIndex <= (currentRowFirstPositionIndexInclusive - 1) ||
+                positionIndex >= nextRowFirstPositionInclusive)
+            {
+                return -1;
+            }
+            
+            var currentRichCharacterKind = _content[positionIndex].GetRichCharacterKind();
+
+            if (currentRichCharacterKind != initialRichCharacterKind)
+                break;
+            
+            positionIndex += indexIteration;
+        }
+        
+        if (goBackwards)
+            positionIndex += 1;
+
+        return positionIndex - currentRowFirstPositionIndexInclusive;
+    }
 }
+
+
