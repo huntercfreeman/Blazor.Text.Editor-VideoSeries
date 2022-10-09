@@ -584,6 +584,9 @@ public class TextEditorBase
         }
         else
         {
+            if (positionIndex >= _content.Count)
+                return -1;
+            
             initialRichCharacterKind = _content[positionIndex].GetRichCharacterKind();
         }
 

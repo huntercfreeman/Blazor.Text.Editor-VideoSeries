@@ -45,6 +45,10 @@ public class TextEditorCursor
                     localIndexCoordinates.columnIndex); 
             }
         }
+        else
+        {
+            textEditorCursor.TextEditorSelection.AnchorPositionIndex = null;
+        }
         
         switch (keyboardEventArgs.Key)
         {
@@ -134,7 +138,7 @@ public class TextEditorCursor
                     MutateIndexCoordinatesAndPreferredColumnIndex(0);
                     localIndexCoordinates.rowIndex++;
                 }
-                else
+                else if (localIndexCoordinates.columnIndex != lengthOfRow)
                 {
                     if (keyboardEventArgs.CtrlKey)
                     {
