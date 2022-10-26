@@ -1,0 +1,148 @@
+Notes for video 19:
+
+# Intent
+{
+-Folder Explorer 
+	-(Generic TreeView Blazor Component)
+}
+
+# Plan
+{
+-Input text
+	-Then button to submit open folder in
+		folder explorer
+			-DispatchSetFolderExplorerStateAction
+-SetFolderExplorerStateAction
+	-AbsoluteFilePath
+-FolderExplorerState
+	-Properties
+		-AbsoluteFilePath
+-FolderExplorerStateReducer
+	-ReduceSetFolderExplorerStateAction
+-RegisterTreeViewRootAction
+	-Properties
+		-TreeViewRootKey
+		-TreeViewModel
+-DisposeTreeViewRootAction
+	-Properties
+		-TreeViewRootKey
+-TreeViewStates
+	-Properties
+		-TreeViewRootMap
+-TreeViewStatesReducer
+	-ReduceRegisterTreeViewRoot
+	-ReduceDisposeTreeViewRoot
+-ITreeViewModel
+	-Properties
+		-ItemType
+		-UntypedItem
+-TreeViewRootKey
+-TreeViewModel<TItem> ClassLib/TreeView
+	-Inherits
+		-None
+	-Implements
+		-ITreeViewModel
+	-Constructor
+		-item
+		-loadChildrenFuncAsync
+	-Properties
+		-public Children is List<TreeViewModel<TItem>>
+		-ItemType
+		-UntypedItem
+		-LoadChildrenFuncAsync
+		-Id is Guid
+		-IsDisplayed
+		-IsExpanded
+		-Item
+		-IsRoot
+		-SelectedDescendants
+		-ActiveDescendant
+	-Events
+		-OnStateChanged
+		-OnActiveDescendantChanged
+		-OnSelectedDescendantsChanged
+	-Methods
+		-SetActiveDescendant
+		-InvokeOnStateChanged
+-TreeViewDisplay<TItem> Blazor Component
+	-Inherits
+		-ComponentBase
+	-Implements
+		-IDisposable
+	-Parameters
+		-TreeViewModel
+		-IsRoot
+		-ShouldDisplayRoot
+		-ItemRenderFragment
+		-GetRootFunc
+		-Depth
+		-Parent
+		-Index
+	-Constants
+		-MARGIN_LEFT_PER_DEPTH
+	-Fields
+		-_previousTreeViewModel
+		-_titleSpanElementReference
+	-Properties
+		-MarginLeftStyleInPixels
+		-TabIndex
+		-IsActiveClassCss
+		-RootTabIndex
+	-Methods
+		-OnParametersSetAsync
+		-TreeViewModelOnStateChanged
+		-GetMarginLeftStyleInPixels
+		-ToggleIsExpandedOnClickAsync
+		-ToggleIsExpandedAsync
+		-GetRoot
+		-IsActiveDescendant
+		-SetActiveAndFocusedOnClick
+		-HandleRootOnKeyDown
+		-HandleEntryOnKeyDownAsync
+		-Dispose
+-FolderExplorerDisplay
+	-Inherits
+		-ComponentBase
+	-Implements
+		-IDisposable
+	-Injects
+		-FolderExplorerStateWrap
+		-Dispatcher
+	-Parameters
+		-FolderExplorerElementDimensions
+	-Fields
+		-_previousAbsoluteFilePathValue
+		-_openRootCancellationTokenSource
+		-_rootFileTreeView
+		-_folderExplorerStateParameter
+	-Methods
+		-OnInitializedAsync
+		-FolderExplorerStateWrapOnStateChanged
+		-OpenRootAbsoluteFilePathAsync
+		-RootFileTreeViewOnOnActiveDescendantChanged
+		-DispatchSetFolderExplorerStateAction
+		-Dispose
+}
+
+# Youtube Video Description
+{
+	Part 18:
+	https://youtu.be/XpxeHaCxrus
+
+	Starting Point Repo:
+	https://github.com/huntercfreeman/BlazorTextEditor
+	
+	BlazorStudio Repo:
+	https://github.com/huntercfreeman/BlazorStudio
+	
+	Fluxor Repo:
+	https://github.com/mrpmorris/Fluxor
+	
+	Photino.Blazor:
+	https://github.com/tryphotino/photino.Blazor
+}
+
+# Youtube Video Title
+{
+	Setup for TreeView Component | Blazor Text Editor Part 19
+}

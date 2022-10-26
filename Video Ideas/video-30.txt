@@ -1,0 +1,127 @@
+microphone realtek(R)
+
+Notes for video 30:
+
+# Intent
+{
+[]Make a WebAssembly host for the BlazorTextEditor
+[]Publish the WebAssembly host to azure
+}
+
+# Plan
+{
+
+[]SHOW THE PUBLISHED WebAssembly VERISON
+[]https://hunter-freeman-dev.azurewebsites.net/
+
+[]@TextEditorStates.cs
+	[]"C:\\Users\\hunte\\Documents\\Hamlet_ Entire Play.html"
+[]@TextEditorDisplay.razor.cs
+	[]The TextEditorDisplay is erroneously not re-rendering 
+		after the user types. The following steps in this section
+		remedy this issue.
+	[]The method named: HandleContentOnClickAsync()
+		[]Is no longer being called and can be removed.
+	[]The method named: GetRowsAsync()
+		[]Is no longer being called and can be removed.
+	[]The field: List<List<RichCharacter>>? _rows
+		[]Is no longer being called and can be removed.
+	[]Capture the Blazor Component usage in the razor markup 
+		using: @ref="_virtualizationDisplay"
+	[]Make the field in the codebehind to store the @ref
+		VirtualizationDisplay<List<RichCharacter>>? _virtualizationDisplay
+	[]In the method override OnParametersSetAsync
+		[]await GetRowsAsync(); needs to be changed
+			to be
+			[]_virtualizationDisplay?.InvokeEntriesProviderFunc();
+	[]In the method override OnAfterRenderAsync
+		[]await GetRowsAsync(); needs to be changed
+			to be
+			[]_virtualizationDisplay?.InvokeEntriesProviderFunc();
+	[]In the method HandleOnKeyDownAsync
+		[]await GetRowsAsync(); needs to be changed
+			to be
+			[]_virtualizationDisplay?.InvokeEntriesProviderFunc();
+	[]In the razor markup
+		[]Remove all references to the _rows field it has been removed.
+	[]By default private bool _showWhitespace should be false
+
+[]@TreeViewDisplay.razor.cs
+	[]const int PADDING_LEFT_PER_DEPTH_IN_PIXELS
+		[]change this padding left field to = 25
+
+[]@FontState.cs
+	[]Change the constructor to default the FontSizeInPixels to = 25
+
+[]@IconState.cs
+	[]Change the constructor to default the IconSizeInPixels to = 25
+
+[]@Program.cs
+	[]app.MainWindow
+		[].SetSize(2900, 1900)
+		[].SetLeft(500)
+
+[]@VirtualizationDisplay.razor.cs
+	[]string TopVirtualizationBoundaryDisplayId has a slightly incorrect value
+		it is missing the word 'top'
+		[]$"bte_top-virtualization-boundary-display-{_intersectionObserverMapKey}";
+	
+[]@blazorTextEditorVirtualization.js
+	[]Do not use IntersectionRatio instead use IsIntersecting
+		it appears that there are rounding issues around 0.0018 if I remember correctly
+
+[]@TextEditorDisplay.razor.cs
+	[]In the method DetermineRowAndColumnIndex()
+		[]Make it so the relative onclick is accounting for ScrollLeft and ScrollTop
+		
+[]@RelativeCoordinates.cs
+	[]Make the class a struct
+	[]Change all properties to POSITIONAL properties
+	[]Add the following POSITIONAL properties
+		[]double RelativeScrollLeft
+		[]double RelativeScrollTop
+
+[]@blazorTextEditor.js
+	[]In the function named: getRelativePosition()
+		[]return AS WELL the following two properties
+			[]RelativeScrollLeft: element.scrollLeft
+			[]RelativeScrollTop: element.scrollTop
+			
+[]@TextEditorDisplay.razor.cs
+	[]In the method DetermineRowAndColumnIndex()
+		[]Make mutable state to use instead of the _relativeCoordinatesOnClick
+			[]var positionX
+			[]var positionY
+			[]// Scroll position offset
+				[]positionX += _relativeCoordinatesOnClick.RelativeScrollLeft;
+				[]positionY += _relativeCoordinatesOnClick.RelativeScrollTop;
+			[]Within the method replace all usage of _relativeCoordinatesOnClick
+				with the respective mutable variables
+
+}
+
+# Youtube Video Description
+{
+	Part 29:
+	https://youtu.be/n538gFD9Mlc
+
+	Website (clear cache if not setting latest version as the app is WebAssembly)
+	https://hunter-freeman-dev.azurewebsites.net/
+	
+	Hamlet
+	http://shakespeare.mit.edu/hamlet/full.html
+
+	Starting Point Repo:
+	https://github.com/huntercfreeman/BlazorTextEditor
+	
+	BlazorStudio Repo:
+	https://github.com/huntercfreeman/BlazorStudio
+	
+	Fluxor Repo:
+	https://github.com/mrpmorris/Fluxor
+}
+
+# Youtube Video Title
+{
+	Published as a Usable Website and Bug Fixes | Blazor Text Editor Part 30
+}

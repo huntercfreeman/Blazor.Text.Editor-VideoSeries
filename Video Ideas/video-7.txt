@@ -1,0 +1,65 @@
+Notes for video 7:
+
+# Intent
+{
+    The goals of video 7 are:
+		-Tab keys should have a width of 4 characters
+		-Tab keys should be handled in regards to
+			cursor positioning accounting for the tab width
+		-onclick move cursor should set preferred column index.
+		-Make various visual updates:
+			-Gutter changes
+				-Add padding-left to the gutter
+				-Add padding-right to the gutter
+				-Add different background-color
+				-Maybe different font color the numbers?
+			-RowContent changes
+				-Add margin-left to the content
+			-Cursor
+				-Cursor needs css changes: 
+					-position: absolute;
+					-display: inline-block;
+					-background-color: var(--pte_primary-cursor-color);
+					-margin: 0;
+					-padding: 0;
+					-outline: none !important;
+					-resize: none;
+					-border: none;
+					-overflow: hidden;
+}
+
+# Plan
+{
+    # Step 1
+        -TextEditorBase._tabKeyPositions
+		-In TextEditorBase.Constructor _tabKeyPositions.Add(index);
+		-Write method TextEditorBase.GetTabsCountOnSameRowBeforeCursor(int rowIndex, int columnIndex)
+		-const int TabWidth = 4;
+		-public const int GutterPaddingLeftInPixels = 5;
+    	-public const int GutterPaddingRightInPixels = 5;
+		-onclick just needs _cursor.preferredColumnIndex = ...
+		-columnIndex for @onclick -=
+			-offsetTabs 
+			-offsetmostDigitsInALineNumber
+			-contentMarginLeftSeparateFromLineNumbers
+}
+
+# Youtube Video Description
+{	
+	Part 6:
+	https://youtu.be/_8sZl3Q-HlI
+
+	Starting Point Repo:
+	https://github.com/huntercfreeman/BlazorTextEditor
+	
+	BlazorStudio Repo:
+	https://github.com/huntercfreeman/BlazorStudio
+	
+	Fluxor Repo:
+	https://github.com/mrpmorris/Fluxor
+}
+
+# Youtube Video Title
+{
+	Tab-Width and minor visual updates | Blazor Text Editor Part 7
+}

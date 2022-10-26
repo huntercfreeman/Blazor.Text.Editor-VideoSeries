@@ -9,6 +9,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorTextEditor.ClassLib",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorTextEditor.RazorLib", "BlazorTextEditor.RazorLib\BlazorTextEditor.RazorLib.csproj", "{530FB2E6-3C00-49C1-BCE0-C3E53B902822}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Photino.Blazor", "photino.Blazor\Photino.Blazor\Photino.Blazor.csproj", "{2F5424FC-7FFA-4406-853E-402A15034CE5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloWorld", "photino.Blazor\Samples\HelloWorld\HelloWorld.csproj", "{C132D287-4C57-4AAC-B507-300BD2933C49}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorTextEditor.NativeApp", "BlazorTextEditor.NativeApp\BlazorTextEditor.NativeApp.csproj", "{FA3E498C-D354-435F-A81D-60C84C3F27BE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorTextEditor.Wasm", "BlazorTextEditor.Wasm\BlazorTextEditor.Wasm.csproj", "{DF7AD47B-ABD1-4662-B06D-A1CC9913656E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +38,21 @@ Global
 		{530FB2E6-3C00-49C1-BCE0-C3E53B902822}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{530FB2E6-3C00-49C1-BCE0-C3E53B902822}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{530FB2E6-3C00-49C1-BCE0-C3E53B902822}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2F5424FC-7FFA-4406-853E-402A15034CE5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F5424FC-7FFA-4406-853E-402A15034CE5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F5424FC-7FFA-4406-853E-402A15034CE5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F5424FC-7FFA-4406-853E-402A15034CE5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C132D287-4C57-4AAC-B507-300BD2933C49}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C132D287-4C57-4AAC-B507-300BD2933C49}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C132D287-4C57-4AAC-B507-300BD2933C49}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C132D287-4C57-4AAC-B507-300BD2933C49}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FA3E498C-D354-435F-A81D-60C84C3F27BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA3E498C-D354-435F-A81D-60C84C3F27BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA3E498C-D354-435F-A81D-60C84C3F27BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA3E498C-D354-435F-A81D-60C84C3F27BE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF7AD47B-ABD1-4662-B06D-A1CC9913656E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF7AD47B-ABD1-4662-B06D-A1CC9913656E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF7AD47B-ABD1-4662-B06D-A1CC9913656E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF7AD47B-ABD1-4662-B06D-A1CC9913656E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

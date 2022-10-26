@@ -1,0 +1,108 @@
+Notes for video 31:
+
+# Intent
+{
+[]Add Ctrl and Shift modifiers to keyboard movement
+}
+
+# Plan
+{
+
+[]Update the published WebAssembly app
+
+[]@TextEditorCursor.cs
+	[]In the method named: 'MoveCursor(...)'
+		[]case KeyboardKeyFacts.MovementKeys.ARROW_RIGHT
+			[]
+
+
+[]@TextEditorBase.cs
+	[]public int GetColumnIndexOfClosestCharacterWithDifferentTypeOnSameRow(
+        ImmutableTextEditorCursor immutableTextEditorCursor,
+        bool goBackwards)
+    {
+        var indexIteration = goBackwards ? -1 : 1;
+
+        var currentRowFirstPositionIndexInclusive = immutableTextEditorCursor.RowIndex == 0
+            ? 0
+            : GetStartOfRowTuple(immutableTextEditorCursor.RowIndex).positionIndex;
+        
+        var nextRowFirstPositionInclusive = 
+            _rowEndingPositions[immutableTextEditorCursor.RowIndex]
+                .positionIndex;
+        
+        var positionIndex = GetImmutableCursorPositionIndex(immutableTextEditorCursor);
+
+        RichCharacterKind initialRichCharacterKind;
+        
+        if (goBackwards)
+        {
+            if (positionIndex <= (currentRowFirstPositionIndexInclusive - 1) ||
+                positionIndex >= nextRowFirstPositionInclusive)
+            {
+                return -1;
+            }
+
+            positionIndex -= 1;
+            
+            initialRichCharacterKind = _content[positionIndex].GetRichCharacterKind();
+        }
+        else
+        {
+            initialRichCharacterKind = _content[positionIndex].GetRichCharacterKind();
+        }
+
+        while (true)
+        {
+            if (positionIndex <= (currentRowFirstPositionIndexInclusive - 1) ||
+                positionIndex >= nextRowFirstPositionInclusive)
+            {
+                return -1;
+            }
+            
+            var currentRichCharacterKind = _content[positionIndex].GetRichCharacterKind();
+
+            if (currentRichCharacterKind != initialRichCharacterKind)
+                break;
+            
+            positionIndex += indexIteration;
+        }
+        
+        if (goBackwards)
+            positionIndex += 1;
+
+        return positionIndex - currentRowFirstPositionIndexInclusive;
+    }
+	
+
+@TextEditorCursorDisplay.razor.cs
+	-Scroll into view using JavaScript intersection observer
+	
+[]Do disposeTextEditorCursorIntersectionObserver and for the virtualization
+
+[]Change IntersectionRatioTuples in javascript to IsIntersectingTuples
+
+}
+
+# Youtube Video Description
+{
+	Part 30:
+	https://youtu.be/jsVcYBHkH0s
+
+	Website (clear cache if not setting latest version as the app is WebAssembly)
+	https://hunter-freeman-dev.azurewebsites.net/
+	
+	Starting Point Repo:
+	https://github.com/huntercfreeman/BlazorTextEditor
+	
+	BlazorStudio Repo:
+	https://github.com/huntercfreeman/BlazorStudio
+	
+	Fluxor Repo:
+	https://github.com/mrpmorris/Fluxor
+}
+
+# Youtube Video Title
+{
+	Ctrl and Shift for Keyboard Movement | Blazor Text Editor Part 31
+}

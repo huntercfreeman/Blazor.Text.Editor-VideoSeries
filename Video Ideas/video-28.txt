@@ -1,0 +1,49 @@
+Notes for video 28
+
+# Intent
+{
+
+[]Setup VirtualizationDisplay<T> Blazor component
+
+}
+
+# Plan
+{
+-Remove 'Rerender' button from EditorDisplay.razor
+-Add time to first render in TextEditorDisplay.razor
+	-style="height: 3.5rem;"
+	-<em>@($"{TimeToFirstRender.TotalMilliseconds:N0}")ms</em>
+-Change TestCaseAbsoluteFilePath to
+	-"/home/hunter/Documents/TestData/Hamlet_ Entire Play.html"
+		-Put time to first render here: 1,680ms
+	-Then put back TestCaseAbsoluteFilePath to TextEditorCursorDisplay
+		-Put time to first render here: 93ms
+-Start writing Virtualization components and the classes
+-Write the Javascript
+}
+
+# Youtube Video Description
+{
+	Part 27:
+	https://youtu.be/ZCB5bfAgWB8
+	
+	Intersection Observer API:
+	https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API
+
+	Starting Point Repo:
+	https://github.com/huntercfreeman/BlazorTextEditor
+	
+	BlazorStudio Repo:
+	https://github.com/huntercfreeman/BlazorStudio
+	
+	Fluxor Repo:
+	https://github.com/mrpmorris/Fluxor
+	
+	Photino.Blazor:
+	https://github.com/tryphotino/photino.Blazor
+}
+
+# Youtube Video Title
+{
+	Begin Custom Virtualization Component | Blazor Text Editor Part 28
+}

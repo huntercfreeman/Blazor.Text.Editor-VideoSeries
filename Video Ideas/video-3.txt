@@ -1,0 +1,104 @@
+Notes for video 3:
+
+# Intent
+{
+    The goals of video 3 are:
+		-Add newline logic.
+		-Add Tab key logic
+}
+
+# Plan
+{
+	# Step 0
+		-FONT SIZE NEEDS TO BE INCREASED FOR EVER APPLICATION I USE
+
+    # Step 1
+        -Iterate through content to find position of newline characters
+        	and maintain them in a List<int> where int is the position 
+        	relative to all characters in the document.
+        	
+	# Step 1.5
+		-Update previousCharacter
+		-Add LineEndingKind enum
+			{
+				CarriageReturn,
+				NewLine,
+				CarriageReturnNewLine,
+				EndOfFile
+			}
+		-In situation where '\r\n' modify position + 1 and change LineEndingKind
+		-Add EndOfFile lineEndingPosition after iterating content
+		
+	# Step 1.5
+		-RowLength()
+		-public (int positionIndex, LineEndingKind lineEndingKind) GetStartOfRowTuple(RowIndex rowIndex)
+    {
+        return rowIndex.Value > 0
+            ? _lineEndingPositions[rowIndex.Value - 1]
+            : (0, LineEndingKind.StartOfFile);
+    }
+        	
+	# Step 2
+		-When rendering out the markup to the UI switch statement swap out
+			all html characters that need escaped
+			{
+				switch (textCharacter.Value)
+                {
+                    case '\t':
+                        spanTextBuilder.Append("&nbsp;&nbsp;&nbsp;&nbsp;");
+                        break;
+                    case ' ':
+                        spanTextBuilder.Append("&nbsp;");
+                        break;
+                    case '\r':
+                        break;
+                    case '\n':
+                        break;
+                    case '<':
+                        spanTextBuilder.Append("&lt;");
+                        break;
+                    case '>':
+                        spanTextBuilder.Append("&gt;");
+                        break;
+                    case '"':
+                        spanTextBuilder.Append("&quot;");
+                        break;
+                    case '\'':
+                        spanTextBuilder.Append("&#39;");
+                        break;
+                    case '&':
+                        spanTextBuilder.Append("&amp;");
+                        break;
+                    default:
+                        spanTextBuilder.Append(textCharacter.Value);
+                        break;
+                }
+			}
+		-In order to render the escaped HTML characters use (MarkupString) cast on the string.
+		
+	# Step 2.5
+		-else if (character == KeyboardKeyFacts.WhitespaceCharacters.NEW_LINE)
+		-InvokeAsync(StateHasChanged)
+		-if (row.Any())
+		-TextEditorStatesSelection.Value.Content.First().DecorationByte;
+}
+
+# Youtube Video Description
+{
+	Part 2:
+	https://youtu.be/ZIt0-mbCgG8
+
+	Starting Point Repo:
+	https://github.com/huntercfreeman/BlazorTextEditor
+	
+	BlazorStudio Repo:
+	https://github.com/huntercfreeman/BlazorStudio
+	
+	Fluxor Repo:
+	https://github.com/mrpmorris/Fluxor
+}
+
+# Youtube Video Title
+{
+	Render with NewLines | Blazor Text Editor Part 3
+}

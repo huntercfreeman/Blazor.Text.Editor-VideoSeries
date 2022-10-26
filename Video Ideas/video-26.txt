@@ -1,0 +1,607 @@
+Notes for video 26
+
+# Intent
+{
+
+~5 minutes (4:34 was practice run timestamp): 
+	[]remove old debugging User Interface.
+	[]Change TextEditorStates.cs
+		[]"/home/hunter/RiderProjects/BlazorTextEditor/BlazorTextEditor.RazorLib/TextEditor/TextEditorCursorDisplay.razor.cs"
+		[]Make var testCaseFileContents = File
+            .ReadAllText(TEST_CASE_ABSOLUTE_FILE_PATH
+                .GetAbsoluteFilePathString());
+
+~10 minutes (17:58 was practice run timestamp):
+	[]Make the content of the TextEditorDisplay.razor
+		take up the remainder of the height instead
+		of a hardcoded pixel value.
+	[]Rename button to add Roslyn Syntax Highlighting
+		to just the text 'ApplyRoslyn' to save horizontal space.
+	
+~5 minutes (21:45 was practice run timestamp):
+	[]Add button with the text 'Re-measure' to re-measure
+		the TextEditorDisplay.razor using JavaScript
+		after resizing the application.
+	[]Add User Interface markup after the 'Re-measure' button
+		with the text to show TextEditor content's dimensions
+		$"Width: {...}px, Height: {...}px"
+
+~10 minutes (42:30 was practice run timestamp):
+	[]Add FontState with [FeatureState] to hold the 
+		font-size in pixels. (32px default)
+	[]Remove from blazorTextEditor.css the hard coded
+		.bte_main-layout { font-size: ...px; }
+	[]MainLayout.razor.cs [Inject] the FontState and
+		interpolate the value onto the ContextBoundary
+	[]As well in MainLayout.razor.cs manually subscribe to
+		the FontStateWrap event handler
+	[]Add RazorLib/FontSettings/FontSettingsDisplay.razor and .cs
+	[]In FontSettingsDisplay.razor use an input number element
+		and bind it to a Property in the codebehind.
+		In the setter if font-size < MINIMUM_FONT_SIZE_IN_PIXELS
+		then set backing field to MINIMUM_FONT_SIZE_IN_PIXELS
+		otherwise the value. Afterwards Dispatch a set font-size
+		action.
+	[]@.css {
+		em {
+		color: var(--bte_primary-emphasis-foreground-color);
+			#4d8aea;
+		font-style: normal;
+	}
+	}
+	[]Add to SettingsDisplay.razor the settings
+		for font
+
+~30 minutes (? was practice run timestamp):
+	[]Add ClassLib
+	  /SyntaxHighlighting
+	  /CSharpRolsynSyntaxHighting.cs and move syntax highlight
+	  logic there.
+	  	[]public static async Task
+	  		 ApplyRoslynSyntaxHighlightingAsync(
+	  		 	TextEditorBase textEditor)
+	 	[]private static void
+	 	 	ApplyRoslynSyntaxHighlightingDecorations(
+	 	 		TextEditorBase textEditor, 
+	 	 		GeneralSyntaxCollector generalSyntaxCollector)
+ 			[]Type decorations
+ 				[]Property Type
+ 				[]Class Declaration
+ 				[]Method Return Type
+ 				[]Parameter Declaration Type
+			[]Method decorations
+				[]Method declaration identifier
+				[]InvocationExpression
+			[]Local variable decorations
+				[]Parameter declaration identifier
+				[]Argument declaration identifier
+			[]String literal
+				[]String literal
+			[]Keywords
+				[]Keywords
+				[]VarSpans
+			[]Comments
+				[]TriviaComments
+				[]XmlComments
+				{
+				private static void ApplyRoslynSyntaxHighlightingDecorations(TextEditorBase textEditor, GeneralSyntaxCollector generalSyntaxCollector)
+    {
+        // Type decorations
+        {
+            // Property Type
+            textEditor.ApplyDecorationRange(
+                DecorationKind.Type,
+                generalSyntaxCollector.PropertyDeclarationSyntaxes
+                    .Select(pds => pds.Type.Span));
+
+            // Class Declaration
+            textEditor.ApplyDecorationRange(
+                DecorationKind.Type,
+                generalSyntaxCollector.ClassDeclarationSyntaxes
+                    .Select(cds => cds.Identifier.Span));
+
+            // Method return Type
+            textEditor.ApplyDecorationRange(
+                DecorationKind.Type,
+                generalSyntaxCollector.MethodDeclarationSyntaxes
+                    .Select(mds =>
+                    {
+                        var retType = mds
+                            .ChildNodes()
+                            .FirstOrDefault(x => x.Kind() == SyntaxKind.IdentifierName);
+
+                        return retType?.Span ?? default;
+                    }));
+
+            // Parameter declaration Type
+            textEditor.ApplyDecorationRange(
+                DecorationKind.Type,
+                generalSyntaxCollector.ParameterSyntaxes
+                    .Select(ps =>
+                    {
+                        var identifierNameNode = ps.ChildNodes()
+                            .FirstOrDefault(x => x.Kind() == SyntaxKind.IdentifierName);
+
+                        if (identifierNameNode is null)
+                        {
+                            return TextSpan.FromBounds(0, 0);
+                        }
+
+                        return identifierNameNode.Span;
+                    }));
+        }
+
+        // Method decorations
+        {
+            // Method declaration identifier
+            textEditor.ApplyDecorationRange(
+                DecorationKind.Method,
+                generalSyntaxCollector.MethodDeclarationSyntaxes
+                    .Select(mds => mds.Identifier.Span));
+
+            // InvocationExpression
+            textEditor.ApplyDecorationRange(
+                DecorationKind.Method,
+                generalSyntaxCollector.InvocationExpressionSyntaxes
+                    .Select(ies =>
+                    {
+                        var childNodes = ies.Expression.ChildNodes();
+
+                        var lastNode = childNodes.LastOrDefault();
+
+                        return lastNode?.Span ?? TextSpan.FromBounds(0, 0);
+                    }));
+        }
+
+        // Local variable decorations
+        {
+            // Parameter declaration identifier
+            textEditor.ApplyDecorationRange(
+                DecorationKind.Parameter,
+                generalSyntaxCollector.ParameterSyntaxes
+                    .Select(ps =>
+                    {
+                        var identifierToken =
+                            ps.ChildTokens().FirstOrDefault(x => x.Kind() == SyntaxKind.IdentifierToken);
+
+                        return identifierToken.Span;
+                    }));
+
+            // Argument declaration identifier
+            textEditor.ApplyDecorationRange(
+                DecorationKind.Parameter,
+                generalSyntaxCollector.ArgumentSyntaxes
+                    .Select(argumentSyntax => argumentSyntax.Span));
+        }
+
+        // String literal
+        {
+            // String literal
+            textEditor.ApplyDecorationRange(
+                DecorationKind.StringLiteral,
+                generalSyntaxCollector.StringLiteralExpressionSyntaxes
+                    .Select(sles => sles.Span));
+        }
+
+        // Keywords
+        {
+            // Keywords
+            textEditor.ApplyDecorationRange(
+                DecorationKind.Keyword,
+                generalSyntaxCollector.KeywordSyntaxTokens
+                    .Select(kst => kst.Span));
+            
+            // Contextual var keyword
+            textEditor.ApplyDecorationRange(
+                DecorationKind.Keyword,
+                generalSyntaxCollector.VarTextSpans);
+        }
+
+        // Comments
+        {
+            // Default comments
+            textEditor.ApplyDecorationRange(
+                DecorationKind.Comment,
+                generalSyntaxCollector.SyntaxTrivias
+                    .Select(st => st.Span));
+
+            // Xml comments
+            textEditor.ApplyDecorationRange(
+                DecorationKind.Comment,
+                generalSyntaxCollector.XmlCommentSyntaxes
+                    .Select(xml => xml.Span));
+        }
+    }
+    
+    
+    .css {
+    .bte_method {
+    color: var(--bte_method-foreground-color);
+}
+
+.bte_type {
+    color: var(--bte_type-foreground-color);
+}
+    
+.bte_parameter {
+    color: var(--bte_parameter-foreground-color);
+}
+    
+.bte_string-literal {
+    color: var(--bte_string-literal-foreground-color);
+}
+    
+.bte_keyword {
+    color: var(--bte_keyword-foreground-color);
+}
+    
+.bte_comment {
+    color: var(--bte_comment-foreground-color);
+}
+    }
+    
+    
+    
+    .css Dark theme {
+    --bte_method-foreground-color: #C9C96E;
+    --bte_type-foreground-color: #4EC9B0;
+    --bte_parameter-foreground-color: #9CDCFE;
+    --bte_string-literal-foreground-color: #D69D85;
+    --bte_keyword-foreground-color: #569CD6;
+    --bte_comment-foreground-color: #57A64A;
+    }
+    
+    
+    
+    .css light theme {
+    	--bte_method-foreground-color: #7F4E00;
+    --bte_type-foreground-color: #2B91AF;
+    --bte_parameter-foreground-color: #1F377F;
+    --bte_string-literal-foreground-color: #A31515;
+    --bte_keyword-foreground-color: #0000FF;
+    --bte_comment-foreground-color: #007F00;
+    }
+    
+    
+    private string GetCssClass(byte currentDecorationByte)
+    {
+        var decoration = (DecorationKind)currentDecorationByte;
+
+        return decoration switch
+        {
+            DecorationKind.None => string.Empty,
+            DecorationKind.Method => "bte_method",
+            DecorationKind.Type => "bte_type",
+            DecorationKind.Parameter => "bte_parameter",
+            DecorationKind.StringLiteral => "bte_string-literal",
+            DecorationKind.Keyword => "bte_keyword",
+            DecorationKind.Comment => "bte_comment",generalSyntaxColl
+            _ => throw new ApplicationException(
+                $"The {nameof(DecorationKind)}: {decoration} was not recognized.")
+        };
+    }
+    
+    []private void AppendTextEscaped(
+        StringBuilder spanBuilder, 
+        RichCharacter richCharacter,
+        string tabKeyOutput,
+        string spaceKeyOutput)
+    
+    
+				}
+	[]ClassLib/RoslynHelpers/GeneralSyntaxCollector.cs
+		[]constructor : base(SyntaxWalkerDepth.Trivia)
+		[]Properties
+			[]List<PropertyDeclarationSyntax>
+			[]List<ClassDeclarationSyntax>
+			[]List<MethodDeclarationSyntax>
+			[]List<InvocationExpressionSyntax>
+			[]List<ArgumentSyntax>
+			[]List<ParameterSyntax>
+			[]List<LiteralExpressionSyntax>
+			[]List<SyntaxTrivia>
+			[]List<SyntaxToken>
+			[]List<TextSpan>
+			[]List<XmlCommentSyntax>
+		[]Overriden Methods
+			[]VisitToken
+			[]VisitPropertyDeclaration
+			[]VisitMethodDeclaration
+			[]VisitArgument
+			[]VisitParameter
+			[]VisitLiteralExpression
+			[]VisitClassDeclaration
+			[]VisitInvocationExpression
+			[]VisitXmlComment
+			[]VisitTrivia
+			[]VisitLocalDeclarationStatement
+}
+
+# Plan
+{
+[]Rerender button in EditorDisplay needs height: 3.5rem
+[]Make input fields and button in TextEditorDisplay a constant height see following block -> {
+<div style="height: 7rem;">
+            <div style="display: flex; overflow: auto; height: 3rem;">
+                <div style="white-space: nowrap;">
+                    <input type="checkbox" @bind="_showWhitespace"/>
+
+                    <span>Whitespace?</span>
+                </div>
+
+                <div style="white-space: nowrap;">
+                    &nbsp;
+                    <span style="height: 100%; display: inline-block; border: 2px solid var(--bte_primary-border-color);"></span>
+                    &nbsp;
+                </div>
+
+                <div style="white-space: nowrap;">
+                    <input type="checkbox" @bind="_showNewlines"/>
+
+                    <span>Newlines?</span>
+                </div>
+            </div>
+
+            <button class="btn btn-primary"
+                    @onclick="ApplyRoslynSyntaxHighlightingOnClick">
+                Roslyn
+            </button>
+            
+            <span>&nbsp;Width:@(_textEditorWidthAndHeight?.WidthInPixels.ToString() ?? "null")px, Height:@(_textEditorWidthAndHeight?.HeightInPixels.ToString() ?? "null")px</span>
+        </div>
+}
+[]Good point to Ctrl + K, Ctrl + D (that is - format the TextEditorDisplay.razor)
+[]Height of the 'TextEditor' component should fill whatever
+	space is available within the 'Editor' component
+	[].bte_text-editor gets height: 100%;
+	[].bte_text-editor-content gets height: calc(100% - 7rem);
+	[]ContextBoundary gets StyleCssString="height: calc(100% - 3.5rem);"
+	[]Add button to force re-measure the width and height of the
+		text editor.
+[]@TextEditorStates.cs {
+public static readonly IAbsoluteFilePath TEST_CASE_ABSOLUTE_FILE_PATH =
+            new AbsoluteFilePath(
+                "/home/hunter/RiderProjects/BlazorTextEditor/BlazorTextEditor.RazorLib/TextEditor/TextEditorDisplay.razor.cs",
+                false);
+                
+                public TextEditorStates() : this(ImmutableList<TextEditorBase>.Empty)
+    {
+        var testCaseFileContents = File
+            .ReadAllText(TEST_CASE_ABSOLUTE_FILE_PATH
+                .GetAbsoluteFilePathString());
+        
+        var textEditorTestCase = new TextEditorBase(testCaseFileContents, TextEditorFacts.TextEditorKeyTestCase);
+        
+        TextEditorList = TextEditorList.AddRange(new []
+        {
+            textEditorTestCase
+        });
+    }
+}
+[]@TextEditorDisplay.razor.cs {
+private string GetCssClass(byte currentDecorationByte)
+    {
+        var decoration = (DecorationKind)currentDecorationByte;
+
+        return decoration switch
+        {
+            DecorationKind.None => string.Empty,
+            DecorationKind.Method => "bte_method",
+            DecorationKind.Type => "bte_type",
+            DecorationKind.Parameter => "bte_parameter",
+            DecorationKind.StringLiteral => "bte_string-literal",
+            DecorationKind.Keyword => "bte_keyword",
+            DecorationKind.Comment => "bte_comment",
+            _ => throw new ApplicationException(
+                $"The {nameof(DecorationKind)}: {decoration} was not recognized.")
+        };
+    }
+}
+[]@TextEditorDisplay.razor.cs {
+private async Task ApplyRoslynSyntaxHighlightingOnClick()
+    {
+        var localTextEditor = TextEditorStatesSelection.Value;
+
+        await CSharpRolsynSyntaxHighting
+            .ApplyRoslynSyntaxHighlightingAsync(localTextEditor);
+    }
+}
+#####################################
+#####################################
+#####################################
+#####################################
+[]@CSharpRoslynSyntaxHighlighting {
+using BlazorTextEditor.ClassLib.RoslynHelpers;
+using BlazorTextEditor.ClassLib.TextEditor;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Text;
+
+namespace BlazorTextEditor.ClassLib.SyntaxHighlighting;
+
+public static class CSharpRolsynSyntaxHighting
+{
+    public static async Task ApplyRoslynSyntaxHighlightingAsync(TextEditorBase textEditor)
+    {
+        // I don't want the IMMUTABLE state changing due to Blazor using a MUTABLE reference.
+        var text = textEditor.GetAllText();
+
+        var generalSyntaxCollector = new GeneralSyntaxCollector();
+
+        var syntaxTree = CSharpSyntaxTree.ParseText(text);
+
+        var syntaxNodeRoot = await syntaxTree.GetRootAsync();
+
+        generalSyntaxCollector.Visit(syntaxNodeRoot);
+
+        ApplyRoslynSyntaxHighlightingDecorations(textEditor, generalSyntaxCollector);
+    }
+
+    private static void ApplyRoslynSyntaxHighlightingDecorations(TextEditorBase textEditor, GeneralSyntaxCollector generalSyntaxCollector)
+    {
+        // Type decorations
+        {
+            // Property Type
+            textEditor.ApplyDecorationRange(
+                DecorationKind.Type,
+                generalSyntaxCollector.PropertyDeclarations
+                    .Select(pds => pds.Type.Span));
+
+            // Class Declaration
+            textEditor.ApplyDecorationRange(
+                DecorationKind.Type,
+                generalSyntaxCollector.ClassDeclarations
+                    .Select(cd => cd.Identifier.Span));
+
+            // Method return Type
+            textEditor.ApplyDecorationRange(
+                DecorationKind.Type,
+                generalSyntaxCollector.MethodDeclarations
+                    .Select(md =>
+                    {
+                        var retType = md
+                            .ChildNodes()
+                            .FirstOrDefault(x => x.Kind() == SyntaxKind.IdentifierName);
+
+                        return retType?.Span ?? default;
+                    }));
+
+            // Parameter declaration Type
+            textEditor.ApplyDecorationRange(
+                DecorationKind.Type,
+                generalSyntaxCollector.ParameterDeclarations
+                    .Select(pd =>
+                    {
+                        var identifierNameNode = pd.ChildNodes()
+                            .FirstOrDefault(x => x.Kind() == SyntaxKind.IdentifierName);
+
+                        if (identifierNameNode is null)
+                        {
+                            return TextSpan.FromBounds(0, 0);
+                        }
+
+                        return identifierNameNode.Span;
+                    }));
+        }
+
+        // Method decorations
+        {
+            // Method declaration identifier
+            textEditor.ApplyDecorationRange(
+                DecorationKind.Method,
+                generalSyntaxCollector.MethodDeclarations
+                    .Select(md => md.Identifier.Span));
+
+            // InvocationExpression
+            textEditor.ApplyDecorationRange(
+                DecorationKind.Method,
+                generalSyntaxCollector.InvocationExpressions
+                    .Select(md =>
+                    {
+                        var childNodes = md.Expression.ChildNodes();
+
+                        var lastNode = childNodes.LastOrDefault();
+
+                        return lastNode?.Span ?? TextSpan.FromBounds(0, 0);
+                    }));
+        }
+
+        // Local variable decorations
+        {
+            // Parameter declaration identifier
+            textEditor.ApplyDecorationRange(
+                DecorationKind.Parameter,
+                generalSyntaxCollector.ParameterDeclarations
+                    .Select(pd =>
+                    {
+                        var identifierToken =
+                            pd.ChildTokens().FirstOrDefault(x => x.Kind() == SyntaxKind.IdentifierToken);
+
+                        return identifierToken.Span;
+                    }));
+
+            // Argument declaration identifier
+            textEditor.ApplyDecorationRange(
+                DecorationKind.Parameter,
+                generalSyntaxCollector.ArgumentDeclarations
+                    .Select(ad => ad.Span));
+        }
+
+        // String literal
+        {
+            // String literal
+            textEditor.ApplyDecorationRange(
+                DecorationKind.StringLiteral,
+                generalSyntaxCollector.StringLiteralExpressions
+                    .Select(sl => sl.Span));
+        }
+
+        // Keywords
+        {
+            textEditor.ApplyDecorationRange(
+                DecorationKind.Keyword,
+                generalSyntaxCollector.Keywords
+                    .Select(keyword => keyword.Span));
+            
+            textEditor.ApplyDecorationRange(
+                DecorationKind.Keyword,
+                generalSyntaxCollector.VarPatternSyntaxes
+                    .Select(keyword => keyword.Span));
+            
+            textEditor.ApplyDecorationRange(
+                DecorationKind.Keyword,
+                generalSyntaxCollector.VarSpans);
+        }
+
+        // Comments
+        {
+            textEditor.ApplyDecorationRange(
+                DecorationKind.Comment,
+                generalSyntaxCollector.TriviaComments
+                    .Select(tc => tc.Span));
+
+            textEditor.ApplyDecorationRange(
+                DecorationKind.Comment,
+                generalSyntaxCollector.XmlComments
+                    .Select(xml => xml.Span));
+        }
+    }
+}
+}
+#####################################
+#####################################
+#####################################
+#####################################
+[]@FontSettingsDisplay blazor component bind to property
+	-Dispatch set FontState in setter of property
+	-OnInitialized set backing field to FontState's value
+[]@.css {
+em {
+    color: var(--bte_primary-emphasis-foreground-color);
+    	#4d8aea;
+    font-style: normal;
+}
+}
+}
+
+# Youtube Video Description
+{
+	Part 25:
+	https://youtu.be/Mor6lzMsVg4
+
+	Starting Point Repo:
+	https://github.com/huntercfreeman/BlazorTextEditor
+	
+	BlazorStudio Repo:
+	https://github.com/huntercfreeman/BlazorStudio
+	
+	Fluxor Repo:
+	https://github.com/mrpmorris/Fluxor
+	
+	Photino.Blazor:
+	https://github.com/tryphotino/photino.Blazor
+}
+
+# Youtube Video Title
+{
+	Font-Size and More Roslyn Syntax Highlighting | Blazor Text Editor Part 26
+}

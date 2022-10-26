@@ -1,0 +1,42 @@
+Notes for video 4:
+
+# Intent
+{
+    The goals of video 4 are:
+		-Add JavaScript to measure the 
+			-Row height 
+			-Character width
+			-TextEditor
+				-Width
+				-Height
+			-Calculate relative onclick position
+}
+
+# Plan
+{
+    # Step 1
+		-Create the JavaScript functions
+			-measureFontWidthAndElementHeightByElementId(elementId, amountOfCharactersRendered)
+			-measureWidthAndHeightByElementId(elementId)
+			-getRelativePosition(elementId, clientX, clientY))
+}
+
+# Youtube Video Description
+{
+	Part 3:
+	https://youtu.be/AedIDAZKp4U
+
+	Starting Point Repo:
+	https://github.com/huntercfreeman/BlazorTextEditor
+	
+	BlazorStudio Repo:
+	https://github.com/huntercfreeman/BlazorStudio
+	
+	Fluxor Repo:
+	https://github.com/mrpmorris/Fluxor
+}
+
+# Youtube Video Title
+{
+	Measure widths and heights, also relative onclick position | Blazor Text Editor Part 4
+}

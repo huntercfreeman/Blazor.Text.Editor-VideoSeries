@@ -1,0 +1,50 @@
+Notes for video 8:
+
+# Intent
+{
+	-columnIndexInt = columnIndexInt > lengthOfRow - 1
+		-remove the -1 part so can click after
+		 last character on row
+	-Cursor needs blinking animation
+	-Do the necessary setup for text ( insertion / deletion )
+	-DecorationKind enum
+	-Move applyling decoration logic to the TextEditorBase.cs
+}
+
+# Plan
+{
+	-columnIndexInt = columnIndexInt > lengthOfRow - 1
+		-remove the -1 part so can click after
+		 last character on row
+ 	-Focus needs to be on the Cursor
+	-Cursor needs blinking animation
+	-public record EditTextEditorAction(
+		TextEditorKey TextEditorKey,
+		ImmutableArray<(ImmutableTextEditorCursor immutableTextEditorCursor, TextEditorCursor textEditorCursor)> TextCursorTuples,
+		KeyboardEventArgs KeyboardEventArgs,
+		CancellationToken CancellationToken);
+	-public TextEditorBase PerformEditTextEditorAction(EditTextEditorAction editTextEditorAction)
+	-Content -> _content and private
+	-readonly _content
+	-public void ApplyDecorationRange(DecorationKind decorationKind, IEnumerable<TextSpan> textSpans)
+}
+
+# Youtube Video Description
+{
+	Part 7:
+	https://youtu.be/Dbl5Mnt5tJM
+
+	Starting Point Repo:
+	https://github.com/huntercfreeman/BlazorTextEditor
+	
+	BlazorStudio Repo:
+	https://github.com/huntercfreeman/BlazorStudio
+	
+	Fluxor Repo:
+	https://github.com/mrpmorris/Fluxor
+}
+
+# Youtube Video Title
+{
+	Setup for text insertion, and deletion | Blazor Text Editor Part 8
+}

@@ -1,0 +1,10 @@
+<div class="bte_body"
+     style="@BodyElementDimensions.StyleString">
+    <BlazorTextEditor.RazorLib.FolderExplorer.FolderExplorerDisplay FolderExplorerElementDimensions="_folderExplorerElementDimensions" />
+    
+    <BlazorTextEditor.RazorLib.ResizableCase.ResizableColumn LeftElementDimensions="_folderExplorerElementDimensions"
+                                                             RightElementDimensions="_editorElementDimensions"
+                                                             ReRenderFuncAsync="ReRenderAsync" />
+    
+    <BlazorTextEditor.RazorLib.Editor.EditorDisplay EditorElementDimensions="_editorElementDimensions" />
+</div>

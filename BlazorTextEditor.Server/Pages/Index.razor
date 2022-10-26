@@ -1,6 +1,9 @@
 ﻿@page "/"
 
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
 @using BlazorTextEditor.RazorLib.CounterCase
+@using BlazorTextEditor.ClassLib.TextEditor
 
 <PageTitle>Index</PageTitle>
 
@@ -9,6 +12,10 @@
 Welcome to your new app.
 
 <SurveyPrompt Title="How is Blazor working for you?"/>
+
+<BlazorTextEditor.RazorLib.TextEditor.TextEditorDisplay TextEditorKey="TextEditorFacts.TextEditorKeyCodeTest" />
+<BlazorTextEditor.RazorLib.TextEditor.TextEditorDisplay TextEditorKey="TextEditorFacts.TextEditorKeyEmailTest" />
+<BlazorTextEditor.RazorLib.TextEditor.TextEditorDisplay TextEditorKey="TextEditorFacts.TextEditorKeyEmptyTest" />
 
 <CounterDisplay />
 <CounterDisplay />

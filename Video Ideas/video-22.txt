@@ -1,0 +1,164 @@
+Notes for video 22
+
+# Intent
+{
+-Css Variables
+-( Dark / Light ) Themes
+}
+
+# Plan
+{
+@ Add Css Variables
+	-blazorTextEditorColors.css
+	-blazorTextEditor.css
+	-RazorLib/wwwroot/Themes
+		-blazorTextEditorDarkTheme.css
+		-blazorTextEditorLightTheme.css
+	-NativeApp/wwwroot/index.html
+---------------------------------------
+@ Settings Dialog
+	-ClassLib/Store/DialogCase
+		-DialogStatesReducer.cs
+			-In ReduceRegisterDialogRecordAction
+				-Do not allow duplicate dialog keys
+	-RazorLib/DialogCase
+		-DialogDisplay.razor
+			-@onmousedown:stopPropagation="true"
+			-@onclick="DispatchDisposeDialogRecordActionOnClick"
+		-DialogDisplay.razor.cs
+			-Move private ResizableDisplay? _resizableDisplay;
+				-to after the [Parameter](s)
+			-[Inject] IDispatcher Dispatcher
+			-DispatchDisposeDialogRecordActionOnClick
+	-RazorLib/Icons/Codicon
+		-IconSettingsGear.razor
+	-RazorLib/Settings
+		-SettingsDialogEntryPoint.razor
+		-SettingsDialogEntryPoint.razor.cs
+		-SettingsDisplay.razor
+		-SettingsDisplay.razor.cs
+	-RazorLib/Shared
+		-BlazorTextEditorHeader.razor
+		-MainLayout.razor.cs
+	-RazorLib/wwwroot/Themes
+		-blazorTextEditorDarkTheme.css
+		-blazorTextEditorLightTheme.css
+---------------------------------------
+@ Swap Themes
+	-ClassLib/Store/ThemeCase
+		-ThemeRecord.cs
+		-ThemeColorKind.cs
+		-ThemeContrastKind.cs
+		-ThemeFacts.cs
+		-SetThemeStateAction.cs
+		-ThemeRecord.cs
+		-ThemeState.cs
+		-ThemeStateReducer.cs
+	-RazorLib/Settings
+		-SettingsDisplay.razor
+		-SettingsDisplay.razor.cs
+	-RazorLib/Shared
+		-MainLayout.razor
+		-MainLayout.razor.cs
+	-RazorLib/wwwroot/Themes
+		-blazorTextEditorDarkTheme.css
+@ Color Css
+	-RazorLib/TextEditor
+		-TextEditorDisplay.razor
+			-Move out hardcoded colors for newlines
+	-wwwroot/Themes
+		-blazorTextEditorDarkTheme.css
+		-blazorTextEditorLightTheme.css
+	-blazorTextEditor.css
+	-blazorTextEditorColors.css
+@ .css files
+:root {
+    --bte_primary-font-color: black;
+    --bte_method-foreground-color: red;
+    --bte_text-editor-cursor-foreground-color: black;
+    --bte_text-selection-background-color: #ADD6FF;
+    --bte_header-background-color: #7fa1e1;
+    --bte_primary-border-color: black;
+    --bte_body-background-color: rgb(253, 253, 253);
+    --bte_footer-background-color: #d4d4d4;
+    --bte_resize-column-background-color: black;
+    --bte_resize-row-background-color: black;
+    --bte_dialog-display-background-color: rgb(252, 252, 245);
+    --bte_primary-box-shadow-color: #000000;
+    --bte_dialog-display-toolbar-background-color: rgb(192, 214, 247);
+    --bte_primary-hover-background-color: orange;
+    --primary-outline-color: #ADD6FF;
+    --primary-active-not-focused-background-color: #d9dcdf;
+    --primary-active-focused-background-color: #ADD6FF;
+    --bte_text-editor-caret-row-border-color: red;
+    --bte_newline-foreground-color: #007F00;
+    --bte_newline-background-color: #faeee2;
+}
+.bte_dark-theme {
+    --bte_primary-font-color: #d2d2d2;
+    --bte_method-foreground-color: #C9C96E;
+    --bte_text-editor-cursor-foreground-color: #f5f5f5;
+    --bte_text-selection-background-color: #245078;
+    --bte_header-background-color: #2d2f34;
+    --bte_primary-border-color: #f5f5f5;
+    --bte_body-background-color: #1E1E1E;
+    --bte_footer-background-color: #353535;
+    --bte_resize-column-background-color: #f5f5f5;
+    --bte_resize-row-background-color: #f5f5f5;
+    --bte_dialog-display-background-color: #2d2f34;
+    --bte_primary-box-shadow-color: #f5f5f5;
+    --bte_dialog-display-toolbar-background-color: #071c57;
+    --bte_primary-hover-background-color: orange;
+    --primary-outline-color: #2d498b;
+    --primary-active-not-focused-background-color: #566060;
+    --primary-active-focused-background-color: #2d498b;
+    --bte_text-editor-caret-row-border-color: orange;
+    --bte_newline-foreground-color: #4e9a41;
+    --bte_newline-background-color: #424242;
+}
+.bte_light-theme {
+    --bte_primary-font-color: black;
+    --bte_method-foreground-color: red;
+    --bte_text-editor-cursor-foreground-color: black;
+    --bte_text-selection-background-color: #ADD6FF;
+    --bte_header-background-color: #7fa1e1;
+    --bte_primary-border-color: black;
+    --bte_body-background-color: rgb(253, 253, 253);
+    --bte_footer-background-color: #d4d4d4;
+    --bte_resize-column-background-color: black;
+    --bte_resize-row-background-color: black;
+    --bte_dialog-display-background-color: rgb(252, 252, 245);
+    --bte_primary-box-shadow-color: #000000;
+    --bte_dialog-display-toolbar-background-color: rgb(192, 214, 247);
+    --bte_primary-hover-background-color: orange;
+    --primary-outline-color: #ADD6FF;
+    --primary-active-not-focused-background-color: #d9dcdf;
+    --primary-active-focused-background-color: #ADD6FF;
+    --bte_text-editor-caret-row-border-color: red;
+    --bte_newline-foreground-color: #007F00;
+    --bte_newline-background-color: #faeee2;
+}
+}
+
+# Youtube Video Description
+{
+	Part 21:
+	https://youtu.be/TxIEKRXkst8
+
+	Starting Point Repo:
+	https://github.com/huntercfreeman/BlazorTextEditor
+	
+	BlazorStudio Repo:
+	https://github.com/huntercfreeman/BlazorStudio
+	
+	Fluxor Repo:
+	https://github.com/mrpmorris/Fluxor
+	
+	Photino.Blazor:
+	https://github.com/tryphotino/photino.Blazor
+}
+
+# Youtube Video Title
+{
+	Css Variables, Dark / Light Themes | Blazor Text Editor Part 22
+}

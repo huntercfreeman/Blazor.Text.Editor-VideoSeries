@@ -1,0 +1,125 @@
+Notes for video 13:
+
+# Intent
+{
+	-Run Photino.Blazor app host
+	-Move over code to Photino.Blazor
+}
+
+# Plan
+{
+
+-[
+-clone the repo found at https://github.com/tryphotino/photino.Blazor
+
+-delete the .git folder in photino.Blazor
+
+-for the .sln add reference to Photino.Blazor.csproj
+
+-.sln add reference to HelloWorld.csproj (the Photino.Blazor sample)
+
+-run HelloWorld.csproj
+
+-make BlazorTextEditor.NativeApp.csproj
+
+-modify the text for BlazorTextEditor.NativeApp.csproj
+	to ensure it has what is needed from HelloWorld.csproj
+	
+-copy over all files from the HelloWorld project in the solution explorer
+
+-Fix namespace in Program.cs after pasting the files to
+	BlazorTextEditor.NativeApp
+	
+-Run BlazorTextEditor.NativeApp and the Photino.Blazor counter works
+
+-add to BlazorTextEditor.NativeApp/wwwroot the following css and js
+
+-@* Razor Lib .css *@
+    <link href="_content/BlazorTextEditor.RazorLib/blazorTextEditor.css" rel="stylesheet"/>
+
+-@* Razor Lib .js *@
+<script src="_content/BlazorTextEditor.RazorLib/blazorTextEditor.js"></script>
+
+-Add project reference to BlazorTextEditor.RazorLib for BlazorTextEditor.NativeApp
+
+-Add appBuilder.Services.AddBlazorTextEditorRazorLibServices();
+	in Program.cs
+
+-Make BlazorTextEditor.RazorLib/Shared directory
+
+-Make BlazorTextEditor.RazorLib/Shared/MainLayout.razor
+-Make BlazorTextEditor.RazorLib/Shared/MainLayout.razor.cs
+
+-MainLayout inherits LayoutComponentBase
+
+-Add <BlazorTextEditor.RazorLib.Shared.MainLayout /> to
+	BlazorTextEditor.NativeApp/App.razor
+
+-Run the app and show MainLayout text
+
+-add the following to MainLayout.razor [
+<BlazorTextEditor.RazorLib.TextEditor.TextEditorDisplay TextEditorKey="TextEditorFacts.TextEditorKeyCodeTest" />
+<BlazorTextEditor.RazorLib.TextEditor.TextEditorDisplay TextEditorKey="TextEditorFacts.TextEditorKeyEmailTest" />
+<BlazorTextEditor.RazorLib.TextEditor.TextEditorDisplay TextEditorKey="TextEditorFacts.TextEditorKeyEmptyTest" />
+
+<BlazorTextEditor.RazorLib.CounterCase.CounterDisplay />
+<BlazorTextEditor.RazorLib.CounterCase.CounterDisplay />
+<BlazorTextEditor.RazorLib.CounterCase.CounterDisplay />
+<BlazorTextEditor.RazorLib.CounterCase.CounterDisplay />
+]
+
+-Run the app
+
+-Add missing css by copying it from BlazorTextEditor.Server/wwwroot/css
+
+-In BlazorTextEditor.NativeApp/wwwroot/index.html reference
+	-<link rel="stylesheet" href="css/bootstrap/bootstrap.min.css"/>
+	-<link href="css/site.css" rel="stylesheet"/>
+]
+
+- add the following to top of MainLayout.razor
+-<BlazorTextEditor.RazorLib.BlazorTextEditorRazorLibInitializer />
+
+-<div class="bte_main-layout">
+
+-blazorTextEditor.css add [
+.bte_main-layout {
+    font-size: 24px;
+}
+]
+
+-In PhotinoWebViewManager.cs change SendMessage(string message) [
+protected override void SendMessage(string message)
+        {
+            Task.Run(() => { Dispatcher.InvokeAsync(() => _window.SendWebMessage(message)); })
+                .Wait();
+            
+            // https://github.com/tryphotino/photino.Blazor/commit/ad36699b6935711efeea1bed1fdb94916d10318d
+            // Task.Run(() => Dispatcher.InvokeAsync(() => _window.SendWebMessage(message)));
+        }
+]
+
+}
+
+# Youtube Video Description
+{
+	Part 12:
+	https://youtu.be/lgwuofuoh90
+
+	Photino.Blazor:
+	https://github.com/tryphotino/photino.Blazor
+
+	Starting Point Repo:
+	https://github.com/huntercfreeman/BlazorTextEditor
+	
+	BlazorStudio Repo:
+	https://github.com/huntercfreeman/BlazorStudio
+	
+	Fluxor Repo:
+	https://github.com/mrpmorris/Fluxor
+}
+
+# Youtube Video Title
+{
+	Photino and Photino.Blazor | Blazor Text Editor Part 13
+}

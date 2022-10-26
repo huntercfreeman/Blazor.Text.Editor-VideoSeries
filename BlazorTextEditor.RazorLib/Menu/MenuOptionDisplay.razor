@@ -1,0 +1,21 @@
+@using BlazorTextEditor.RazorLib.Dropdown
+@using BlazorTextEditor.ClassLib.Dropdown
+
+<div class="bte_menu-option-display bte_unselectable"
+     @onclick="HandleOnClick">
+    
+    @MenuOptionRecord.DisplayName
+    
+    @if (MenuOptionRecord.SubMenu is not null)
+    {
+        <IconChevronRight />
+        
+        <DropdownDisplay DropdownKey="_subMenuDropdownKey"
+                         DropdownPositionKind="DropdownPositionKind.Horizontal">
+            
+            <div class="bte_dropdown-display-default-background">
+                <MenuDisplay MenuRecord="MenuOptionRecord.SubMenu" />
+            </div>
+        </DropdownDisplay>
+    }
+</div>

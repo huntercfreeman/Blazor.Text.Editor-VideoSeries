@@ -1,0 +1,526 @@
+Notes for video 12:
+
+# Intent
+{
+	-Add Text Selection with mouse
+}
+
+# Plan
+{
+
+@ TextEditorBase.cs
+{
+
+-[
+rename endingPositionIndexExclusive to endingPositionIndex
+]
+
+-[
+public int GetCursorPositionIndex(TextEditorCursor textEditorCursor)
+    {
+        var startOfRowPositionIndex =
+            GetStartOfRowTuple(textEditorCursor.IndexCoordinates.rowIndex)
+                .positionIndex;
+
+        return startOfRowPositionIndex + textEditorCursor.IndexCoordinates.columnIndex;
+    }
+]
+
+-[
+ public string GetTextRange(int startingPositionIndex, int count)
+    {
+        return new string(_content
+            .Skip(startingPositionIndex)
+            .Take(count)
+            .Select(rc => rc.Value)
+            .ToArray());
+    }
+]
+
+-[
+public (int rowIndex, int rowStartPositionIndex, (int positionIndex, RowEndingKind rowEndingKind) rowEndingTuple) FindRowIndexRowStartRowEndingTupleFromPositionIndex(int positionIndex)
+    {
+        for (int i = _rowEndingPositions.Count - 1; i >= 0; i--)
+        {
+            var rowEndingTuple = _rowEndingPositions[i];
+            
+            if (positionIndex >= rowEndingTuple.positionIndex)
+                return (i + 1, rowEndingTuple.positionIndex, 
+                    i == _rowEndingPositions.Count - 1
+                        ? rowEndingTuple
+                        : _rowEndingPositions[i + 1]);
+        }
+
+        return (0, 0, _rowEndingPositions[0]);
+    }
+]
+
+}
+
+@ TextEditorCursor.cs
+{
+
+-[
+public TextEditorCursor()
+    {
+    }
+    
+    public TextEditorCursor((int rowIndex, int columnIndex) rowAndColumnIndex)
+        : this()
+    {
+        IndexCoordinates = rowAndColumnIndex;
+    }
+    
+    public TextEditorSelection TextEditorSelection { get; } = new();
+]
+
+}
+
+@ TextEditorSelection.cs
+{
+
+-[
+namespace BlazorTextEditor.ClassLib.TextEditor;
+
+/// <summary>
+/// To select the first character in a TextEditor one would
+/// set <see cref="AnchorPositionIndex"/> = 0 and
+/// set <see cref="EndingPositionIndex"/> = 1
+/// <br/><br/>
+/// The <see cref="AnchorPositionIndex"/> does not select any text by itself.
+/// One must visualize that the user's cursor is in <see cref="TextCursorKind.Beam"/> mode.
+/// <br/><br/>
+/// The <see cref="EndingPositionIndex"/> can then be set.
+/// If <see cref="EndingPositionIndex"/> is less than <see cref="AnchorPositionIndex"/>
+/// then <see cref="EndingPositionIndex"/> will be INCLUSIVE in respect to
+/// selecting the character at that PositionIndex and <see cref="AnchorPositionIndex"/> will be EXCLUSIVE.
+/// <br/><br/>
+/// If <see cref="EndingPositionIndex"/> is greater than <see cref="AnchorPositionIndex"/> then
+/// <see cref="EndingPositionIndex"/> will be EXCLUSIVE in respect to
+/// selecting the character at that PositionIndex and <see cref="AnchorPositionIndex"/> will be INCLUSIVE.
+/// <br/><br/>
+/// If <see cref="EndingPositionIndex"/> is equal to <see cref="AnchorPositionIndex"/> then
+/// no selection is active.
+/// <br/><br/>
+/// If <see cref="AnchorPositionIndex"/> is null then
+/// no selection is active.
+/// </summary>
+public class TextEditorSelection
+{
+    public int? AnchorPositionIndex { get; set; }
+    public int EndingPositionIndex { get; set; }
+}
+]
+
+}
+
+@ blazorTextEditor.css
+{
+
+-[
+.bte_text-selection {
+    background-color: #ADD6FF;
+    position: absolute;
+}
+]
+
+-[
+.bte_unselectable {
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+/Edge */
+    user-select: none; /* Standard */
+}
+]
+
+}
+
+@ TextEditorDisplay.razor
+{
+
+-[
+<div>
+        AnchorPositionIndex:&nbsp;
+        @if (_textEditorCursor.TextEditorSelection.AnchorPositionIndex.HasValue)
+        {
+            <text>@_textEditorCursor.TextEditorSelection.AnchorPositionIndex.Value</text>
+        }
+        else
+        {
+            <text>null</text>
+        }
+    </div>
+    
+    <div>
+        Selection&nbsp;EndingPositionIndex:&nbsp;
+        @_textEditorCursor.TextEditorSelection.EndingPositionIndex
+    </div>
+    
+    <div>
+        @if (_textEditorCursor.TextEditorSelection.AnchorPositionIndex.HasValue &&
+             _textEditorCursor.TextEditorSelection.AnchorPositionIndex.Value != 
+                _textEditorCursor.TextEditorSelection.EndingPositionIndex)
+        {
+            var lowerBound = _textEditorCursor.TextEditorSelection.AnchorPositionIndex.Value; 
+            var upperBound = _textEditorCursor.TextEditorSelection.EndingPositionIndex;
+                
+            if (lowerBound > upperBound)
+            {
+                (lowerBound, upperBound) = (upperBound, lowerBound);
+            }
+            
+            var result = TextEditorStatesSelection.Value.GetTextRange(lowerBound,
+                upperBound - lowerBound);
+
+            if (result.Length != 0)
+            {
+                <text>@result.Replace("\r\n", "\\r\\n").Replace("\n", "\\n").Replace("\r", "\\r").Replace(" ", "·").Replace("\t", "--->")</text>
+            }
+            else
+            {
+                <text>null</text>
+            }
+        }
+        else
+        {
+            <text>null</text>
+        }
+    </div>
+]
+
+--------------------------------------------------------------
+RUN THE PROGRAM SHOW CHANGES (NOTHING INTERACTIVE HAPPENS YET)
+--------------------------------------------------------------
+
+-[
+<div class="bte_text-editor-content bte_unselectable"
+         id="@TextEditorContentId"
+         @onmousedown="HandleContentOnMouseDownAsync"
+         @onmousemove="HandleContentOnMouseMoveAsync">
+]
+
+-[
+<div class="bte_text-selection-group">
+            @if (_textEditorCursor.TextEditorSelection.AnchorPositionIndex.HasValue &&
+                 _textEditorCursor.TextEditorSelection.AnchorPositionIndex.Value != 
+                 _textEditorCursor.TextEditorSelection.EndingPositionIndex)
+            {
+                var lowerBound = _textEditorCursor.TextEditorSelection.AnchorPositionIndex.Value; 
+                var upperBound = _textEditorCursor.TextEditorSelection.EndingPositionIndex;
+                
+                if (lowerBound > upperBound)
+                {
+                    (lowerBound, upperBound) = (upperBound, lowerBound);
+                }
+
+                var localTextEditor = TextEditorStatesSelection.Value;
+                
+                var selectionIndex = lowerBound;
+                
+                var firstRowToSelectData = localTextEditor.FindRowIndexRowStartRowEndingTupleFromPositionIndex(selectionIndex);
+                var lastRowToSelectData = localTextEditor.FindRowIndexRowStartRowEndingTupleFromPositionIndex(upperBound);
+                
+                List<int> rowIndicesToSelect = new();
+
+                for (int i = firstRowToSelectData.rowIndex; i <= lastRowToSelectData.rowIndex; i++)
+                {
+                    var rowIndex = i;
+                    
+                    <div class="bte_text-selection"
+                         style="@GetTextSelectionStyleCss(lowerBound, upperBound, rowIndex)">
+                    </div>
+                }
+            }
+        </div>
+]
+
+}
+
+@ TextEditorDisplay.razor.cs
+{
+
+-[
+private bool _showGetAllTextEscaped = false;
+    /// <summary>
+    /// Do not select text just because the user has the Left Mouse Button down.
+    /// They might hold down Left Mouse Button from outside the TextEditorDisplay's content div
+    /// then move their mouse over the content div while holding the Left Mouse Button down.
+    /// <br/><br/>
+    /// Instead only select text if an @onmousedown event triggered <see cref="_thinksLeftMouseButtonIsDown"/>
+    /// to be equal to true and the @onmousemove event followed afterwards.
+    /// </summary>
+    private bool _thinksLeftMouseButtonIsDown;
+]
+
+-[
+private async Task HandleContentOnMouseDownAsync(MouseEventArgs mouseEventArgs)
+    {
+        var rowAndColumnIndex = await DetermineRowAndColumnIndex(mouseEventArgs);
+
+        _textEditorCursor.IndexCoordinates = (rowAndColumnIndex.rowIndex, rowAndColumnIndex.columnIndex);
+        _textEditorCursor.PreferredColumnIndex = rowAndColumnIndex.columnIndex;
+
+        _textEditorCursorDisplay?.PauseBlinkAnimation();
+
+        var cursorPositionIndex = TextEditorStatesSelection.Value.GetCursorPositionIndex(new TextEditorCursor(rowAndColumnIndex));
+        
+        _textEditorCursor.TextEditorSelection.AnchorPositionIndex = cursorPositionIndex;
+
+        _textEditorCursor.TextEditorSelection.EndingPositionIndex = cursorPositionIndex;
+        
+        _thinksLeftMouseButtonIsDown = true;
+    }
+]
+
+-[
+/// <summary>
+    /// OnMouseUp is unnecessary
+    /// </summary>
+    /// <param name="mouseEventArgs"></param>
+    private async Task HandleContentOnMouseMoveAsync(MouseEventArgs mouseEventArgs)
+    {
+        // Buttons is a bit flag
+        // '& 1' gets if left mouse button is held
+        if (_thinksLeftMouseButtonIsDown && 
+            (mouseEventArgs.Buttons & 1) == 1)
+        {
+            var rowAndColumnIndex = await DetermineRowAndColumnIndex(mouseEventArgs);
+            
+            _textEditorCursor.IndexCoordinates = (rowAndColumnIndex.rowIndex, rowAndColumnIndex.columnIndex);
+            _textEditorCursor.PreferredColumnIndex = rowAndColumnIndex.columnIndex;
+
+            _textEditorCursorDisplay?.PauseBlinkAnimation();
+            
+            _textEditorCursor.TextEditorSelection.EndingPositionIndex =
+                TextEditorStatesSelection.Value.GetCursorPositionIndex(new TextEditorCursor(rowAndColumnIndex));
+        }
+        else
+        {
+            _thinksLeftMouseButtonIsDown = false;
+        }
+    }
+]
+
+-[
+private async Task<(int rowIndex, int columnIndex)> DetermineRowAndColumnIndex(MouseEventArgs mouseEventArgs)
+    {
+        var localTextEditor = TextEditorStatesSelection.Value;
+        
+        _relativeCoordinatesOnClick = await JsRuntime.InvokeAsync<RelativeCoordinates>(
+            "blazorTextEditor.getRelativePosition",
+            TextEditorContentId,
+            mouseEventArgs.ClientX,
+            mouseEventArgs.ClientY);
+
+        if (_characterWidthAndRowHeight is null)
+            return (0, 0);
+
+        // Gutter padding column offset
+        {
+            _relativeCoordinatesOnClick.RelativeX -= 
+                (TextEditorBase.GutterPaddingLeftInPixels + TextEditorBase.GutterPaddingRightInPixels);
+        }
+        
+        var columnIndexDouble = _relativeCoordinatesOnClick.RelativeX / _characterWidthAndRowHeight.FontWidthInPixels;
+
+        var columnIndexInt = (int)Math.Round(columnIndexDouble, MidpointRounding.AwayFromZero);
+        
+        var rowIndex = (int) (_relativeCoordinatesOnClick.RelativeY / _characterWidthAndRowHeight.ElementHeightInPixels);
+
+        rowIndex = rowIndex > localTextEditor.RowCount - 1
+            ? localTextEditor.RowCount - 1
+            : rowIndex;
+
+        var lengthOfRow = localTextEditor.GetLengthOfRow(rowIndex);
+
+        // Tab key column offset
+        {
+            var parameterForGetTabsCountOnSameRowBeforeCursor = columnIndexInt > lengthOfRow
+                ? lengthOfRow
+                : columnIndexInt;
+
+            var tabsOnSameRowBeforeCursor = localTextEditor
+                .GetTabsCountOnSameRowBeforeCursor(
+                    rowIndex, 
+                    parameterForGetTabsCountOnSameRowBeforeCursor);
+            
+            // 1 of the character width is already accounted for
+
+            var extraWidthPerTabKey = TextEditorBase.TabWidth - 1;
+            
+            columnIndexInt -= (extraWidthPerTabKey * tabsOnSameRowBeforeCursor);
+        }
+        
+        // Line number column offset
+        {
+            var mostDigitsInARowLineNumber = TextEditorStatesSelection.Value.RowCount
+                .ToString()
+                .Length;
+
+            columnIndexInt -= mostDigitsInARowLineNumber;
+        }
+        
+        columnIndexInt = columnIndexInt > lengthOfRow
+            ? lengthOfRow
+            : columnIndexInt;
+
+        rowIndex = Math.Max(rowIndex, 0);
+        columnIndexInt = Math.Max(columnIndexInt, 0);
+        
+        return (rowIndex, columnIndexInt);
+    }
+]
+
+-[
+private string GetTextSelectionStyleCss(int lowerBound, int upperBound, int rowIndex)
+    {
+        if (_characterWidthAndRowHeight is null ||
+            rowIndex >= TextEditorStatesSelection.Value.RowEndingPositions.Length)
+        {
+            return string.Empty;
+        }
+        
+        var startOfRowTuple = TextEditorStatesSelection.Value.GetStartOfRowTuple(rowIndex);
+        var endOfRowTuple = TextEditorStatesSelection.Value.RowEndingPositions[rowIndex];
+
+        var selectionStartingColumnIndex = 0;
+        var selectionEndingColumnIndex = endOfRowTuple.positionIndex 
+                                         - 1;
+
+        var fullWidthOfRowIsSelected = true;
+        
+        if (lowerBound > startOfRowTuple.positionIndex)
+        {
+            selectionStartingColumnIndex = lowerBound
+                                           - startOfRowTuple.positionIndex;
+
+            fullWidthOfRowIsSelected = false;
+        }
+
+        
+        if (upperBound < endOfRowTuple.positionIndex)
+        {
+            selectionEndingColumnIndex = upperBound 
+                                         - startOfRowTuple.positionIndex;
+            
+            fullWidthOfRowIsSelected = false;
+        }
+        
+        var top = $"top: {rowIndex * _characterWidthAndRowHeight.ElementHeightInPixels}px;";
+        var height = $"height: {_characterWidthAndRowHeight.ElementHeightInPixels}px;";
+
+        var mostDigitsInARowLineNumber = TextEditorStatesSelection.Value.RowCount
+            .ToString()
+            .Length;
+        
+        var widthOfGutterInPixels = mostDigitsInARowLineNumber * _characterWidthAndRowHeight.FontWidthInPixels;
+
+        var gutterSizeInPixels = widthOfGutterInPixels 
+                + TextEditorBase.GutterPaddingLeftInPixels 
+                + TextEditorBase.GutterPaddingRightInPixels;
+        
+        var selectionStartInPixels = selectionStartingColumnIndex 
+                                     * _characterWidthAndRowHeight.FontWidthInPixels;
+        
+        // selectionStartInPixels offset from Tab keys a width of many characters
+        {
+            var tabsOnSameRowBeforeCursor = TextEditorStatesSelection.Value
+                .GetTabsCountOnSameRowBeforeCursor(
+                    rowIndex, 
+                    selectionStartingColumnIndex);
+            
+            // 1 of the character width is already accounted for
+
+            var extraWidthPerTabKey = TextEditorBase.TabWidth - 1;
+            
+            selectionStartInPixels += (extraWidthPerTabKey * tabsOnSameRowBeforeCursor * _characterWidthAndRowHeight.FontWidthInPixels);    
+        }
+        
+        var left = $"left: {gutterSizeInPixels + selectionStartInPixels}px;";
+
+        var selectionWidthInPixels = selectionEndingColumnIndex 
+                                     * _characterWidthAndRowHeight.FontWidthInPixels
+                                     - selectionStartInPixels;
+        
+        // Tab keys a width of many characters
+        {
+            var tabsOnSameRowBeforeCursor = TextEditorStatesSelection.Value
+                .GetTabsCountOnSameRowBeforeCursor(
+                    rowIndex, 
+                    selectionEndingColumnIndex);
+            
+            // 1 of the character width is already accounted for
+
+            var extraWidthPerTabKey = TextEditorBase.TabWidth - 1;
+            
+            selectionWidthInPixels += (extraWidthPerTabKey * tabsOnSameRowBeforeCursor * _characterWidthAndRowHeight.FontWidthInPixels);    
+        }
+        
+        var widthCssStyleString = "width: ";
+
+        if (fullWidthOfRowIsSelected)
+            widthCssStyleString += "100%";
+        else if (selectionStartingColumnIndex != 0 && upperBound > endOfRowTuple.positionIndex - 1)
+            widthCssStyleString += $"calc(100% - {selectionStartInPixels}px);";
+        else
+            widthCssStyleString += $"{selectionWidthInPixels}px;";
+        
+        return $"{top} {height} {left} {widthCssStyleString}";
+    }
+]
+
+}
+
+@ TextEditorCursorDisplay.razor.cs
+{
+
+-[
+public void PauseBlinkAnimation()
+    {
+        _hasBlinkAnimation = false;
+
+        var cancellationToken = CancelSourceAndCreateNewThenReturnToken();
+
+        _ = Task.Run(async () =>
+        {
+            await Task.Delay(_blinkingCursorTaskDelay, cancellationToken);
+
+            if (!cancellationToken.IsCancellationRequested)
+            {
+                _hasBlinkAnimation = true;
+                await InvokeAsync(StateHasChanged);    
+            }
+        }, cancellationToken);
+    }
+]
+
+-[
+private void HandleOnKeyDown()
+    {
+        PauseBlinkAnimation();
+    }
+]
+
+}
+
+}
+
+# Youtube Video Description
+{
+	Part 11:
+	https://youtu.be/9yAJxGvZVVU
+
+	Starting Point Repo:
+	https://github.com/huntercfreeman/BlazorTextEditor
+	
+	BlazorStudio Repo:
+	https://github.com/huntercfreeman/BlazorStudio
+	
+	Fluxor Repo:
+	https://github.com/mrpmorris/Fluxor
+}
+
+# Youtube Video Title
+{
+	Text Selection with Mouse | Blazor Text Editor Part 12
+}

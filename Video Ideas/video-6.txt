@@ -1,0 +1,52 @@
+Notes for video 6:
+
+# Intent
+{
+    The goals of video 6 are:
+		-Move cursor onclick
+		-Add line numbers
+		-Add caret row
+}
+
+# Plan
+{
+	# Step 1
+		-display: flex;
+		-overflow: auto;
+		-height: 400px;
+		-font-family: monospace;
+		-In TextEditorDisplay component and the method HandleContentOnClickAsync()
+			-Math.Round(
+				RelativeX / CharacterWidth, 
+				MidpointRounding.AwayFromZero)
+			-(int) truncate (RelativeY / RowHeight)
+			-If (rowIndex > rowCount) take last row index
+			-If (columnIndex > rowLength) take rowLength
+			-In TextEditorDisplay.razor
+				-bstudio_text-editor-display-gutter
+				-the row content
+					-both absolute
+			-In Cursor blazor component
+				-pte_caret-row
+}
+
+# Youtube Video Description
+{
+	Part 5:
+	https://youtu.be/jvWS6e7Mnm8
+
+	Starting Point Repo:
+	https://github.com/huntercfreeman/BlazorTextEditor
+	
+	BlazorStudio Repo:
+	https://github.com/huntercfreeman/BlazorStudio
+	
+	Fluxor Repo:
+	https://github.com/mrpmorris/Fluxor
+}
+
+# Youtube Video Title
+{
+	Move Cursor onclick, line numbers, caret row | Blazor Text Editor Part 6
+}
+

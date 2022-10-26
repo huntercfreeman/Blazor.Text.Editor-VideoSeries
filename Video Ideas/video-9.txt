@@ -1,0 +1,184 @@
+Notes for video 9:
+
+# Intent
+{
+	-Insertion
+}
+
+# Plan
+{
+	-KeyboardKeyFacts.IsMetaKey()
+		-Change to KeyboardEventArgs argument
+		-Pass code to overload
+		-put !Whitespace Code in IsMetaKey()
+	-public enum TextEditKind {Other,Insertion,Deletion}
+	-public record EditBlock(TextEditKind, DisplayName, ContentSnapshot);
+	-private readonly List<EditBlock> _editBlocks = new();
+	-public ImmutableArray<EditBlock> EditBlocks => 
+		_editBlocks.ToImmutableArray();
+	-PerformEditTextEditorAction()
+	{
+		if (just IsMetaKey() put !Whitespace Code in IsMetaKey())
+		{
+			if (backspaceKey)
+				PerformBackspaces(editTextEditorAction);
+			else if (deleteKey)
+				PerformDeletions(editTextEditorAction);
+		}
+		else
+        {
+            PerformInsertions(editTextEditorAction);
+        }
+        
+        return this;
+	}
+	-private void EnsureUndoPoint(TextEditKind textEditKind)
+		-mostRecentEditBlock
+		-while (_editBlocks.Count > MaximumEditBlocks && 
+                _editBlocks.Count != 0)
+	-public const int MaximumEditBlocks = 10;	
+	-private void PerformInsertions(TextEditorEditAction textEditorEditAction)
+	{
+		EnsureUndoPoint(TextEditKind.Insertion);
+		-foreach over the cursors
+			-if // enterkey
+			{
+			}
+			-else
+			{
+				-if // tab
+				{
+				}
+				
+				// tab and ( character / digits )
+			}
+			- put the following variables to
+			  be shared above the if // whitespace
+				-var startOfRowPositionIndex
+				-var cursorPositionIndex
+				-var wasTabCode = false;
+				-var wasEnterCode = false;
+				-var characterValueToInsert = .Key.First()
+				-if (KeyboardKeyFacts.Whitespace(.Code))
+				{
+					characterValueToInsert = ConvertWhitespaceCodeToCharacter(code)
+				
+					wasTabCode = KeyboardKeyFacts.WhitespaceCodes...
+					wasEnterCode = KeyboardKeyFacts.WhitespaceCodes...
+				}
+				-var richCharacterToInsert = new() RichCharacter
+				{
+					characterValueToInsert, 
+					(byte)DecorationKind.None
+				}
+			-if (wasEnterKey)
+			{
+				// New line
+				_content.Insert(cursorPosition)
+				_rowEndingPositions
+					.Insert(
+						rowIndex, // weird not to have +1 so comment on why 
+						(cursorPositionIndex + 1, NewLine))
+				
+				// later video match current file's line endings 
+				
+				cursor.IndexCoordinates -> (rowIndex + 1, 0)
+				cursor.PreferredColumnIndex -> 0
+			}
+			else
+			{
+				if (wasTabCode)
+				{
+					var index = _tabKeyPositions
+		                    .FindIndex(x =>
+		                        x >= cursorPositionIndex);
+
+		            if (index == -1)
+		            {
+		                _tabKeyPositions.Add(cursorPositionIndex);
+		            }
+		            else
+		            {
+		                for (int i = index; i < _tabKeyPositions.Count; i++)
+		                {
+		                    _tabKeyPositions[i]++;
+		                }
+		                
+		                _tabKeyPositions.Insert(index, cursorPosition);
+		            }
+				}
+				
+				// insert to _content for both tab and non tab
+				// cursorPositionIndex, richCharacterToInsert
+				
+				// mutate coordinates column += 1 and PreferredColumn += 1
+			}
+			-var firstRowIndexToModify = wasEnterCode ? :
+			-var firstTabKeyPositionIndexToModify = _tabKeyPositions
+                    .FindIndex(x => x >= cursorPositionIndex);
+			-for (int i = firstRowIndexToModify; i < _rowEndingPositions.Count; i++)
+			-if (firstTabKeyPositionIndexToModify != -1)
+			-modify onkeydown in blazor code behind use IsMetaKey()
+			-OnAfterRenderAsync move _rows logic into method
+			-Call await GetRowsAsync(); after Dispatch onkeydown
+			-tab key needs fixed
+			-onclick account for scrollTop when getting rowIndex
+	}
+	-Render the edit blocks to showcase them, then remove them from UI.
+	 	{
+	 		<div style="overflow: auto; height: 5em;">
+                @{
+                    foreach (var editBlock in TextEditor.EditBlocks)
+                    {
+                        var message = editBlock.Something
+                        <div style="white-space: nowrap;">
+                            @foreach (var character in message)
+                            {
+                                if (character == '\t')
+                                {
+                                    <text>&nbsp;&nbsp;&nbsp;&nbsp;</text>
+                                }
+                                else if (character == ' ')
+                                {
+                                    <text>&nbsp;</text>
+                                }
+                                else
+                                {
+                                    <text>@character</text>
+                                }
+                            }
+                        </div>
+                    }
+                }
+            </div>
+	 	}
+ 	-
+ 	{
+		if (keydown == (ctrl + z))
+			// undo most recent editblock
+		else if(keydown == (ctrl + y))
+			// REDO most recently undone editblock
+		else
+			// history changed so clear REDO block
+ 	}
+}
+
+# Youtube Video Description
+{
+	Part 8:
+	https://youtu.be/jcml53gERYE
+
+	Starting Point Repo:
+	https://github.com/huntercfreeman/BlazorTextEditor
+	
+	BlazorStudio Repo:
+	https://github.com/huntercfreeman/BlazorStudio
+	
+	Fluxor Repo:
+	https://github.com/mrpmorris/Fluxor
+}
+
+# Youtube Video Title
+{
+	Text Insertion | Blazor Text Editor Part 9
+}

@@ -1,0 +1,91 @@
+Notes for video 14:
+
+# Intent
+{
+	-Add non-resizable Dialogs
+}
+
+# Plan
+{
+-In ClassLib:
+	-record DialogStates
+	-record DialogRecord
+	-record DialogKey
+	-record RegisterDialogAction(DialogRecord DialogRecord)
+	-record DisposeDialogAction(DialogRecord DialogRecord)
+	-class DialogStatesReducer
+
+-In RazorLib:
+	-DialogDisplay (Blazor Component)
+	-DialogInitializer (Blazor Component)
+	-ExampleDialog (Blazor Component)
+	-Icons/Codicon
+		-IconBase.cs
+		-IconClose.razor
+		-IconMaximize.razor
+		-IconMinimize.razor
+		-README.md [
+codicon is an open source repository for icons used by Visual Studio Code
+
+https://github.com/microsoft/vscode-codicons
+
+any codicon icons are found in this directory
+		]
+		
+	-Add to blazorTextEditor.css [
+	.bte_dialog-display {
+	// width: 60; height: 60; left: 20; top: 20;
+    z-index: 10;
+    background-color: rgb(252, 252, 245);
+    box-shadow: 0px 0px 2px #000000;
+}
+
+.bte_dialog-display-tool-bar {
+    display: flex;
+    justify-content: space-between;
+    background-color: rgb(192, 214, 247);
+}
+
+.bte_dialog-display-buttons {
+    display: flex;
+    align-items: center;
+}
+
+.bte_dialog-display-button-entry {
+    margin-right: 5px;
+    padding: 3px;
+    display: inline-flex;
+    height: fit-content;
+}
+
+.bte_dialog-display-button-entry:hover {
+    background-color: orange;
+}
+	]
+}
+
+# Youtube Video Description
+{
+	Part 13:
+	https://youtu.be/H1zM1kAlf40
+
+	vscode-codicons Repo:
+	https://github.com/microsoft/vscode-codicons
+
+	Starting Point Repo:
+	https://github.com/huntercfreeman/BlazorTextEditor
+	
+	BlazorStudio Repo:
+	https://github.com/huntercfreeman/BlazorStudio
+	
+	Fluxor Repo:
+	https://github.com/mrpmorris/Fluxor
+	
+	Photino.Blazor:
+	https://github.com/tryphotino/photino.Blazor
+}
+
+# Youtube Video Title
+{
+	Static Dialogs | Blazor Text Editor Part 14
+}

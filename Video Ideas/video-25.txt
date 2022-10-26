@@ -1,0 +1,69 @@
+Notes for video 25
+
+# Intent
+{
+-Add Menu Component
+-Add ContextMenu to
+	TreeView
+-Open a file from FileSystem
+	using TreeView into
+	the Text Editor
+}
+
+# Plan
+{
+-Add Menu Component
+-Add 'File' Menu Component instance to the
+	Header of the app.
+-.bte_menu-option-display
+	-position: relative;
+	-white-space: nowrap;
+-.bte_menu-option-display:hover
+	-background-color: var(#956100)
+-Remove position-marker for dropdown
+-private string DropdownPositionKindStyleCss => ....
+-ShowInputFileDialogOnClick
+-Environment.GetFolderPath(
+	Environment.SpecialFolder
+	.UserProfile)
+{
+				.bte_input-file-display {
+					height: 100%;
+					overflow: auto;
+				}
+				.bte_dialog-display-toolbar {
+					height: 3rem;
+				}
+				.bte_dialog-display-body {
+					height: calc(100% - 3rem);
+				}
+			}
+-Add Context Menu to TreeView
+-Add ContextMenu option to open selected TreeViewModel
+	in the Text Editor
+-.bte_tree-view-display-title
+	position: relative
+}
+
+# Youtube Video Description
+{
+	Part 24:
+	https://youtu.be/QRMQV7xQwE0
+
+	Starting Point Repo:
+	https://github.com/huntercfreeman/BlazorTextEditor
+	
+	BlazorStudio Repo:
+	https://github.com/huntercfreeman/BlazorStudio
+	
+	Fluxor Repo:
+	https://github.com/mrpmorris/Fluxor
+	
+	Photino.Blazor:
+	https://github.com/tryphotino/photino.Blazor
+}
+
+# Youtube Video Title
+{
+	Read from File System a file into the Text Editor | Blazor Text Editor Part 25
+}

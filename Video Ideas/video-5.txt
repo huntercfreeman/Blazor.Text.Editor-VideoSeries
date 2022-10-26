@@ -1,0 +1,76 @@
+Notes for video 5:
+
+# Intent
+{
+    The goals of video 5 are:
+		-Add Cursor
+			-Class
+			-Component
+		-OnKeyDown 
+			-Move cursor with movement keyboard keys
+}
+
+# Plan
+{
+	# Step 1
+		-Create TextEditorCursor ClassLib
+		{
+			prop IndexCoordinates is ValueTuple (int rowIndex, int columnIndex)
+			prop PreferredColumnIndex is int
+			prop TextCursorKind is TextCursorKind
+			{
+				public enum TextCursorKind
+				{
+					Beam,
+					Block,
+					Replace,
+					AlternateBeam,
+					AlternateBlock,
+					AlternateReplace
+				}
+			}
+			MoveCursor(KeyboardEventArgs, TextCursor, TextEditorBase)
+			{
+				switch (keyboardEventArgs.Key)
+				{
+					case KeyboardKeyFacts.MovementKeys.ARROW_LEFT:
+						...
+					case KeyboardKeyFacts.MovementKeys.ARROW_DOWN:
+						...
+					case KeyboardKeyFacts.MovementKeys.ARROW_UP:
+						...
+					case KeyboardKeyFacts.MovementKeys.ARROW_RIGHT:
+						...
+					case KeyboardKeyFacts.MovementKeys.HOME:
+						...
+					case KeyboardKeyFacts.MovementKeys.END:
+						...
+				}
+			}
+		}
+		-Create TextEditorCursorDisplay Blazor Component
+		-Caret row for user interface
+		
+		-Create ImmutableTextEditorCursor ClassLib
+}
+
+# Youtube Video Description
+{
+	Part 4:
+	https://youtu.be/_qcqlUyD_Mw
+
+	Starting Point Repo:
+	https://github.com/huntercfreeman/BlazorTextEditor
+	
+	BlazorStudio Repo:
+	https://github.com/huntercfreeman/BlazorStudio
+	
+	Fluxor Repo:
+	https://github.com/mrpmorris/Fluxor
+}
+
+# Youtube Video Title
+{
+	Cursor, Keyboard Movement | Blazor Text Editor Part 5
+}
+

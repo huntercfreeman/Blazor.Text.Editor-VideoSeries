@@ -1,0 +1,105 @@
+Notes for video 18:
+
+# Intent
+{
+-Add resizable grid
+}
+
+# Plan
+{
+
+- {
+[MainLayout:
+	[
+		[Header],
+		[Body:
+			[
+				Folder Explorer, 
+				Text Editor
+			],
+		[Footer]
+	]
+
+}
+
+-ResizableRow.razor
+-ResizableColumn.razor
+
+blazorTextEditor.css [
+.bte_main-layout {
+    font-size: 24px;
+    height: 100vh;
+    width: 100vw;
+    overflow: auto;
+}
+
+.bte_header {
+    padding: 5px;
+    border-bottom: 2px solid black;
+    height: calc(3rem);
+    background-color: #7fa1e1;
+}
+
+.bte_body {
+    display: flex;
+    border-bottom: 2px solid black;
+    height: calc(100% - 9rem);
+    overflow: auto;
+    background-color: rgb(253, 253, 253);
+}
+
+.bte_footer {
+    padding: 5px;
+    height: calc(6rem);
+    background-color: #d4d4d4;
+}
+
+.bte_folder-explorer-display {
+    padding: 5px;
+}
+
+.bte_editor-display {
+    padding: 5px;
+    border-left: 2px solid black;
+}
+
+.bte_section-title {
+    font-size: 1.75rem;
+}
+
+.bte_resizable-column {
+    background-color: black;
+    height: 100%;
+    cursor: e-resize;
+}
+
+.bte_resizable-row {
+    background-color: black;
+    width: 100%;
+    cursor: n-resize;
+}
+]
+}
+
+# Youtube Video Description
+{
+	Part 17:
+	https://youtu.be/utGxm40hof8
+
+	Starting Point Repo:
+	https://github.com/huntercfreeman/BlazorTextEditor
+	
+	BlazorStudio Repo:
+	https://github.com/huntercfreeman/BlazorStudio
+	
+	Fluxor Repo:
+	https://github.com/mrpmorris/Fluxor
+	
+	Photino.Blazor:
+	https://github.com/tryphotino/photino.Blazor
+}
+
+# Youtube Video Title
+{
+	Resizable Grid | Blazor Text Editor Part 18
+}
