@@ -1,8 +1,8 @@
 All the code in this repo was done on video:
 https://www.youtube.com/playlist?list=PLG4PTDe2qc0i0COivTxn_rjSN96Xq-_K1
 
-This repo is finished and the end result is a nuget package named:
-Blazor.Text.Editor
+This repo is finished and the end result is a nuget package named Blazor.Text.Editor:
+https://www.nuget.org/packages/Blazor.Text.Editor
 
 The Blazor.Text.Editor Nuget Package source code:
 https://github.com/huntercfreeman/Blazor.Text.Editor
