@@ -5,8 +5,6 @@ The source code is found here: https://github.com/Luthetus/Luthetus.Ide
 
 This main branch does not build.
 
-(2023-10-04)
-
 ---
 
 All the code in this repo was done on video:
